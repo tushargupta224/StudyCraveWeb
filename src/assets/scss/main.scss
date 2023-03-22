@@ -1,0 +1,9 @@
+@import 'common-classes.scss';
+@import 'variables.scss';
+
+#app {
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+  background-color: $bg-white;
+}
