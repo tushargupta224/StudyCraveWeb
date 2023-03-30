@@ -1,9 +1,20 @@
 <template>
+  <h2>Verification</h2>
   <div>
-    <h1>Verification</h1>
-  </div>
-  <div>
-    <h3>verify your mobile number.</h3>
+    <text class="subtitle-text">
+      Please enter the OTP sent to
+      <text class="highlight-phone-number">+91 {{ phoneNumber }}</text>
+      &nbsp;
+      <n-button
+        text
+        style="edit-phone-number"
+        @click="$emit('onEditPhoneNumber')"
+      >
+        <text class="edit-phone-number"
+          >Edit<n-icon> <Edit20Regular /> </n-icon
+        ></text>
+      </n-button>
+    </text>
   </div>
   <div class="flex otp-container">
     <v-otp-input
@@ -19,8 +30,12 @@
     />
   </div>
   <div class="button-container">
-    <n-button @click="onSubmit" ghost :disabled="isOtpEntered"
-      >Click me</n-button
+    <n-button
+      @click="onSubmit"
+      :ghost="isOtpEntered ? true : false"
+      :color="isOtpEntered ? undefined : '#00FF00'"
+      :disabled="isOtpEntered"
+      >Continue</n-button
     >
   </div>
 </template>
@@ -28,19 +43,28 @@
 // Import in a Vue component
 import VOtpInput from "vue3-otp-input";
 import { defineComponent, ref } from "vue";
-import { NButton } from "naive-ui";
+import { NButton, NIcon } from "naive-ui";
+import { Edit20Regular } from "@vicons/fluent";
 
 export default defineComponent({
   name: "App",
   components: {
     VOtpInput,
     NButton,
+    Edit20Regular,
+    NIcon,
   },
   setup() {
     const otpInput = ref<any | null>(null);
 
     return { otpInput };
   },
+  props: {
+    phoneNumber: {
+      type: String,
+    },
+  },
+
   data() {
     return {
       otp: "",
@@ -52,7 +76,7 @@ export default defineComponent({
       return this.otp.length < 6;
     },
   },
-  emits: ["onOtpSubmit"],
+  emits: ["onOtpSubmit", "onEditPhoneNumber"],
   methods: {
     onSubmit() {
       if (this.otpEntered) {
@@ -110,5 +134,23 @@ input::placeholder {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+}
+
+.subtitle-text {
+  font-size: 16px;
+}
+
+.highlight-phone-number {
+  text-decoration: underline;
+  text-decoration-color: $green-blue;
+  font-weight: 700;
+  color: $green-blue;
+}
+
+.edit-phone-number {
+  text-decoration: underline;
+  text-decoration-color: $green-blue;
+  font-weight: 700;
+  color: #000;
 }
 </style>
