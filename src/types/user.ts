@@ -1,15 +1,15 @@
 export default interface User {
-  id: String;
+  id: string;
 
-  firstName: String;
+  firstName: string;
 
-  lastName: String;
+  lastName: string;
 
   phoneCountryCode: string;
 
   phoneNumber: string;
 
-  profilePic?: String;
+  profilePic?: string;
 
   createdAt?: Date;
 
