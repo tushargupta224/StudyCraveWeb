@@ -1,13 +1,14 @@
 <template>
   <header class="flex max-width landing-page-header">
     <img :src="logo" alt="logo" class="logo" />
-    <div class="flex" v-if="!isLoggedIn">
+    <div class="flex absolute-center" v-if="!isLoggedIn">
       <n-button
         text
         text-color="#0f0f0f"
         size="large"
         @click="showModal = true"
         style="font-size: 1rem"
+        class="navbar-btn"
         >Log in</n-button
       >
       <n-button
@@ -16,6 +17,7 @@
         text-color="#0f0f0f"
         size="large"
         style="margin-left: 2rem; font-size: 1rem"
+        class="navbar-btn"
         >Sign up</n-button
       >
 
@@ -85,4 +87,51 @@ export default defineComponent({
 .logo {
   height: 50px;
 }
+
+// @media screen and (max-width : 2560px){
+//   .logo{
+//     height: 120px;
+//   }
+//   .navbar-btn{
+//     width: 200px !important;
+//     height: 100px !important;
+//     font-size: 30px !important;
+//   }
+// }
+@media screen and (max-width : 1440px){
+  .logo{
+    height: 50px;
+  }
+  .navbar-btn{
+    width: initial !important;
+    height: 40px !important;
+    font-size: 15px !important;
+  }
+
+}
+@media screen and (max-width : 468px){
+  .logo{
+    height: 30px;
+  }
+  .navbar-btn{
+    width: 60px !important;
+    height: 30px !important;
+    font-size: 12px !important;
+    padding-left: 10px !important;
+    margin-left: 0.2rem !important;
+  }
+}
+@media screen and (max-width : 325px){
+  .logo{
+    height: 28px;
+  }
+  .navbar-btn{
+    // width: 60px !important;
+    height: 30px !important;
+    font-size: 10px !important;
+    margin-left: 0.05rem !important;
+    padding-left: 12px !important;
+  }
+}
+
 </style>
