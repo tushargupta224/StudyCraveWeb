@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <h1>Verification</h1>
-    </div>
-    <div>
-        <h3>verify your mobile number.</h3>
-    </div>
+  <div>
+    <h1>Verification</h1>
+  </div>
+  <div>
+    <h3>verify your mobile number.</h3>
+  </div>
   <div class="flex otp-container">
     <v-otp-input
       ref="otpInput"
@@ -19,7 +19,9 @@
     />
   </div>
   <div class="button-container">
-    <n-button @click="onSubmit" ghost>Click me</n-button>
+    <n-button @click="onSubmit" ghost :disabled="isOtpEntered"
+      >Click me</n-button
+    >
   </div>
 </template>
 <script lang="ts">
@@ -45,12 +47,16 @@ export default defineComponent({
       otpEntered: false,
     };
   },
+  computed: {
+    isOtpEntered(): boolean {
+      return this.otp.length < 6;
+    },
+  },
+  emits: ["onOtpSubmit"],
   methods: {
     onSubmit() {
       if (this.otpEntered) {
-        console.log(this.otp);
-      } else {
-        console.log("errp");
+        this.$emit("onOtpSubmit", this.otp);
       }
     },
     handleOnChange(value: string) {
@@ -100,9 +106,9 @@ input::placeholder {
   text-align: center;
   font-weight: 600;
 }
-.button-container{
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
 </style>
