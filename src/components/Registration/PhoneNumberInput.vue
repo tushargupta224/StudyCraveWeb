@@ -11,20 +11,22 @@
       path="phone"
       style="border-top: none; border-left: none; border-right: none"
     >
-      <n-input v-model:value="formValue.phone" placeholder="00000-00000" maxlength='10'/>
+      <n-input
+        v-model:value="formValue.phone"
+        placeholder="00000-00000"
+        maxlength="10"
+      />
     </n-form-item>
     <n-button
-      @click="handleValidateCheck"
+      @click="onSubmit"
       ghost
-      color="#00FF00"
+      :color="isButtonDisabled ? undefined : '#00FF00'"
       text-color="#0f0f0f"
       style="margin-bottom: 2rem"
       :disabled="isButtonDisabled"
-      
       >CONTINUE</n-button
     >
   </n-form>
-  <!-- <pre>{{ JSON.stringify(formValue, null, 2) }}</pre> -->
 </template>
 
 <script lang="ts">
@@ -70,17 +72,15 @@ export default defineComponent({
     NInput,
     NButton,
   },
-  computed:{
-    isButtonDisabled():boolean{
-      return this.formValue.phone.length <=10 ;
+  computed: {
+    isButtonDisabled(): boolean {
+      return this.formValue.phone.length < 10;
     },
   },
-  methods:{
-    // ismorethan10(e:KeyboardEvent){
-    //   if(this.formValue.phone.length >9){
-    //     e.preventDefault();
-    //   }
-    // }
-  }
+  methods: {
+    onSubmit() {
+      this.$emit("onSubmit", this.formValue.phone);
+    },
+  },
 });
 </script>
