@@ -43,7 +43,7 @@ export default defineComponent({
       return "https://www.croptecshow.com/wp-content/uploads/2017/04/guest-avatar-250x250px.png";
     },
     userName(): String {
-      return "Tushar";
+      return this.authStore.user?.firstName || "";
     },
   },
 });

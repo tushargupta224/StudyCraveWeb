@@ -6,7 +6,10 @@
         text
         text-color="#0f0f0f"
         size="large"
-        @click="showModal = true"
+        @click="
+          showSignUp = false;
+          showModal = true;
+        "
         style="font-size: 1rem"
         >Log in</n-button
       >
@@ -15,12 +18,19 @@
         color="#bab8ba"
         text-color="#0f0f0f"
         size="large"
+        @click="
+          showSignUp = true;
+          showModal = true;
+        "
         style="margin-left: 2rem; font-size: 1rem"
         >Sign up</n-button
       >
 
       <n-modal v-model:show="showModal">
-        <LogInRegistrationForm></LogInRegistrationForm>
+        <LogInRegistrationForm
+          :isSignUp="showSignUp"
+          @onCloseModal="showModal = false"
+        ></LogInRegistrationForm>
       </n-modal>
     </div>
 
@@ -51,6 +61,7 @@ export default defineComponent({
       logo: logo,
       showModal: false,
       showPhoneInput: true,
+      showSignUp: false,
     };
   },
   components: {
@@ -62,13 +73,17 @@ export default defineComponent({
   },
   computed: {
     isLoggedIn(): boolean {
-      return this.authStore.isAuthenticated;
+      return this.authStore.isAuthenticated && this.authStore.hasSignedUp;
     },
   },
-  methods: {
-    onSubmitOtp() {
-      if (this.isLoggedIn) {
-        this.$router.replace("/home");
+  watch: {
+    authStore(isAuthenticated, hasSignedUp) {
+      if (isAuthenticated && !hasSignedUp) {
+        if (!this.showModal) {
+          this.showModal = true;
+        }
+      } else if (this.isLoggedIn) {
+        this.showModal = false;
       }
     },
   },

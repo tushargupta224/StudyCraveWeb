@@ -1,41 +1,39 @@
 <template>
   <n-form ref="formRef" :label-width="80" :model="formValue" :rules="rules">
-    <n-form-item label="First Name">
-      <n-input v-model:value="formValue.firstName" placeholder="Input firstname" />
-    </n-form-item>
-    <n-form-item label="Last Name">
-      <n-input v-model:value="formValue.lastName" placeholder="Input lastname" />
-    </n-form-item>
-    <n-form-item label="email">
-      <n-input v-model:value="formValue.email" placeholder="Input email" />
-    </n-form-item>
-    <n-form-item label="Phone Number">
+    <n-form-item label="First Name" path="firstName">
       <n-input
-        v-model:value="formValue.phoneNumber"
-        placeholder="Phone Number"
+        v-model:value="formValue.firstName"
+        placeholder="Input firstname"
       />
     </n-form-item>
-    <n-button @click="handleClick" type="primary"> SUBMIT </n-button>
+    <n-form-item label="Last Name" path="lastName">
+      <n-input
+        v-model:value="formValue.lastName"
+        placeholder="Input lastname"
+      />
+    </n-form-item>
+    <n-form-item label="email" path="email">
+      <n-input v-model:value="formValue.email" placeholder="Input email" />
+    </n-form-item>
+    <n-button @click="handleClick" type="primary"> Submit </n-button>
   </n-form>
 </template>
 
 <script lang="ts">
 import { NButton, NForm, NFormItem, NInput } from "naive-ui";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, type PropType } from "vue";
 import type { FormInst } from "naive-ui";
 import type User from "../../types/user";
+import type SignUpDetails from "../../types/signup/signup_details";
 
 export default defineComponent({
-  setup() {
+  setup(props, { emit }) {
     const formRef = ref<FormInst | null>(null);
-    const formValue = ref<User>({
-      id: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      profilePic: "",
-      phoneCountryCode: "",
-      phoneNumber: "",
+    const formValue = ref<SignUpDetails>({
+      firstName: props.user?.firstName || "",
+      lastName: props.user?.lastName || "",
+      email: props.user?.email || "",
+      profilePic: props.user?.profilePic || "",
     });
 
     return {
@@ -57,23 +55,23 @@ export default defineComponent({
           message: "Please enter your email",
           trigger: "blur",
         },
-        phoneNumber: {
-          required: true,
-          trigger: ["input"],
-        },
       },
       handleClick(e: MouseEvent) {
         e.preventDefault();
         formRef.value?.validate((errors) => {
           if (!errors) {
-            console.log(JSON.stringify(formValue.value, null, 2));
-          } else {
-            console.log(errors);
+            emit("onSignUp", formValue);
           }
         });
       },
     };
   },
+  props: {
+    user: {
+      type: Object as PropType<User | null>,
+    },
+  },
+  emits: ["onSignUp"],
   components: {
     NButton,
     NForm,

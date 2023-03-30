@@ -13,6 +13,13 @@ export const useAuthStore = defineStore({
     isAuthenticated: (state) => {
       return state.user != null;
     },
+    hasSignedUp: (state) => {
+      return (
+        state.user?.firstName.trim().length !== 0 &&
+        state.user?.lastName.trim().length !== 0 &&
+        state.user?.email.trim().length !== 0
+      );
+    },
   },
   actions: {
     // async login(phone: Phone, otpVerifiedToken: string) {
