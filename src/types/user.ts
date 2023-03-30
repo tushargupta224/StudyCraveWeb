@@ -5,6 +5,8 @@ export default interface User {
 
   lastName: string;
 
+  email: string;
+
   phoneCountryCode: string;
 
   phoneNumber: string;
