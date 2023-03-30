@@ -15,6 +15,7 @@
         v-model:value="formValue.phone"
         placeholder="00000-00000"
         maxlength="10"
+        @input="checkNumber"
       />
     </n-form-item>
     <n-button
@@ -42,7 +43,7 @@ export default defineComponent({
     const formValue = ref({
       phone: "",
     });
-
+    
     return {
       formRef,
       formValue: formValue,
@@ -51,18 +52,6 @@ export default defineComponent({
           required: true,
           trigger: ["input"],
         },
-      },
-      handleValidateCheck(e: MouseEvent) {
-        e.preventDefault();
-        formRef.value?.validate((errors) => {
-          if (!errors) {
-            message.success("Valid");
-          } else {
-            console.log(errors);
-            message.error("Invalid");
-          }
-          console.log(formValue.value.phone);
-        });
       },
     };
   },
@@ -77,9 +66,13 @@ export default defineComponent({
       return this.formValue.phone.length < 10;
     },
   },
+  emits: ["onSubmit"],
   methods: {
     onSubmit() {
       this.$emit("onSubmit", this.formValue.phone);
+    },
+    checkNumber() {
+      this.formValue.phone = this.formValue.phone.replace(/[^0-9]/g, "");
     },
   },
 });
