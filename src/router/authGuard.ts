@@ -23,7 +23,7 @@ export const setUpAuthRouteGuard = async function (router: Router) {
           await authStore.getUserData();
         }
 
-        if (authStore.isAuthenticated) {
+        if (authStore.isAuthenticated && authStore.hasSignedUp) {
           next();
         } else {
           next("/");
