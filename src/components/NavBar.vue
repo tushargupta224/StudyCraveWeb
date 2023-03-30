@@ -1,7 +1,7 @@
 <template>
   <header class="flex max-width landing-page-header">
     <img :src="logo" alt="logo" class="logo" />
-    <div class="flex">
+    <div class="flex" v-if="!isLoggedIn">
       <n-button
         text
         text-color="#0f0f0f"
@@ -20,19 +20,12 @@
       >
 
       <n-modal v-model:show="showModal">
-        <n-card
-          style="width: 600px"
-          :bordered="false"
-          size="huge"
-          role="dialog"
-          aria-modal="true"
-        >
-          <n-message-provider>
-            <PhoneNumberInput />
-            <OtpInput/>
-          </n-message-provider>
-        </n-card>
+        <LogInRegistrationForm></LogInRegistrationForm>
       </n-modal>
+    </div>
+
+    <div v-if="isLoggedIn">
+      <PrimaryUserAvatar></PrimaryUserAvatar>
     </div>
   </header>
 </template>
@@ -41,26 +34,43 @@
 import { defineComponent } from "vue";
 import logo from "@/assets/images/logo.png";
 import AnimatedButton from "./AnimatedButton.vue";
-import { NModal, NCard, NButton, NMessageProvider } from "naive-ui";
-import PhoneNumberInput from "./Registration/PhoneNumberInput.vue";
-import OtpInput from "./Registration/OtpInput.vue";
+import { NModal, NButton } from "naive-ui";
+import LogInRegistrationForm from "./Registration/LogInRegistrationForm.vue";
+import { useAuthStore } from "../stores/auth";
+import PrimaryUserAvatar from "@/components/User/PrimaryUserAvatar.vue";
 
 export default defineComponent({
   name: "NavBar",
+  setup() {
+    const authStore = useAuthStore();
+
+    return { authStore };
+  },
   data() {
     return {
       logo: logo,
       showModal: false,
+      showPhoneInput: true,
     };
   },
   components: {
     AnimatedButton,
     NModal,
-    NCard,
     NButton,
-    PhoneNumberInput,
-    NMessageProvider,
-    OtpInput,
+    PrimaryUserAvatar,
+    LogInRegistrationForm,
+  },
+  computed: {
+    isLoggedIn(): boolean {
+      return this.authStore.isAuthenticated;
+    },
+  },
+  methods: {
+    onSubmitOtp() {
+      if (this.isLoggedIn) {
+        this.$router.replace("/home");
+      }
+    },
   },
 });
 </script>
@@ -75,4 +85,4 @@ export default defineComponent({
 .logo {
   height: 50px;
 }
-</style> 
+</style>
