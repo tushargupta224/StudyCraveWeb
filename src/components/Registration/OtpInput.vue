@@ -136,6 +136,22 @@ input::placeholder {
   margin-top: 2rem;
 }
 
+
+
+@media screen and (max-width: 600px) {
+  .otp-input {
+    width: 32px;
+    height: 32px;
+    margin: 0 1.5px;
+  }
+}
+@media screen and (max-width: 350px){
+  .otp-input{
+    width: 24px;
+    height: 24px;
+    margin: 0 1px;
+  }
+}
 .subtitle-text {
   font-size: 16px;
 }

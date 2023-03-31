@@ -5,6 +5,7 @@
     size="huge"
     role="dialog"
     aria-modal="true"
+    class="modal"
     :title="title"
     closable
     @close="handleCloseModal"
@@ -143,7 +144,33 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+
+@media screen and (max-width: 1440px){
+
+  .modal{
+    width: 600px;
+  }
+
+}
+
+@media screen and (max-width: 598px){
+  .modal{
+    width: 500px !important;
+  }
+}
+@media screen and (max-width: 500px){
+  .modal{
+    width: 350px !important;
+  }
+}
+@media screen and (max-width: 350px){
+  .modal{
+    width: 300px !important;
+  }
+}
+
 .n-card {
   border-radius: 12px;
 }
 </style>
+
