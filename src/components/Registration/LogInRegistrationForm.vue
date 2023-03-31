@@ -28,7 +28,7 @@
           />
         </div>
 
-        <div xyz="fade left-80%" v-if="!showPhoneInput && isSignup">
+        <div xyz="fade left-80%" v-if="!showPhoneInput && isNewSignup">
           <UserInfoInput :user="authStore.user" @onSignUp="onSignUp" />
         </div>
       </XyzTransition>
@@ -77,7 +77,7 @@ export default defineComponent({
     isAuthenticated(): boolean {
       return this.authStore.isAuthenticated;
     },
-    isSignup(): boolean {
+    isNewSignup(): boolean {
       return this.authStore.isAuthenticated && !this.authStore.hasSignedUp;
     },
   },
@@ -105,15 +105,16 @@ export default defineComponent({
     onSubmitOtp(otp: string) {
       this.authStore.user = {
         id: "asdadas",
-        firstName: "Kunal",
+        firstName: "",
         lastName: "",
-        email: "kunalKishore2gmail.com",
+        email: "",
         phoneCountryCode: "91",
         phoneNumber: this.phoneNumber!,
       };
     },
     onSignUp(details: SignUpDetails) {
       const user = this.authStore.user;
+      console.log(details.firstName);
       this.authStore.user = {
         id: "asdadas",
         firstName: details.firstName,
@@ -129,10 +130,13 @@ export default defineComponent({
       } else {
         this.dialog.warning({
           title: "Confirm",
-          content: "Are you sure?",
+          content: "Are you sure you want to cancel the process?",
           positiveText: "Sure",
           negativeText: "Not Sure",
           onPositiveClick: () => {
+            if (this.isAuthenticated) {
+              this.authStore.user = null;
+            }
             this.$emit("onCloseModal");
           },
           onNegativeClick: () => {},
@@ -144,27 +148,24 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-
-@media screen and (max-width: 1440px){
-
-  .modal{
+@media screen and (max-width: 1440px) {
+  .modal {
     width: 600px;
   }
-
 }
 
-@media screen and (max-width: 598px){
-  .modal{
+@media screen and (max-width: 598px) {
+  .modal {
     width: 500px !important;
   }
 }
-@media screen and (max-width: 500px){
-  .modal{
+@media screen and (max-width: 500px) {
+  .modal {
     width: 350px !important;
   }
 }
-@media screen and (max-width: 350px){
-  .modal{
+@media screen and (max-width: 350px) {
+  .modal {
     width: 300px !important;
   }
 }
@@ -173,4 +174,3 @@ export default defineComponent({
   border-radius: 12px;
 }
 </style>
-

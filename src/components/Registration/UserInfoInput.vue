@@ -60,7 +60,7 @@ export default defineComponent({
         e.preventDefault();
         formRef.value?.validate((errors) => {
           if (!errors) {
-            emit("onSignUp", formValue);
+            emit("onSignUp", formValue.value);
           }
         });
       },
