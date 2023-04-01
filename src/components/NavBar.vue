@@ -15,15 +15,14 @@
         >Log in</n-button
       >
       <n-button
-        ghost
-        color="#bab8ba"
+        color="#FDC886"
         text-color="#0f0f0f"
         size="large"
         @click="
           showSignUp = true;
           showModal = true;
         "
-        style="margin-left: 2rem; font-size: 1rem"
+        style="margin-left: 2rem; font-size: 1rem;"
         class="navbar-btn"
         >Sign up</n-button
       >

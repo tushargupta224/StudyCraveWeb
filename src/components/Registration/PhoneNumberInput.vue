@@ -1,12 +1,18 @@
 <template>
-  <div>
+  <div class="heading-conatiner">
     <h2>{{ title }}</h2>
+    <p>{{ subTitle }}</p>
   </div>
   <n-form ref="formRef" :model="formValue" :rules="rules">
     <n-form-item
       label="Registered mobile number"
       path="phone"
-      style="border-top: none; border-left: none; border-right: none"
+      style="
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        outline: none;
+      "
     >
       <n-input
         v-model:value="formValue.phone"
@@ -18,8 +24,8 @@
     <n-button
       @click="onSubmit"
       :ghost="isButtonDisabled ? true : false"
-      :color="isButtonDisabled ? undefined : '#00FF00'"
-      text-color="#0f0f0f"
+      :color="isButtonDisabled ? undefined : '#FDC886'"
+      :text-color="isButtonDisabled ? '#bab8ba' : '#000'"
       style="margin-bottom: 2rem"
       :disabled="isButtonDisabled"
       >Continue</n-button
@@ -57,6 +63,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    subTitle: {
+      type: String,
+      required: true,
+    },
     phoneNumber: {
       type: String,
     },
@@ -83,3 +93,11 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss" scoped>
+
+.heading-conatiner p{
+  font-style: italic;
+  font-size: 0.8rem;
+  margin-top: -30px;
+}
+</style>

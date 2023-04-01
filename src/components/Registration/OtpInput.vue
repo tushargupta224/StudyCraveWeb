@@ -1,6 +1,17 @@
 <template>
-  <h2>Verification</h2>
-  <div>
+  <div class="flex resend-container">
+    <h2>Verification</h2>
+    <n-button text :disabled="!canResendOtp" style="font-size: 16px">
+      <div v-if="!canResendOtp">
+        <n-icon style="position: relative; top: 1.5px">
+          <Timer16Regular />
+        </n-icon>
+        <n-countdown :duration="duration" :on-finish="handleOnFinishOtpTimer" />
+      </div>
+      <text v-else style="font-size: 12px; font-weight: 400">Resend OTP</text>
+    </n-button>
+  </div>
+  <div class="sub-heading-container">
     <text class="subtitle-text">
       Please enter the OTP sent to
       <text class="highlight-phone-number">+91 {{ phoneNumber }}</text>
@@ -33,7 +44,8 @@
     <n-button
       @click="onSubmit"
       :ghost="isOtpEntered ? true : false"
-      :color="isOtpEntered ? undefined : '#00FF00'"
+      :color="isOtpEntered ? undefined : '#FDC886'"
+      :text-color="isOtpEntered ? '#bab8ba' : '#000'"
       :disabled="isOtpEntered"
       >Continue</n-button
     >
@@ -43,8 +55,8 @@
 // Import in a Vue component
 import VOtpInput from "vue3-otp-input";
 import { defineComponent, ref } from "vue";
-import { NButton, NIcon } from "naive-ui";
-import { Edit20Regular } from "@vicons/fluent";
+import { NButton, NIcon, NCountdown } from "naive-ui";
+import { Edit20Regular, Timer16Regular } from "@vicons/fluent";
 
 export default defineComponent({
   name: "App",
@@ -53,6 +65,8 @@ export default defineComponent({
     NButton,
     Edit20Regular,
     NIcon,
+    NCountdown,
+    Timer16Regular,
   },
   setup() {
     const otpInput = ref<any | null>(null);
@@ -69,6 +83,8 @@ export default defineComponent({
     return {
       otp: "",
       otpEntered: false,
+      duration: 30000,
+      canResendOtp: false,
     };
   },
   computed: {
@@ -85,6 +101,9 @@ export default defineComponent({
     },
     handleOnChange(value: string) {
       this.otp = value;
+    },
+    handleOnFinishOtpTimer() {
+      this.canResendOtp = true;
     },
     handleOnComplete() {
       this.otpEntered = true;
@@ -115,6 +134,7 @@ export default defineComponent({
   border: 1px solid rgba(0, 0, 0, 0.3);
   text-align: center;
   background-color: $bg-white;
+  outline: none;
 }
 /* Background colour of an input field with value */
 .otp-input.is-complete {
@@ -132,28 +152,49 @@ input::placeholder {
 }
 .button-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   margin-top: 2rem;
 }
-
-
+.resend-container {
+  justify-content: space-between;
+}
+.resend-container {
+  margin-top: -20px;
+}
+.resend-container h2 {
+  font-size: 1.8rem;
+}
+.sub-heading-container {
+  margin-top: -30px;
+  margin-bottom: 2rem;
+}
+.subtitle-text {
+  font-size: 0.8rem;
+  font-style: italic;
+}
 
 @media screen and (max-width: 600px) {
   .otp-input {
-    width: 32px;
-    height: 32px;
-    margin: 0 1.5px;
-  }
-}
-@media screen and (max-width: 350px){
-  .otp-input{
     width: 24px;
     height: 24px;
-    margin: 0 1px;
+    margin: 0 1.5px;
+  }
+  .subtitle-text{
+    font-size: 0.65rem;
   }
 }
-.subtitle-text {
-  font-size: 16px;
+@media screen and (max-width: 350px) {
+  .otp-input {
+    width: 20px;
+    height: 20px;
+    margin: 0 1px;
+  }
+  .resend-container h2 {
+    font-size: 1.5rem;
+  }
+  .subtitle-text{
+    font-size: 0.48rem;
+  }
 }
 
 .highlight-phone-number {
