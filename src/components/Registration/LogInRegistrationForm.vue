@@ -12,11 +12,14 @@
   >
     <n-message-provider>
       <XyzTransition appear mode="out-in">
-        <div xyz="fade right-80%" v-if="showPhoneInput && !isAuthenticated">
+        
+
+        <div xyz="fade right-80%" v-if="showPhoneInput && !isAuthenticated" class="heading">
           <PhoneNumberInput
             @onSubmit="onSubmitPhoneNumber"
             :phoneNumber="phoneNumber"
             :title="isSignUp ? 'Create your account.' : 'Welcome back'"
+            :sub-title="!isSignUp ? 'Enter the registered phone number to login.': 'Enter phone number to start registration process.'"
           />
         </div>
 
@@ -148,6 +151,13 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+
+.heading{
+  margin-top: -35px !important;
+  font-size: 1.3rem;
+}
+
+
 @media screen and (max-width: 1440px) {
   .modal {
     width: 600px;
