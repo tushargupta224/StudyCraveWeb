@@ -3,19 +3,19 @@
     <n-form-item label="First Name" path="firstName">
       <n-input
         v-model:value="formValue.firstName"
-        placeholder="Input firstname"
+        placeholder="eg. John"
       />
     </n-form-item>
     <n-form-item label="Last Name" path="lastName">
       <n-input
         v-model:value="formValue.lastName"
-        placeholder="Input lastname"
+        placeholder="eg. Wick"
       />
     </n-form-item>
-    <n-form-item label="email" path="email">
-      <n-input v-model:value="formValue.email" placeholder="Input email" />
+    <n-form-item label="Email" path="email">
+      <n-input v-model:value="formValue.email" placeholder="eg. johnwick007@gmail.com"/>
     </n-form-item>
-    <n-button @click="handleClick" type="primary"> Submit </n-button>
+    <n-button @click="handleClick" type="primary" color="#FDC886" text-color="#000"> Submit </n-button>
   </n-form>
 </template>
 
