@@ -1,6 +1,6 @@
 <template>
   <div class="hero-section">
-    <div class="max-width right-side-wrapper">
+    <div class="right-side-wrapper max-width">
       <div class="hero-section-heading">
         Collaborate. Connect. Succeed. - Studycrave!
       </div>
@@ -32,6 +32,7 @@ export default ({
 .hero-section {
   height: 100vh;
   display: flex;
+  
 
   &-heading {
     max-width: 650px;
@@ -57,6 +58,8 @@ export default ({
 }
 .right-side-wrapper {
   margin-top: 100px;
+  margin-left: 50px;
+  max-width: 50%;
 }
 .img-container{
   max-width: 80%;
