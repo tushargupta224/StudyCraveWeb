@@ -1,118 +1,77 @@
 <template>
-  <div class="hero-section">
-    <div class="right-side-wrapper max-width">
-      <div class="hero-section-heading">
-        Collaborate. Connect. Succeed. - Studycrave!
+  <div class="first-row">
+    <div class="left-side-wrapper">
+      <div class="first-row-heading">
+        Collaborate, Connect,<br />
+        Succeed - Studycrave!
       </div>
-      <!-- <div class="hero-section-subheading">
-        Join a community of learners, achieve more.
-      </div> -->
+      <div class="first-row-subheading">
+        Transforming the way students learn by fostering collaboration, community, and real-time interaction on a global scale.
+      </div>
+      <div style="padding-bottom: 16px;"/>
+      <n-button type="primary" color="#793BA8">Get Started</n-button>
     </div>
-    <div class="img-container">
-      <img :src='headerIllustration' alt="hero-img">
 
+    <div class="photo">
+      <img :src="headerIllustration" alt="hero-img" />
     </div>
   </div>
 </template>
 <script lang="ts">
-import headerIllustration from '@/assets/images/Landing Page Illustration.png';
+import headerIllustration from "@/assets/images/Landing Page Illustration.png";
+import { NButton } from "naive-ui";
 
-export default ({
-  data(){
-    return{
-      headerIllustration:headerIllustration,
-    }
-  }
-})
+export default {
+  data() {
+    return {
+      headerIllustration: headerIllustration,
+    };
+  },
+  components: {
+    NButton,
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 @import "../assets/scss/variables.scss";
 
-.hero-section {
-  height: 100vh;
-  display: flex;
-  
+.first-row {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
 
   &-heading {
-    max-width: 650px;
-    font-size: 3rem;
+    font-size: 3vw;
     font-weight: 700;
     color: $bg-black;
   }
   &-subheading {
-    margin-top: 20px;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 3rem;
-    color: $dark-yellow;
-  }
-  &-background {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    height: 790px;
-    width: 728px;
-    z-index: -1;
+    margin-top: 6px;
+    font-size: 1.1vw;
+    text-align: justify;
   }
 }
-.right-side-wrapper {
-  margin-top: 100px;
-  margin-left: 50px;
-  max-width: 50%;
+.left-side-wrapper {
+  width: 54%;
+  height: auto;
 }
-.img-container{
-  max-width: 80%;
+.img-container {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
 }
-.img-container img{
-  
-  width:40rem;
-  height: 40rem;
+.photo,
+.left-side-wrapper {
+  display: table-cell;
+  vertical-align: middle;
 }
-
-@media screen and (max-width: 920px){
-  .hero-section{
-    // flex-direction: column-reverse;
-    margin-top: 30px;
-    &-heading{
-      font-size: 1.8rem;
-    }
-  }
-  .right-side-wrapper{
-    margin-top: 2rem;
-  }
-  
-  .img-container img{
-    width: 30rem;
-    height: 30rem;
-  }
+.photo {
+  width: 48%;
 }
-
-@media screen and (max-width:660px){
-  .img-container img{
-    width: 25rem;
-    height: 25rem;
-  }
-}
-@media screen and (max-width: 468px){
-  .hero-section{
-    flex-direction: column-reverse;
-    justify-content: center;
-    align-items: center;
-
-    &-heading{
-      font-size: 2rem;
-    }
-  }
-  .right-side-wrapper{
-    margin-top: -0.7rem;
-  }
-  .img-container img{
-    max-width: 100%;
-    max-height: 80%;
-    width: 21rem;
-    height: 21rem;
-  }
-
+.photo img {
+  // margin-left: 4rem;
+  max-width: 100%;
+  height: auto;
 }
 </style>
