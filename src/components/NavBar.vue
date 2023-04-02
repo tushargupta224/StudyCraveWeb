@@ -22,12 +22,15 @@
           showSignUp = true;
           showModal = true;
         "
-        style="margin-left: 2rem; font-size: 1rem;"
+        style="margin-left: 2rem; font-size: 1rem"
         class="navbar-btn"
         >Sign up</n-button
       >
 
-      <n-modal v-model:show="showModal">
+      <n-modal
+        v-model:show="showModal"
+        :mask-closable=false
+      >
         <LogInRegistrationForm
           :isSignUp="showSignUp"
           @onCloseModal="showModal = false"
@@ -61,7 +64,6 @@ export default defineComponent({
     return {
       logo: logo,
       showModal: false,
-      showPhoneInput: true,
       showSignUp: false,
     };
   },
@@ -112,22 +114,21 @@ export default defineComponent({
 //     font-size: 30px !important;
 //   }
 // }
-@media screen and (max-width : 1440px){
-  .logo{
+@media screen and (max-width: 1440px) {
+  .logo {
     height: 50px;
   }
-  .navbar-btn{
+  .navbar-btn {
     width: initial !important;
     height: 40px !important;
     font-size: 15px !important;
   }
-
 }
-@media screen and (max-width : 468px){
-  .logo{
+@media screen and (max-width: 468px) {
+  .logo {
     height: 30px;
   }
-  .navbar-btn{
+  .navbar-btn {
     width: 60px !important;
     height: 30px !important;
     font-size: 12px !important;
@@ -135,11 +136,11 @@ export default defineComponent({
     margin-left: 0.2rem !important;
   }
 }
-@media screen and (max-width : 325px){
-  .logo{
+@media screen and (max-width: 325px) {
+  .logo {
     height: 28px;
   }
-  .navbar-btn{
+  .navbar-btn {
     // width: 60px !important;
     height: 30px !important;
     font-size: 10px !important;
@@ -147,5 +148,4 @@ export default defineComponent({
     padding-left: 12px !important;
   }
 }
-
 </style>
