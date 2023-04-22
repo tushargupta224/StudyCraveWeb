@@ -1,52 +1,108 @@
 import { defineStore } from "pinia";
-import type { Phone } from "../types/Phone";
 import type User from "../types/user";
+import { auth, db } from "../config/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { useOtpStore } from "./otp";
+
+onAuthStateChanged(auth, (user) => {
+  const auth = useAuthStore();
+  if (user) {
+    const uid = user.uid;
+    const phoneNumber = user.phoneNumber;
+    // ...
+    auth.uid = uid;
+    auth.phoneNumber = phoneNumber;
+  } else {
+    auth.user = undefined;
+    auth.uid = null;
+    useOtpStore().resetStates();
+  }
+});
 
 export const useAuthStore = defineStore({
   id: "userAuth",
   state: () => ({
-    user: null as User | null,
+    user: undefined as User | undefined,
+    uid: null as string | null,
+    phoneNumber: null as string | null,
     authenticating: false,
     fetchingUser: false,
   }),
   getters: {
-    isAuthenticated: (state) => {
-      return state.user != null;
+    isAuthenticated: (state): boolean => {
+      return state.user != undefined;
     },
-    hasSignedUp: (state) => {
+    hasSignedUp: (state): boolean => {
       return (
+        state.user?.firstName != undefined &&
         state.user?.firstName.trim().length !== 0 &&
+        state.user?.lastName != undefined &&
         state.user?.lastName.trim().length !== 0 &&
+        state.user?.email != undefined &&
         state.user?.email.trim().length !== 0
       );
     },
   },
   actions: {
-    // async login(phone: Phone, otpVerifiedToken: string) {
-    //   try {
-    //     this.authenticating = true;
-
-    //     // Add LoginOtP Call
-
-    //     localStorage.setItem("userId", this.user.id);
-    //   } finally {
-    //     this.authenticating = false;
-    //   }
-    // },
     async getUserData() {
       try {
-        const userId = localStorage.getItem("userId");
-
-        if (userId) {
-          this.fetchingUser = true;
-
-          // Call get user data api
-        }
-      } catch (e) {
-        localStorage.removeItem("userId");
+        this.authenticating = true;
+        this.user = await this.createOrGetUser(this.uid!, this.phoneNumber);
       } finally {
-        this.fetchingUser = false;
+        this.authenticating = false;
       }
     },
+    async createOrGetUser(
+      uId: string,
+      phoneNumber: string | null
+    ): Promise<User | undefined> {
+      try {
+        const res = await getDoc(doc(db, "users", uId));
+        if (res.exists()) {
+          // User already exists, get the existing data
+          const existingUserData = res.data() as User;
+          return existingUserData;
+        } else {
+          // User doesn't exist, create a new user with the user's data
+          if (!phoneNumber) {
+            this.logOut();
+            throw Error("Phone No Not Set");
+          }
+          const newUser: User = {
+            id: uId,
+            phoneNumber: phoneNumber,
+          };
+          await setDoc(doc(db, "users", uId), newUser);
+          return newUser;
+        }
+      } catch (error) {
+        throw error;
+      }
+    },
+    async updateUserDetails(updatedUser: User): Promise<void> {
+      await updateDoc(doc(db, "users", this.user!.id), {
+        ...updatedUser,
+      })
+        .then(async () => {
+          const res = await getDoc(doc(db, "users", this.user!.id));
+
+          if (res) {
+            this.user = res.data() as User;
+          } else {
+            this.user = updatedUser;
+          }
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
+    async logOut() {
+      await auth.signOut();
+    },
+  },
+  persist: {
+    enabled: true,
+    strategies: [{ storage: localStorage, paths: ["uid"] }],
   },
 });
