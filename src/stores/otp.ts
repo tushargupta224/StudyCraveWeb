@@ -1,5 +1,11 @@
 import { defineStore } from "pinia";
-import type { Phone } from "../types/Phone";
+import {
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  type ConfirmationResult,
+  type User,
+} from "firebase/auth";
+import { auth } from "../config/firebase";
 
 export const useOtpStore = defineStore({
   id: "otp",
@@ -7,12 +13,30 @@ export const useOtpStore = defineStore({
     sendingOtp: false,
     otpSent: false,
     verifyingOtp: false,
-    otpVerifiedToken: null as string | null,
     resendTimer: null as null | ReturnType<typeof setInterval>,
     resendWaitInSecs: 60,
+    reCaptchaVerifier: null as any,
+    confirmationResult: null as ConfirmationResult | null,
   }),
   actions: {
-    async sendOtp(phone: Phone) {
+    async sendOtp(phoneCountryCode: string, phoneNumber: string) {
+      console.log("asgfdgjasd");
+
+      this.reCaptchaVerifier = new RecaptchaVerifier(
+        "otp-send-button",
+        {
+          size: "invisible",
+        },
+        auth
+      );
+
+      if (this.reCaptchaVerifier)
+        this.sendOtpForVerification(phoneCountryCode, phoneNumber);
+    },
+    async sendOtpForVerification(
+      phoneCountryCode: string,
+      phoneNumber: string
+    ): Promise<void> {
       this.sendingOtp = true;
       this.otpSent = false;
       this.clearResendTimer();
@@ -26,21 +50,43 @@ export const useOtpStore = defineStore({
           }
         }, 1000);
 
-        // Send Otp Api Call
-        this.otpSent = true;
+        signInWithPhoneNumber(
+          auth,
+          "+" + phoneCountryCode + phoneNumber,
+          this.reCaptchaVerifier
+        )
+          .then((confirmationResult) => {
+            // SMS sent. Prompt user to type the code from the message, then sign the
+            // user in with confirmationResult.confirm(code).
+            this.confirmationResult = confirmationResult;
+            this.otpSent = true;
+            // ...
+          })
+          .catch((error) => {
+            this.otpSent = false;
+            throw Error("Something went wrong while sending OTP");
+          });
       } finally {
         this.sendingOtp = false;
       }
     },
-    async verifyOtp(phone: Phone, otp: string) {
+    async verifyOtp(otp: string): Promise<User> {
       this.verifyingOtp = true;
 
-      try {
-        // Verify Otp Api Call
-        // this.otpVerifiedToken = otpRes.otpVerifiedToken;
-      } finally {
-        this.verifyingOtp = false;
+      if (!this.confirmationResult) {
+        throw Error("");
       }
+
+      return this.confirmationResult
+        ?.confirm(otp)
+        .then((result) => {
+          console.log("success");
+          this.verifyingOtp = false;
+          return result.user;
+        })
+        .catch((error) => {
+          throw error;
+        });
     },
 
     clearResendTimer() {
@@ -49,6 +95,16 @@ export const useOtpStore = defineStore({
         clearInterval(this.resendTimer);
         this.resendTimer = null;
       }
+    },
+
+    resetStates() {
+      this.sendingOtp = false;
+      this.otpSent = false;
+      this.verifyingOtp = false;
+      this.resendTimer = null;
+      this.resendWaitInSecs = 60;
+      this.reCaptchaVerifier = null;
+      this.confirmationResult = null;
     },
   },
 });

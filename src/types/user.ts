@@ -1,13 +1,11 @@
 export default interface User {
   id: string;
 
-  firstName: string;
+  firstName?: string;
 
-  lastName: string;
+  lastName?: string;
 
-  email: string;
-
-  phoneCountryCode: string;
+  email?: string;
 
   phoneNumber: string;
 

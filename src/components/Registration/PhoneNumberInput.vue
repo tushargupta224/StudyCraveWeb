@@ -22,6 +22,7 @@
       />
     </n-form-item>
     <n-button
+      id="otp-send-button"
       @click="onSubmit"
       :ghost="isButtonDisabled ? true : false"
       :color="isButtonDisabled ? undefined : '#FDC886'"
@@ -94,8 +95,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-
-.heading-conatiner p{
+.heading-conatiner p {
   font-style: italic;
   font-size: 0.8rem;
   margin-top: -30px;
