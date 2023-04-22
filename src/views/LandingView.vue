@@ -55,6 +55,7 @@ export default {
   width: 100%;
   display: table;
   table-layout: fixed;
+  height: 90vh;
 
   &-heading {
     font-size: 3vw;
