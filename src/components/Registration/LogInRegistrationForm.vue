@@ -112,7 +112,14 @@ export default defineComponent({
       this.otpStore.verifyOtp(otp).then((user) => {
         this.authStore.uid = user.uid;
         this.authStore.phoneNumber = user.phoneNumber;
-        this.authStore.getUserData();
+        this.authStore
+          .getUserData()
+          .then(() => {
+            if (this.isAuthenticated && this.authStore.hasSignedUp) {
+              this.$router.replace("/home");
+            }
+          })
+          .catch((error) => {});
       });
     },
     async onSignUp(details: SignUpDetails) {
