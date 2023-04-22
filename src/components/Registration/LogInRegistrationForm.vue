@@ -12,14 +12,20 @@
   >
     <n-message-provider>
       <XyzTransition appear mode="out-in">
-        
-
-        <div xyz="fade right-80%" v-if="showPhoneInput && !isAuthenticated" class="heading">
+        <div
+          xyz="fade right-80%"
+          v-if="showPhoneInput && !isAuthenticated"
+          class="heading"
+        >
           <PhoneNumberInput
             @onSubmit="onSubmitPhoneNumber"
             :phoneNumber="phoneNumber"
             :title="isSignUp ? 'Create your account.' : 'Welcome back'"
-            :sub-title="!isSignUp ? 'Enter the registered phone number to login.': 'Enter phone number to start registration process.'"
+            :sub-title="
+              !isSignUp
+                ? 'Enter the registered phone number to login.'
+                : 'Enter phone number to start registration process.'
+            "
           />
         </div>
 
@@ -31,7 +37,7 @@
           />
         </div>
 
-        <div xyz="fade left-80%" v-if="!showPhoneInput && isNewSignup">
+        <div xyz="fade left-80%" v-if="isAuthenticated && isNewSignup">
           <UserInfoInput :user="authStore.user" @onSignUp="onSignUp" />
         </div>
       </XyzTransition>
@@ -49,18 +55,19 @@ import { useAuthStore } from "../../stores/auth";
 import UserInfoInput from "./UserInfoInput.vue";
 import type SignUpDetails from "../../types/signup/signup_details";
 import { useDialog } from "naive-ui";
+import { useOtpStore } from "../../stores/otp";
 
 export default defineComponent({
   setup() {
     const authStore = useAuthStore();
+    const otpStore = useOtpStore();
     const dialog = useDialog();
 
-    return { authStore, dialog };
+    return { authStore, otpStore, dialog };
   },
   data() {
     return {
       phoneNumber: undefined as string | undefined,
-      showPhoneInput: true,
     };
   },
   props: {
@@ -77,6 +84,9 @@ export default defineComponent({
 
       return "Log In";
     },
+    showPhoneInput(): boolean {
+      return !this.otpStore.otpSent;
+    },
     isAuthenticated(): boolean {
       return this.authStore.isAuthenticated;
     },
@@ -92,43 +102,41 @@ export default defineComponent({
     OtpInput,
     UserInfoInput,
   },
-  watch: {
-    checkIfUserSignedUpOrLogin(isAuthenticated, isSignup) {
-      if (isAuthenticated && isSignup) {
-        this.$router.replace("/home");
-      }
-    },
-  },
   emits: ["onCloseModal"],
   methods: {
     onSubmitPhoneNumber(phoneNumber: string) {
       this.phoneNumber = phoneNumber;
-      this.showPhoneInput = false;
+      this.otpStore.sendOtp("91", phoneNumber);
     },
     onSubmitOtp(otp: string) {
-      this.authStore.user = {
-        id: "asdadas",
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneCountryCode: "91",
-        phoneNumber: this.phoneNumber!,
-      };
+      this.otpStore.verifyOtp(otp).then((user) => {
+        this.authStore.uid = user.uid;
+        this.authStore.phoneNumber = user.phoneNumber;
+        this.authStore.getUserData();
+      });
     },
-    onSignUp(details: SignUpDetails) {
+    async onSignUp(details: SignUpDetails) {
       const user = this.authStore.user;
-      console.log(details.firstName);
-      this.authStore.user = {
-        id: "asdadas",
-        firstName: details.firstName,
-        lastName: details.lastName,
-        email: details.email,
-        phoneCountryCode: user?.phoneCountryCode || "",
-        phoneNumber: user?.phoneNumber || "",
-      };
+      if (user) {
+        const updatedUser = {
+          ...user,
+          firstName: details.firstName,
+          lastName: details.lastName,
+          email: details.email,
+        };
+
+        await this.authStore
+          .updateUserDetails(updatedUser)
+          .then(() => {
+            if (this.isAuthenticated && this.authStore.hasSignedUp) {
+              this.$router.replace("/home");
+            }
+          })
+          .catch((error) => {});
+      }
     },
     handleCloseModal() {
-      if (this.showPhoneInput) {
+      if (this.showPhoneInput && !this.isAuthenticated) {
         this.$emit("onCloseModal");
       } else {
         this.dialog.warning({
@@ -138,7 +146,7 @@ export default defineComponent({
           negativeText: "Not Sure",
           onPositiveClick: () => {
             if (this.isAuthenticated) {
-              this.authStore.user = null;
+              this.authStore.logOut();
             }
             this.$emit("onCloseModal");
           },
@@ -151,12 +159,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-
-.heading{
+.heading {
   margin-top: -35px !important;
   font-size: 1.3rem;
 }
-
 
 @media screen and (max-width: 1440px) {
   .modal {
