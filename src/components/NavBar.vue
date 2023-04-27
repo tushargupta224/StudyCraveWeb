@@ -22,7 +22,7 @@
           showSignUp = true;
           showModal = true;
         "
-        style="margin-left: 2rem; font-size: 1rem"
+        style="margin-left: 2rem; font-size: 1rem; z-index: 1;"
         class="navbar-btn"
         >Sign up</n-button
       >

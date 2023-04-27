@@ -82,6 +82,7 @@ export const useOtpStore = defineStore({
           return result.user;
         })
         .catch((error) => {
+          this.verifyingOtp = false;
           throw error;
         });
     },
