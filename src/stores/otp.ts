@@ -20,8 +20,6 @@ export const useOtpStore = defineStore({
   }),
   actions: {
     async sendOtp(phoneCountryCode: string, phoneNumber: string) {
-      console.log("asgfdgjasd");
-
       this.reCaptchaVerifier = new RecaptchaVerifier(
         "otp-send-button",
         {
@@ -80,11 +78,11 @@ export const useOtpStore = defineStore({
       return this.confirmationResult
         ?.confirm(otp)
         .then((result) => {
-          console.log("success");
           this.verifyingOtp = false;
           return result.user;
         })
         .catch((error) => {
+          this.verifyingOtp = false;
           throw error;
         });
     },
