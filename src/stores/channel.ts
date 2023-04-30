@@ -30,30 +30,21 @@ export const useChannelStore = defineStore({
   }),
   getters: {},
   actions: {
-    async createChannel(channel: Channel) {
+    async createChannel(channel: Partial<Channel>): Promise<Channel> {
       const channelColRef = collection(db, "channels");
-
-      const channelData: Partial<Channel> = {
-        name: channel.name,
-        topic: channel.topic,
-        description: channel.description,
+      const newChannel: Partial<Channel> = {
+        ...channel,
         memberIds: [],
-        createdAt: channel.createdAt,
-        maxMembersLimit: channel.maxMembersLimit,
-        ownerId: channel.ownerId,
-        ownerDisplayName: channel.ownerDisplayName,
-        ownerAvatar: channel.ownerAvatar,
-        ownerStatus: channel.ownerStatus,
-      };
-
-      await addDoc(channelColRef, channelData)
-        .then(() => {
-          console.log("added successfully");
-        })
-        .catch((error) => {
-          console.log("errr while adding");
-          console.log(error);
-        });
+      }
+      const ref = await addDoc(channelColRef, newChannel);
+      const res = await getDoc(ref);
+      if (!res.exists()) {
+        throw Error("Something went wrong");
+      }
+      return {
+        id: res.id,
+        ...res.data(),
+      } as Channel;
     },
     async loadChannelByChannelId(channelId: string): Promise<Channel> {
       const channelRef = doc(db, "channels", channelId);

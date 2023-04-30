@@ -19,6 +19,9 @@
     <SoloChannelBanner></SoloChannelBanner>
     <ChannelsSection></ChannelsSection>
   </div>
+  <n-modal v-model:show="showModal">
+    <create-channel-form />
+  </n-modal>
 </template>
 
 <script lang="ts">
