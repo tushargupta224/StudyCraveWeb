@@ -1,47 +1,59 @@
 <template>
   <n-card class="n-card">
-    <div class="form-heading">
-      <h3>✨ Create your Channel</h3>
-    </div>
-    <div class="form-subheading">
-      How does you want your channel to look like?
-    </div>
-    <n-form
-      ref="formRef"
-      :label-width="80"
-      :model="formValue"
-      :rules="rules"
-      :size="size"
-    >
-      <n-form-item label="Channel's Name" path="channel.name">
-        <n-input v-model:value="formValue.channel.name" />
-      </n-form-item>
-      <n-form-item label="Topic" path="channel.topic">
-        <n-input v-model:value="formValue.channel.topic" />
-      </n-form-item>
-      <n-form-item label="Description" path="channel.description">
-        <n-input
-          v-model:value="formValue.channel.description"
-          type="textarea"
-        />
-      </n-form-item>
-      <n-form-item
-        label="Max. Member Limit"
-        :validation-status="inputMaxParticipantStatus"
+    <Loading v-if="isCreatingChannel">
+      <template v-slot:body>
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </template>
+    </Loading>
+    <div v-else>
+      <div class="form-heading">
+        <h3>✨ Create your Channel</h3>
+      </div>
+      <div class="form-subheading">
+        How does you want your channel to look like?
+      </div>
+      <n-form
+        ref="formRef"
+        :label-width="80"
+        :model="formValue"
+        :rules="rules"
+        :size="size"
       >
-        <n-input-number
-          v-model:value="formValue.channel.maxMembersLimit"
-          :min="25"
-          :max="500"
-        />
-        <template #feedback>
-          {{ inputMaxParticipantFeedback }}
-        </template>
-      </n-form-item>
-      <n-form-item>
-        <n-button @click="handleClick">Create Channel</n-button>
-      </n-form-item>
-    </n-form>
+        <n-form-item label="Channel's Name" path="channel.name">
+          <n-input v-model:value="formValue.channel.name" />
+        </n-form-item>
+        <n-form-item label="Topic" path="channel.topic">
+          <n-input v-model:value="formValue.channel.topic" />
+        </n-form-item>
+        <n-form-item label="Description" path="channel.description">
+          <n-input
+            v-model:value="formValue.channel.description"
+            type="textarea"
+          />
+        </n-form-item>
+        <n-form-item
+          label="Max. Member Limit"
+          :validation-status="inputMaxParticipantStatus"
+        >
+          <n-input-number
+            v-model:value="formValue.channel.maxMembersLimit"
+            :min="25"
+            :max="500"
+          />
+          <template #feedback>
+            {{ inputMaxParticipantFeedback }}
+          </template>
+        </n-form-item>
+        <n-form-item>
+          <n-button @click="handleClick">Create Channel</n-button>
+        </n-form-item>
+      </n-form>
+    </div>
   </n-card>
 </template>
 
@@ -58,11 +70,18 @@ import {
 } from "naive-ui";
 import type { FormInst } from "naive-ui";
 import type Channel from "@/types/channels/channel";
+import { useAuthStore } from "@/stores/auth";
+import { useChannelStore } from "@/stores/channel";
+import Loading from "@/components/Loading.vue";
 
 export default defineComponent({
   setup() {
     const formRef = ref<FormInst | null>(null);
+    const { user } = useAuthStore();
+    const channelStore = useChannelStore();
     return {
+      user,
+      channelStore,
       formRef,
       size: ref<"small" | "medium" | "large">("medium"),
       formValue: ref({
@@ -80,9 +99,9 @@ export default defineComponent({
             validator(rule: FormItemRule, value: string) {
               if (!value || value.length == 0) {
                 return new Error("Channel name is required");
-              } else if (value.length < 10) {
+              } else if (value.length < 5) {
                 return new Error(
-                  "Channel name should be of atleast 10 characters"
+                  "Channel name should be of atleast 5 characters"
                 );
               }
               return true;
@@ -94,9 +113,9 @@ export default defineComponent({
             validator(rule: FormItemRule, value: string) {
               if (!value || value.length == 0) {
                 return new Error("Topic name is required");
-              } else if (value.length < 10) {
+              } else if (value.length < 5) {
                 return new Error(
-                  "Topic name should be of atleast 8 characters"
+                  "Topic name should be of atleast 5 characters"
                 );
               }
               return true;
@@ -110,6 +129,11 @@ export default defineComponent({
           },
         },
       },
+    };
+  },
+  data() {
+    return {
+      isCreatingChannel: false,
     };
   },
   computed: {
@@ -129,9 +153,26 @@ export default defineComponent({
       e.preventDefault();
       this.formRef?.validate((error) => {
         if (!error) {
-          console.log("Valid");
-        } else {
-          console.log("error");
+          this.isCreatingChannel = true;
+
+          const channelToCreate: Partial<Channel> = {
+            ...this.formValue.channel,
+            ownerId: this.user?.id,
+            ownerDisplayName:
+              (this.user?.firstName ?? "") + (this.user?.lastName ?? ""),
+            ownerAvatar: this.user?.profilePic ?? "",
+            ownerStatus: false,
+          };
+
+          this.channelStore
+            .createChannel(channelToCreate)
+            .then((channel) => {
+              this.isCreatingChannel = false;
+              this.$router.push(`channel/${channel.id}`);
+            })
+            .catch((error) => {
+              this.isCreatingChannel = false;
+            });
         }
       });
     },
@@ -143,6 +184,7 @@ export default defineComponent({
     NInput,
     NInputNumber,
     NButton,
+    Loading,
   },
 });
 </script>
