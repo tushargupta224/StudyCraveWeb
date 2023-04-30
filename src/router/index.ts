@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 import LandingView from "../views/LandingView.vue";
 import { setUpAuthRouteGuard } from "./authGuard";
 // import NProgress from 'nprogress';
@@ -15,7 +14,13 @@ const router = createRouter({
     {
       path: "/home",
       name: "home",
-      component: HomeView,
+      component: () => import("../views/HomeView.vue"),
+      meta: { requireAuth: true },
+    },
+    {
+      path: "/channel/:channelId",
+      name: "channel",
+      component: () => import("../views/ChannelView.vue"),
       meta: { requireAuth: true },
     },
   ],
