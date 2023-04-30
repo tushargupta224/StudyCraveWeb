@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingView from "../views/LandingView.vue";
+import PrivateChannel from '../views/PrivateChannel.vue';
 import { setUpAuthRouteGuard } from "./authGuard";
-// import NProgress from 'nprogress';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,16 +23,15 @@ const router = createRouter({
       component: () => import("../views/ChannelView.vue"),
       meta: { requireAuth: true },
     },
+    {
+      path: "/private-channel",
+      name: "private-channel",
+      component: PrivateChannel,
+      meta: { requireAuth: true },
+    },
   ],
 });
 
 setUpAuthRouteGuard(router);
 
-// router.beforeEach(()=>{
-//   NProgress.start()
-// })
-
-// router.afterEach(()=>{
-//   NProgress.done()
-// })
 export default router;

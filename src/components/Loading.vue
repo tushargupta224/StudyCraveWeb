@@ -46,6 +46,7 @@ export default {
 .loading-body {
   position: relative;
   padding: 20px 10px;
+  z-index: 22;
 }
 
 .loading-fade-enter,

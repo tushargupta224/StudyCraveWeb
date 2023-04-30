@@ -1,36 +1,41 @@
 <template>
-  <div class="first-row">
-    <div class="left-side-wrapper">
-      <div class="first-row-heading">
-        Collaborate, Connect, Succeed - Studycrave!
-      </div>
-      <div class="avatar-subheading">
-        <img
-          :src="userAvtarLandingPage"
-          alt="user avtar"
-          class="avatar-subheading-avatar"
-        />
-
-        <div class="first-row-subheading">
-          Transforming the way students learn by fostering collaboration,
-          community, and real-time interaction on a global scale.
+  <div style="padding: 2rem;">
+    <nav-bar />
+    <div class="first-row">
+      <div class="left-side-wrapper">
+        <div class="first-row-heading">
+          Collaborate, Connect, Succeed - Studycrave!
         </div>
-      </div>
-      <n-button
-        type="primary"
-        color="#793BA8"
-        size="large"
-        class="get-started-btn"
-        >Get Started</n-button
-      >
-    </div>
+        <div class="avatar-subheading">
+          <img
+            :src="userAvtarLandingPage"
+            alt="user avtar"
+            class="avatar-subheading-avatar"
+          />
 
-    <div class="photo">
-      <img :src="headerIllustration" alt="hero-img" />
+          <div class="first-row-subheading">
+            Transforming the way students learn by fostering collaboration,
+            community, and real-time interaction on a global scale.
+          </div>
+        </div>
+        <n-button
+          type="primary"
+          color="#793BA8"
+          size="large"
+          class="get-started-btn"
+          >Get Started</n-button
+        >
+      </div>
+
+      <div class="photo">
+        <img :src="headerIllustration" alt="hero-img" />
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
+import NavBar from "../components/NavBar.vue";
+
 import headerIllustration from "@/assets/images/Landing Page Illustration.png";
 import userAvtarLandingPage from "@/assets/images/User avatar landing page.png";
 import { NButton } from "naive-ui";
@@ -44,6 +49,7 @@ export default {
   },
   components: {
     NButton,
+    NavBar,
   },
 };
 </script>
@@ -53,6 +59,7 @@ export default {
 
 .first-row {
   width: 100%;
+  height: 100vh;
   display: table;
   table-layout: fixed;
   height: 90vh;
