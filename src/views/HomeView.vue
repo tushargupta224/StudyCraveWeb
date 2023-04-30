@@ -1,24 +1,24 @@
 <template>
-  <!-- <h1>Home View</h1> -->
-  <div class="content">
-    <div>
-      <p>
-        Hey,<span>{{ username }}</span> nice to have you on board.
-      </p>
-      <h2>Enjoy your Study Session.</h2>
-    </div>
-    <div>
-      <button class="create-button" @click="showModal = true">
-        Create channel
-      </button>
+  <div style="padding: 2rem">
+    <NavBar />
+    <div class="content">
+      <div>
+        <p>
+          Hey,<span>{{ username }}</span> nice to have you on board.
+        </p>
+        <h2>Enjoy your Study Session.</h2>
+      </div>
+      <div>
+        <button class="create-button" @click="showModal = true">
+          Create channel
+        </button>
+      </div>
     </div>
   </div>
   <div>
+    <SoloChannelBanner></SoloChannelBanner>
     <ChannelsSection></ChannelsSection>
   </div>
-  <n-modal v-model:show="showModal">
-    <create-channel-form />
-  </n-modal>
 </template>
 
 <script lang="ts">
@@ -28,6 +28,8 @@ import { NModal } from "naive-ui";
 import CreateChannelForm from "@/components/Channels/CreateChannelForm.vue";
 import { useAuthStore } from "../stores/auth";
 import ChannelsSection from "../components/Channels/ChannelsSection.vue";
+import SoloChannelBanner from "@/components/Channels/SoloChannelBanner.vue";
+import NavBar from "@/components/NavBar.vue";
 
 export default defineComponent({
   setup() {
@@ -40,6 +42,8 @@ export default defineComponent({
     NModal,
     CreateChannelForm,
     ChannelsSection,
+    SoloChannelBanner,
+    NavBar
   },
   data() {
     return {
