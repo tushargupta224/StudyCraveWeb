@@ -121,7 +121,7 @@ export default defineComponent({
 .banner_slider {
   width: 95%;
   position: relative;
-  max-width: 800px;
+  max-width: 80%px;
   margin: auto;
   margin-bottom: 24px;
   background: #fff;
@@ -132,14 +132,14 @@ export default defineComponent({
   transition: all 0.3s;
 
   @media screen and (max-width: 992px) {
-    max-width: 680px;
+    max-width: 720px;
     height: 400px;
   }
 
   @media screen and (max-width: 768px) {
     min-height: 300px;
     height: auto;
-    max-height: 600px;
+    max-height: 540px;
   }
 
   @media screen and (max-height: 500px) and (min-width: 992px) {
