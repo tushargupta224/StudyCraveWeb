@@ -1,6 +1,6 @@
 <template>
   <swiper
-    :direction="'vertical'"
+    :direction="windowWidth > 768 ? 'vertical' : 'horizontal'"
     :slides-per-view="1"
     :space-between="30"
     :loop="true"
@@ -99,14 +99,32 @@ export default defineComponent({
       modules: [Pagination],
     };
   },
+  data() {
+    return {
+      windowWidth: window.innerWidth,
+    };
+  },
   components: {
     NButton,
     Swiper,
     SwiperSlide,
   },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", this.onResize);
+    });
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.onResize);
+  },
+
   methods: {
     startButtonHandler() {
       this.$router.replace("/private-channel");
+    },
+    onResize() {
+      this.windowWidth = window.innerWidth;
     },
   },
 });
