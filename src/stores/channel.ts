@@ -28,14 +28,13 @@ export const useChannelStore = defineStore({
     exploreChannels: [] as Channel[],
     channelsFetched: false,
   }),
-  getters: {},
   actions: {
     async createChannel(channel: Partial<Channel>): Promise<Channel> {
       const channelColRef = collection(db, "channels");
       const newChannel: Partial<Channel> = {
         ...channel,
         memberIds: [],
-      }
+      };
       const ref = await addDoc(channelColRef, newChannel);
       const res = await getDoc(ref);
       if (!res.exists()) {
@@ -66,9 +65,8 @@ export const useChannelStore = defineStore({
       const channelsRefQuery = query(collection(db, "channels"));
       const querySnapshot = await getDocs(channelsRefQuery);
 
-      this.updateChannelList(userId, querySnapshot).then(() => {
-        this.channelsFetched = true;
-      });
+      await this.updateChannelList(userId, querySnapshot);
+      this.channelsFetched = true;
 
       onSnapshot(channelsRefQuery, (querySnapshot) => {
         this.updateChannelList(userId, querySnapshot);
@@ -97,34 +95,42 @@ export const useChannelStore = defineStore({
     async updateChannelList(
       userId: string,
       querySnapshot: QuerySnapshot<DocumentData>
-    ) {
+    ): Promise<void> {
       const channels: Channel[] = [];
       const myChannels: Channel[] = [];
       const joinedChannels: Channel[] = [];
       const exploreChannels: Channel[] = [];
 
+      const promises: Promise<void>[] = [];
+
       querySnapshot.forEach(async (doc) => {
         const channel = { id: doc.id, ...doc.data() } as Channel;
 
-        const members = await this.loadChannelMembers(doc.id);
+        const membersPromise = this.loadChannelMembers(doc.id).then(
+          (members) => {
+            channel.members = members;
 
-        channel.members = members;
+            if (channel.ownerId === userId) {
+              myChannels.push(channel);
+            } else if (channel.memberIds.includes(userId!)) {
+              joinedChannels.push(channel);
+            } else {
+              exploreChannels.push(channel);
+            }
 
-        if (channel.ownerId === userId) {
-          myChannels.push(channel);
-        } else if (channel.memberIds.includes(userId!)) {
-          joinedChannels.push(channel);
-        } else {
-          exploreChannels.push(channel);
-        }
+            channels.push(channel);
+          }
+        );
 
-        channels.push(channel);
+        promises.push(membersPromise);
       });
 
-      this.channels = channels;
-      this.myChannels = myChannels;
-      this.joinedChannels = joinedChannels;
-      this.exploreChannels = exploreChannels;
+      Promise.all(promises).then(() => {
+        this.channels = channels;
+        this.myChannels = myChannels;
+        this.joinedChannels = joinedChannels;
+        this.exploreChannels = exploreChannels;
+      });
     },
     async joinChannel(channelId: string, userId: string) {
       const membersRef = doc(db, "channels", channelId, "members", userId);
