@@ -70,7 +70,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.125);
   color: white;
   position: relative;
-  z-index: 3;
+  z-index: 2;
   left: 52%;
 }
 h2 {
@@ -93,7 +93,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3;
+  z-index: 2;
   margin-top: 70px;
   //   margin-bottom: 50px;
 }

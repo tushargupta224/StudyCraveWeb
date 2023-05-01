@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 2rem">
+  <div style="padding: 2rem;" >
     <NavBar />
     <div class="content">
       <div>
@@ -62,9 +62,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-body {
-  background: white;
-}
+
 
 span {
   font-weight: 600;

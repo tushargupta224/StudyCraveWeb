@@ -1,31 +1,46 @@
 <template>
-  <div style="width: 50vw; height: 50vh" class="chat-container">
-    <header class="msger-header">
-      <div class="msger-header-title">SimpleChat</div>
-    </header>
-    <main class="msger-chat">
-      <ChatMessage :author="true"></ChatMessage>
-      <ChatMessage :author="true"></ChatMessage>
-      <ChatMessage :author="false"></ChatMessage>
-    </main>
-    <form class="msger-inputarea">
-      <input
-        type="text"
-        class="msger-input"
-        placeholder="Enter your message..."
-      />
-      <button type="submit" class="msger-send-btn">Send</button>
-    </form>
+  <div class="chat-container">
+    <ChatDiscription />
+    <div style="width: 100%">
+      <header class="msger-header">
+        <div class="msger-header-title">StudyCrave Chat</div>
+        <div>
+          <button class="msger-exit-btn" @click="exitbtnHandler">Exit</button>
+        </div>
+      </header>
+      <main class="msger-chat">
+        <ChatMessage :author="true"></ChatMessage>
+        <ChatMessage :author="true"></ChatMessage>
+        <ChatMessage :author="false"></ChatMessage>
+      </main>
+      <form class="msger-inputarea">
+        <input
+          type="text"
+          class="msger-input"
+          placeholder="Enter your message..."
+        />
+        <button type="submit" class="msger-send-btn" @click.prevent="">
+          Send
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 import ChatMessage from "@/components/Chat/ChatMessage.vue";
+import ChatDiscription from "./ChatDiscription.vue";
 
 export default defineComponent({
   name: "chatSection",
   components: {
     ChatMessage,
+    ChatDiscription,
+  },
+  methods: {
+    exitbtnHandler() {
+      this.$router.push("/home");
+    },
   },
 });
 </script>
@@ -33,7 +48,9 @@ export default defineComponent({
 <style scoped lang="scss">
 @import "../../assets/scss/variables.scss";
 .chat-container {
-  margin: auto;
+  margin: 0 auto;
+  height: 80vh;
+  display: flex;
 }
 .msger {
   display: flex;
@@ -41,7 +58,7 @@ export default defineComponent({
   justify-content: space-between;
   width: 100%;
   max-width: 867px;
-  margin: 25px 10px;
+  margin: 0px 10px;
   height: calc(100% - 50px);
   border: $border;
   border-radius: 5px;
@@ -57,9 +74,20 @@ export default defineComponent({
   background: #eee;
   color: #666;
 }
+.msger-exit-btn {
+  cursor: pointer;
+  background-color: #579ffb;
+  border: 2px solid white;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+}
 
 .msger-chat {
   flex: 1;
+  height: 100%;
   overflow-y: auto;
   padding: 10px;
 }
@@ -74,6 +102,7 @@ export default defineComponent({
 }
 .msger-inputarea {
   display: flex;
+  align-items: flex-end;
   padding: 10px;
   border-top: border;
   background: #eee;

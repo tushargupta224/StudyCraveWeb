@@ -11,6 +11,7 @@
           padding: 0;
           margin: 0px;
           margin-top: 10px;
+          margin-left: 15%;
           color: whitesmoke;
           text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000,
             -1px -1px 0 #000;
@@ -23,7 +24,7 @@
         style="
           color: cornsilk;
           margin: 0;
-          margin-left: -120px;
+          margin-left: 0%;
           margin-top: 12px;
           text-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000,
             -1px -1px 0 #000;
@@ -42,7 +43,7 @@
         align-items: end;
         margin-bottom: 12px;
         position: relative;
-        right: -44%;
+        right: -14%;
       "
     >
       <n-button type="primary" @click="startButtonHandler"
@@ -73,7 +74,7 @@ export default defineComponent({
 .private-channel-container {
   display: flex;
   gap: 20px;
-  width: 1350px;
+  width: 80%;
   height: 200px;
   background-image: url("https://images.pexels.com/photos/3704611/pexels-photo-3704611.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
   background-position: center;
@@ -97,7 +98,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 45px;
+  margin-left: 15%;
   position: relative;
   top: 10px;
   border-radius: 10px;
