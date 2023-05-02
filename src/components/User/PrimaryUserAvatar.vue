@@ -1,6 +1,6 @@
 <template>
   <div class="flex container">
-    <text class="prefix-text">
+    <text class="prefix-text non-mobile">
       Hey <text class="username-text"> {{ userName }} </text>
     </text>
     <n-dropdown :show="showProfileDropdown" :options="options" size="huge">
