@@ -6,7 +6,7 @@
     :loop="true"
     :pagination="pagination"
     :autoplay="{
-      delay: 2500,
+      delay: 4500,
       disableOnInteraction: false,
     }"
     :modules="modules"
@@ -51,7 +51,7 @@
           button and start learning with YouTube today!
         </div>
         <a href="#" @click="startButtonHandler" class="banner_slider__button"
-          >Start</a
+          >See recommendation</a
         >
       </div>
     </swiper-slide>
@@ -121,7 +121,7 @@ export default defineComponent({
 .banner_slider {
   width: 95%;
   position: relative;
-  max-width: 80%px;
+  max-width: 80%;
   margin: auto;
   margin-bottom: 24px;
   background: #fff;
@@ -329,7 +329,6 @@ export default defineComponent({
         background: #fd3838;
         height: 30px;
         box-shadow: 0px 0px 20px rgba(252, 56, 56, 0.3);
-
         @media screen and (max-width: 768px) {
           height: 11px;
           width: 30px;
