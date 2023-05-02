@@ -2,16 +2,26 @@
   <div style="padding: 2rem">
     <NavBar />
     <div class="content">
-      <div>
-        <p>
-          Hey,<span>{{ username }}</span> nice to have you on board.
-        </p>
-        <h2>Enjoy your Study Session.</h2>
-      </div>
-      <div>
-        <button class="create-button" @click="showModal = true">
-          Create channel
-        </button>
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+        class="box"
+      >
+        <div class="heading-container">
+          <p>
+            Hey,<span>{{ username }}</span> nice to have you on board.
+          </p>
+          <h2>Enjoy your Study Session.</h2>
+        </div>
+        <div style="height: 30px">
+          <button class="create-button" @click="showModal = true">
+            Create channel
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -46,7 +56,7 @@ export default defineComponent({
     CreateChannelForm,
     ChannelsSection,
     SoloChannelBanner,
-    NavBar
+    NavBar,
   },
   data() {
     return {
@@ -62,12 +72,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-body {
-  background: white;
-}
-
 span {
   font-weight: 600;
+}
+.box {
+  border-radius: 25px;
+  background: #fff;
+  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+  margin-top: 12px;
+}
+.heading-container {
+  margin-left: 25px;
 }
 
 .content {
@@ -77,16 +92,40 @@ span {
 }
 
 .create-button {
-  background-color: #007bff;
+  display: inline-flex;
+  background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
+  padding: 15px 35px;
+  border-radius: 50px;
   color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 20px;
+  box-shadow: 0px 14px 80px rgba(252, 56, 56, 0.4);
+  text-decoration: none;
+  font-weight: 500;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 1px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  transition: background-color 0.2s ease-in-out;
-  margin-right: 80px;
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .create-button {
+    margin-right: 50px;
+  }
+}
+
+@media all and (max-width: 460px) {
+  .heading-container p {
+    font-size: 0.6rem;
+  }
+  .heading-container h2 {
+    font-size: 1rem;
+    margin-top: -10px;
+  }
+  .box {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>
