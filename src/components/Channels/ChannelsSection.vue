@@ -4,7 +4,7 @@
       <n-skeleton height="120px" width="84%" :sharp="false" />
       <n-skeleton height="120px" width="84%" :sharp="false" />
     </n-space>
-    <n-tabs v-else type="line">
+    <n-tabs :animated="true" type="segment" v-else>
       <n-tab-pane name="All live Channels" tab="All live channels">
         <div class="card-container">
           <ChannelCard
@@ -47,8 +47,7 @@ import { defineComponent, onUnmounted } from "vue";
 import { useChannelStore } from "../../stores/channel";
 import ChannelCard from "./ChannelCard.vue";
 import { useAuthStore } from "../../stores/auth";
-import type Channel from "../../types/channels/channel";
-import { mapActions, mapState, storeToRefs } from "pinia";
+import { mapActions, mapState } from "pinia";
 
 export default defineComponent({
   name: "ChannelSection",

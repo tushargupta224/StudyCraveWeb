@@ -14,4 +14,6 @@ export default interface User {
   createdAt?: Date;
 
   updatedAt?: Date;
+
+  interests? : string[];
 }

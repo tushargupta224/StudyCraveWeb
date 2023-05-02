@@ -10,7 +10,14 @@
       <n-input
         v-model:value="formValue.email"
         placeholder="eg. johnwick007@gmail.com"
-        
+      />
+    </n-form-item>
+    <n-form-item label="Enter your area of intrest">
+      <n-dynamic-input
+        v-model:value="formValue.interests"
+        placeholder="Enter your tyoe of intreset"
+        :min="1"
+        :max="3"
       />
     </n-form-item>
     <n-button
@@ -25,28 +32,31 @@
 </template>
 
 <script lang="ts">
-import { NButton, NForm, NFormItem, NInput, textProps } from "naive-ui";
+import {
+  NButton,
+  NForm,
+  NFormItem,
+  NInput,
+  textProps,
+  NDynamicInput,
+} from "naive-ui";
 import { defineComponent, ref, type PropType } from "vue";
 import type { FormInst } from "naive-ui";
 import type User from "../../types/user";
 import type SignUpDetails from "../../types/signup/signup_details";
 import { computed } from "@vue/reactivity";
 
+// function createStatus(value:string) {
+//   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
-    // function createStatus(value:string) {
-    //   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    //   if (regex.test(value)) {
-    //     return undefined;
-    //   } else {
-    //     return "error";
-    //   }
-    // }
-
+//   if (regex.test(value)) {
+//     return undefined;
+//   } else {
+//     return "error";
+//   }
+// }
 
 export default defineComponent({
-  
   setup(props, { emit }) {
     const formRef = ref<FormInst | null>(null);
     const formValue = ref<SignUpDetails>({
@@ -54,6 +64,7 @@ export default defineComponent({
       lastName: props.user?.lastName || "",
       email: props.user?.email || "",
       profilePic: props.user?.profilePic || "",
+      interests: props.user?.interests || [""],
     });
 
     return {
@@ -75,6 +86,11 @@ export default defineComponent({
           message: "Please enter your email",
           trigger: "blur",
         },
+        intrest: {
+          required: true,
+          message: "Please tell your intrest of learning",
+          trigger: "blur",
+        },
       },
       handleClick(e: MouseEvent) {
         e.preventDefault();
@@ -82,6 +98,7 @@ export default defineComponent({
           if (!errors) {
             emit("onSignUp", formValue.value);
           }
+          console.log(formValue.value.interests);
         });
       },
       // inputValidationStatus: computed(() => {
@@ -101,7 +118,7 @@ export default defineComponent({
     NForm,
     NFormItem,
     NInput,
+    NDynamicInput,
   },
-  
 });
 </script>
