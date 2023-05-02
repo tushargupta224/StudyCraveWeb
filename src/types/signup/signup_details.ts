@@ -6,4 +6,6 @@ export default interface SignUpDetails {
   email: string;
 
   profilePic?: string;
+
+  interests: string[];
 }
