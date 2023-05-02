@@ -15,6 +15,14 @@ const themeOverrides: GlobalThemeOverrides = {
     borderFocus: "1px solid #001f3f",
     borderHover: "1px solid #001f3f",
   },
+  Tabs: {
+    tabColorSegment: "#A5D7E8",
+    colorSegment: "#19376D",
+    tabTextColorActiveSegment: "#0B2447",
+    tabTextColorDisabledSegment: "#FFFFFF",
+    tabTextColorSegment: "#FFFFFF",
+    tabTextColorHoverSegment: "#0B2447",
+  }
 };
 
 export default {
