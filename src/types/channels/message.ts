@@ -1,3 +1,5 @@
+import type { FieldValue } from "firebase/firestore";
+
 export default interface Message {
   id: string;
   senderId: string;
