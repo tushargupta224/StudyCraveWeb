@@ -1,9 +1,15 @@
 import { defineStore } from "pinia";
 import type User from "../types/user";
-import { auth, db } from "../config/firebase";
+import { auth, db, storage } from "../config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useOtpStore } from "./otp";
+import {
+  getDownloadURL,
+  uploadBytes,
+  ref as storageRef,
+} from "firebase/storage";
+import type UpdateUserDetails from "../types/update_user_details/update_user_details";
 
 onAuthStateChanged(auth, (user) => {
   const auth = useAuthStore();
@@ -80,22 +86,49 @@ export const useAuthStore = defineStore({
         throw error;
       }
     },
-    async updateUserDetails(updatedUser: User): Promise<void> {
-      await updateDoc(doc(db, "users", this.user!.id), {
-        ...updatedUser,
-      })
-        .then(async () => {
-          const res = await getDoc(doc(db, "users", this.user!.id));
+    async updateUserDetails(details: UpdateUserDetails): Promise<void> {
+      if (!this.user) {
+        throw new Error("User not authenticated");
+      }
 
-          if (res) {
-            this.user = res.data() as User;
-          } else {
-            this.user = updatedUser;
-          }
-        })
-        .catch((error) => {
-          throw error;
-        });
+      const { profilePic, profilePicUrl, ...rest } = details;
+      const updatedUser = { ...this.user, ...rest };
+
+      if (profilePic) {
+        const storageReference = storageRef(
+          storage,
+          `avatars/${this.user.id}/${Date.now()}_${profilePic.name}`
+        );
+
+        await uploadBytes(storageReference, profilePic)
+          .then(async () => {
+            const profilePicURL = await getDownloadURL(storageReference);
+
+            await updateDoc(doc(db, "users", this.user!.id), {
+              ...updatedUser,
+              profilePic: profilePicURL,
+            });
+
+            this.user = { ...updatedUser, profilePic: profilePicURL };
+          })
+          .catch((error) => {
+            throw error;
+          });
+      } else {
+        await updateDoc(doc(db, "users", this.user!.id), updatedUser)
+          .then(async () => {
+            const res = await getDoc(doc(db, "users", this.user!.id));
+
+            if (res) {
+              this.user = res.data() as User;
+            } else {
+              this.user = updatedUser;
+            }
+          })
+          .catch((error) => {
+            throw error;
+          });
+      }
     },
     async logOut() {
       await auth.signOut();
