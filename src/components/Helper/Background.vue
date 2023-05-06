@@ -72,6 +72,7 @@ export default {
   position: relative;
   z-index: 2;
   left: 52%;
+  overflow-y: auto;
 }
 h2 {
   margin-bottom: -50px;
@@ -96,5 +97,20 @@ h2 {
   z-index: 2;
   margin-top: 70px;
   //   margin-bottom: 50px;
+}
+
+@media all and (max-width: 601px) {
+  .img-parent {
+    left: 25%;
+    width: 240px;
+    height: 300px;
+    overflow-y: scroll;
+    z-index: 1;
+    background-position: center;
+    background-size: cover;
+  }
+  h2 {
+    font-size: 0.6rem;
+  }
 }
 </style>

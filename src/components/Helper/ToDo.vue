@@ -194,4 +194,16 @@ button {
   cursor: pointer;
   z-index: 2;
 }
+
+@media all and (max-width: 601px){
+  .container{
+    top: 25%;
+    margin-left: 25%;
+    padding: 0 15px;
+    z-index: 1;
+  }
+  .header h2{
+    font-style: 0.5rem;
+  }
+}
 </style>

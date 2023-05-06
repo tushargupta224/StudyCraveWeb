@@ -86,4 +86,20 @@ span {
   font-weight: bold;
   z-index: 2;
 }
+
+@media all and (max-width: 601px){
+  .timer-container{
+    top: 25%;
+    margin-left: 25%;
+    z-index: 1;
+  }
+  .h5{
+    margin-top: 0px;
+    padding: 0;
+  }
+
+  .timer{
+    row-gap: 10px !important;
+  }
+}
 </style>

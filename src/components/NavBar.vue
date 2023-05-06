@@ -1,6 +1,6 @@
 <template>
   <header class="flex max-width landing-page-header">
-    <img :src="logo" alt="logo" class="logo" />
+    <img :src="logo" alt="logo" class="logo" @click="logoClickHandler" />
     <div class="flex absolute-center" v-if="!isLoggedIn">
       <n-button
         text
@@ -22,15 +22,12 @@
           showSignUp = true;
           showModal = true;
         "
-        style="margin-left: 2rem; font-size: 1rem; z-index: 1;"
+        style="margin-left: 2rem; font-size: 1rem; z-index: 1"
         class="navbar-btn"
         >Sign up</n-button
       >
 
-      <n-modal
-        v-model:show="showModal"
-        :mask-closable=false
-      >
+      <n-modal v-model:show="showModal" :mask-closable="false">
         <LogInRegistrationForm
           :isSignUp="showSignUp"
           @onCloseModal="showModal = false"
@@ -90,6 +87,11 @@ export default defineComponent({
       }
     },
   },
+  methods: {
+    logoClickHandler() {
+      this.$router.push("/home");
+    },
+  },
 });
 </script>
 
@@ -102,6 +104,7 @@ export default defineComponent({
 }
 .logo {
   height: 50px;
+  cursor: pointer;
 }
 
 // @media screen and (max-width : 2560px){

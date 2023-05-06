@@ -8,8 +8,7 @@
       class="iframe"
       :src="`https://www.youtube-nocookie.com/embed/${getYouTubeId(
         videoId
-      )}?autoplay=${autoPlay}`"
-      @keydown.space="toggleAutoPlay"
+      )}?autoplay=1`"
       title="YouTube video player"
       frameborder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -27,11 +26,6 @@ export default defineComponent({
       required: true,
     },
   },
-  data() {
-    return {
-      autoPlay: 1,
-    };
-  },
   methods: {
     getYouTubeId(url: string): string | null {
       // Regular expression to match YouTube URLs
@@ -48,9 +42,6 @@ export default defineComponent({
 
       // If no match was found, return null
       return null;
-    },
-    toggleAutoPlay() {
-     return this.autoPlay = 0;
     },
   },
 });

@@ -77,4 +77,23 @@ input {
     margin-bottom: 20px;
     cursor: pointer;
 }
+
+@media all and (max-width: 601px){
+  .form-parent{
+    top: 25%;
+    left: 25%;
+    z-index: 1;
+  }
+  .form-heading h4{
+    font-size: 1rem;
+  }
+  .form-heading p{
+    font-size: 0.5rem;
+    margin-bottom: 20px;
+  }
+  .form-container button{
+    padding: 2px 10px;
+    font-size: 0.8rem;
+  }
+}
 </style>
