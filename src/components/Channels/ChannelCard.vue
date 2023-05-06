@@ -149,7 +149,7 @@ path {
   height: 100%;
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
-  background-image: url("https://m.media-amazon.com/images/S/aplus-media/vc/cab6b08a-dd8f-4534-b845-e33489e91240._CR75,0,300,300_PT0_SX300__.jpg");
+  background-image: url("https://img.freepik.com/free-vector/gradient-minimalist-background_23-2149976758.jpg?w=1060&t=st=1683113035~exp=1683113635~hmac=cd8bb526410001d284093a301e12302240bfa6da42c1785f985debb1aed8055d");
   background-position: bottom center;
   background-size: cover;
 }

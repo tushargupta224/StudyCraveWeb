@@ -50,7 +50,7 @@
           your focus with our integrated timer and focus mode. Click the start
           button and start learning with YouTube today!
         </div>
-        <a href="#" @click="startButtonHandler" class="banner_slider__button"
+        <a href="#" @click="recommendationBtnHandler" class="banner_slider__button"
           >See recommendation</a
         >
       </div>
@@ -126,6 +126,9 @@ export default defineComponent({
     onResize() {
       this.windowWidth = window.innerWidth;
     },
+    recommendationBtnHandler(){
+      this.$router.push("/youtube-recommendation")
+    }
   },
 });
 </script>
