@@ -53,6 +53,9 @@ export const setUpAuthRouteGuard = async function (router: Router) {
             } else {
               next(); // allow user to access the corresponding route
             }
+          } else {
+            await authStore.logOut();
+            next("/");
           }
         } else {
           next(); // allow user to access the route
