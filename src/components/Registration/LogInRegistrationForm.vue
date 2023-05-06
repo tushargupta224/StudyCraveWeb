@@ -47,7 +47,7 @@
         </div>
 
         <div xyz="fade left-80%" v-if="isAuthenticated && isNewSignup">
-          <UserInfoInput :user="authStore.user" @onSignUp="onSignUp" />
+          <UserInfoInput :user="authStore.user" @onUpdate="onSignUp" />
         </div>
       </XyzTransition>
     </n-message-provider>
@@ -63,9 +63,10 @@ import OtpInput from "@/components/Registration/OtpInput.vue";
 import Loading from "../Loading.vue";
 import { useAuthStore } from "../../stores/auth";
 import UserInfoInput from "./UserInfoInput.vue";
-import type SignUpDetails from "../../types/signup/signup_details";
+
 import { useDialog } from "naive-ui";
 import { useOtpStore } from "../../stores/otp";
+import type UpdateUserDetails from "../../types/update_user_details/update_user_details";
 
 export default defineComponent({
   setup() {
@@ -133,25 +134,15 @@ export default defineComponent({
           .catch((error) => {});
       });
     },
-    async onSignUp(details: SignUpDetails) {
-      const user = this.authStore.user;
-      if (user) {
-        const updatedUser = {
-          ...user,
-          firstName: details.firstName,
-          lastName: details.lastName,
-          email: details.email,
-        };
-
-        await this.authStore
-          .updateUserDetails(updatedUser)
-          .then(() => {
-            if (this.isAuthenticated && this.authStore.hasSignedUp) {
-              this.$router.replace("/home");
-            }
-          })
-          .catch((error) => {});
-      }
+    async onSignUp(details: UpdateUserDetails) {
+      await this.authStore
+        .updateUserDetails(details)
+        .then(() => {
+          if (this.isAuthenticated && this.authStore.hasSignedUp) {
+            this.$router.replace("/home");
+          }
+        })
+        .catch((error) => {});
     },
     handleCloseModal() {
       if (this.showPhoneInput && !this.isAuthenticated) {
