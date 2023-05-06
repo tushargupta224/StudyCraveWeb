@@ -14,7 +14,6 @@
         class="recommend-card"
         v-for="playlist in playlists"
         :key="playlist.id"
-        @click="handleClick"
       >
         <img :src="playlist.thumbnail_link" :alt="playlist.title" />
         <div style="width: 100%; height: 80px; overflow: hidden">
@@ -23,7 +22,10 @@
 
         <div style="width: 100%; display: flex; justify-content: space-between">
           <p class="video-count">{{ playlist.videoCount }} videos</p>
-          <a href="#" @click="handleClick" class="banner_slider__button"
+          <a
+            href="#"
+            @click="handleClick(playlist.play_id)"
+            class="banner_slider__button"
             >View</a
           >
         </div>
@@ -89,8 +91,12 @@ export default defineComponent({
   },
 
   methods: {
-    handleClick() {
-      this.$router.push("/youtube-Video");
+    handleClick(index: any) {
+      this.$router.push({
+        name: "youtube-Video",
+        params: { VideoId: index },
+      });
+      // console.log(index);
     },
   },
   components: {

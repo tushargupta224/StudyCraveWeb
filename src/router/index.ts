@@ -39,10 +39,11 @@ const router = createRouter({
       meta: { requireAuth: true },
     },
     {
-      path: "/youtube-Video",
+      path: "/youtube-recommendation/:VideoId",
       name: "youtube-Video",
       component: YoutubeVideo,
       meta: { requireAuth: true },
+      props:true,
     },
   ],
 });
