@@ -57,22 +57,24 @@ export default defineComponent({
     const message = useMessage();
     const { user } = useAuthStore();
 
+    let keywords = user?.interests;
+
     const state: State = {
       playlists: ref<YtPlaylist[]>([]),
       apiUrl: ref("https://studycraveytrec.up.railway.app/api/yt_play_recom"),
       api_Key: ref("cQsgws_xiQ-c5zeMDSfs7IKlszjOKsOq5_EiEdhGzy4"),
       apiParams: {
-        keyword: 'python',
-        count: "8",
+        count: "4",
       },
     };
 
-    const getPlayList = async () => {
+    const getPlayList = async (keyword: string) => {
       try {
         const response = await axios.get(state.apiUrl.value, {
           params: {
             api_key: state.api_Key.value,
             ...state.apiParams,
+            keyword,
           },
         });
 
@@ -88,7 +90,7 @@ export default defineComponent({
       console.log(state.playlists.value);
     };
     onMounted(() => {
-      getPlayList();
+      keywords?.forEach((Keyword) => getPlayList(Keyword));
     });
     return {
       playlists: state.playlists.value,
@@ -108,7 +110,11 @@ export default defineComponent({
         .catch((error) => {
           console.log(error);
         });
-      // console.log(index);
+      // this.$router.push({
+      //   name: "youtube-video",
+      //   params: { VideoId: index },
+      // });
+      console.log(index);
     },
   },
   components: {
