@@ -7,4 +7,5 @@ export default interface Message {
   senderAvatar?: string;
   message: string;
   createdAt: string;
+  timeStamp: string;
 }
