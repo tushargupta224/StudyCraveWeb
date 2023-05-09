@@ -22,7 +22,7 @@
         <div class="cross-con" @click="close">
           <div class="cross">&#10006;</div>
         </div>
-        <UserInfoInput />
+        <UserInfoInput :user="authStore.user" @onUpdate="onUpdate"/>
       </n-card>
     </n-modal>
   </div>
@@ -39,6 +39,7 @@ import {
   NIcon,
   NModal,
   NCard,
+  useMessage,
 } from "naive-ui";
 import { auth } from "@/config/firebase";
 import { useRouter } from "vue-router";
@@ -49,6 +50,7 @@ import {
 } from "@vicons/ionicons5";
 import Profile from "@/components/User/Profile.vue";
 import UserInfoInput from "../Registration/UserInfoInput.vue";
+import type UpdateUserDetails from "@/types/update_user_details/update_user_details";
 
 const renderIcon = (icon: Component) => {
   return () => {
@@ -65,6 +67,7 @@ export default defineComponent({
     const router = useRouter();
     const viewProfile = ref(false);
     const editProfile = ref(false);
+    const message = useMessage();
 
     function close() {
       editProfile.value = false;
@@ -76,6 +79,7 @@ export default defineComponent({
       viewProfile,
       editProfile,
       close,
+      message,
       options: [
         {
           label: "Profile",
@@ -147,6 +151,19 @@ export default defineComponent({
     },
   },
   methods: {
+    async onUpdate(details: UpdateUserDetails) {
+      await this.authStore
+        .updateUserDetails(details)
+        .then(() => {
+          this.editProfile=false;
+          this.message.success('Profile Updated successfully');
+        })
+        .catch((error) => {
+          this.message.error(
+            "Something Went wrong while registring, please try again after some time."
+          );
+        });
+    },
     handleUserAvatarClick() {
       this.showProfileDropdown = !this.showProfileDropdown;
     },
