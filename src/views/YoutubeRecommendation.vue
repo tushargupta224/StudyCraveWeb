@@ -22,12 +22,12 @@
 
         <div style="width: 100%; display: flex; justify-content: space-between">
           <p class="video-count">{{ playlist.videoCount }} videos</p>
-          <a
-            href="#"
+          <button
             @click="handleClick(playlist.play_id)"
             class="banner_slider__button"
-            >View</a
           >
+            Copy playlist url
+          </button>
         </div>
       </div>
     </div>
@@ -36,11 +36,13 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import type { Ref } from "vue";
+import { useMessage } from "naive-ui";
 
 import axios from "axios";
 
 import NavBar from "../components/NavBar.vue";
 import type YtPlaylist from "@/types/yt/yt_playlist";
+import { useAuthStore } from "@/stores/auth";
 
 interface State {
   playlists: Ref<YtPlaylist[]>;
@@ -52,12 +54,15 @@ interface State {
 export default defineComponent({
   name: "YoutubeRecommendation",
   setup() {
+    const message = useMessage();
+    const { user } = useAuthStore();
+
     const state: State = {
       playlists: ref<YtPlaylist[]>([]),
       apiUrl: ref("https://studycraveytrec.up.railway.app/api/yt_play_recom"),
       api_Key: ref("cQsgws_xiQ-c5zeMDSfs7IKlszjOKsOq5_EiEdhGzy4"),
       apiParams: {
-        keyword: "python",
+        keyword: 'python',
         count: "8",
       },
     };
@@ -87,15 +92,22 @@ export default defineComponent({
     });
     return {
       playlists: state.playlists.value,
+      message,
     };
   },
 
   methods: {
     handleClick(index: any) {
-      this.$router.push({
-        name: "youtube-Video",
-        params: { VideoId: index },
-      });
+      let playlistLink = `https://www.youtube.com/playlist?list=${index}`;
+      navigator.clipboard
+        .writeText(playlistLink)
+        .then(() => {
+          console.log(playlistLink);
+          this.message.success("PlayList link Copied to Clipboard");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       // console.log(index);
     },
   },
@@ -172,6 +184,8 @@ export default defineComponent({
   font-weight: 500;
   justify-content: center;
   text-align: center;
+  cursor: pointer;
+  border: none;
   letter-spacing: 1px;
   @media screen and (max-width: 576px) {
     width: 100%;
