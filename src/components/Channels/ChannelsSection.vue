@@ -104,5 +104,6 @@ export default defineComponent({
   gap: 20px;
   flex-wrap: wrap;
   z-index: 1 !important;
+  background-color: #ffffff;
 }
 </style>

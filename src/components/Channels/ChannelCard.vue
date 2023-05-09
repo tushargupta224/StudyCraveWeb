@@ -1,5 +1,4 @@
 <template>
-
   <div class="card" :key="channel.id">
     <div class="img-avatar">
       <svg viewBox="0 0 100 100">
@@ -24,10 +23,13 @@
         <h2>{{ channel.topic }}</h2>
 
         <div class="desc">{{ channel.description }}</div>
-        <div class="actions">
+        <!-- <div class="actions">
           <button><i class="far fa-heart"></i></button>
           <button><i class="far fa-envelope"></i></button>
           <button><i class="fas fa-user-friends"></i></button>
+        </div> -->
+        <div class="btn-container">
+          <button @click="onJoinOrEnter">Join</button>
         </div>
       </div>
     </div>
@@ -83,9 +85,10 @@ export default defineComponent({
   background: #fff;
   border-radius: 4px;
   box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.5);
-  max-width: 400px;
+  width: auto;
+  max-width: 500px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   border-radius: 25px;
   position: relative;
 }
@@ -103,6 +106,8 @@ export default defineComponent({
 .card .desc {
   padding: 0.5rem 1rem;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
 }
 .card .actions {
   display: grid;
@@ -154,16 +159,30 @@ path {
   background-size: cover;
 }
 
+.title-total{
+  z-index: 2;
+}
+.btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 button {
-  border: none;
-  background: none;
-  font-size: 24px;
-  color: #8bc34a;
+  display: inline-flex;
+  background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
+  padding: 15px 35px;
+  border-radius: 50px;
+  color: #fff;
+  box-shadow: 0px 14px 80px rgba(252, 56, 56, 0.4);
+  text-decoration: none;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.5s;
-  &:hover {
-    color: #4caf50;
-    transform: rotate(22deg);
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 1px;
+  border: none;
+  @media screen and (max-width: 576px) {
+    width: 100%;
   }
 }
 </style>

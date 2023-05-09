@@ -12,7 +12,7 @@
     <h1 v-if="pageStatus == `ERROR`">
       Error Channel Id {{ $route.params.channelId }} {{ error }}
     </h1>
-    <ChatSection v-if="pageStatus == `LOADED`"/>
+    <Chat :channel="channel!" v-if="pageStatus == `LOADED`" />
   </div>
 </template>
 
@@ -24,8 +24,7 @@ import { ChannelLoadingEnum } from "../types/commom";
 import { useAuthStore } from "../stores/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
-
-import ChatSection from "@/components/Chat/ChatSection.vue";
+import Chat from "../components/Chat/chat.vue";
 
 export default defineComponent({
   name: "ChannelView",
@@ -36,7 +35,7 @@ export default defineComponent({
     return { channelStore, user };
   },
   components: {
-    ChatSection,
+    Chat,
   },
   mounted() {
     this.channelStore

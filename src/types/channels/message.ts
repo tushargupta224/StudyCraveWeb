@@ -1,3 +1,5 @@
+import type { FieldValue } from "firebase/firestore";
+
 export default interface Message {
   id: string;
   senderId: string;
@@ -5,4 +7,5 @@ export default interface Message {
   senderAvatar?: string;
   message: string;
   createdAt: string;
+  timeStamp: string;
 }

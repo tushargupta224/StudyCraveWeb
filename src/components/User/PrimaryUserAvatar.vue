@@ -16,14 +16,30 @@
         class="avatar"
       />
     </n-dropdown>
+    <Profile :show="viewProfile" @onClose="viewProfile = false" />
+    <n-modal :show="editProfile">
+      <n-card title="Update Profile" style="width: 500px; border-radius: 18px">
+        <div class="cross-con" @click="close">
+          <div class="cross">&#10006;</div>
+        </div>
+        <UserInfoInput />
+      </n-card>
+    </n-modal>
   </div>
 </template>
 
 <script lang="ts">
-import { h, defineComponent } from "vue";
+import { h, defineComponent, ref } from "vue";
 import type { Component } from "vue";
 import { useAuthStore } from "../../stores/auth";
-import { NAvatar, NDropdown, NAvatarGroup, NIcon } from "naive-ui";
+import {
+  NAvatar,
+  NDropdown,
+  NAvatarGroup,
+  NIcon,
+  NModal,
+  NCard,
+} from "naive-ui";
 import { auth } from "@/config/firebase";
 import { useRouter } from "vue-router";
 import {
@@ -31,6 +47,8 @@ import {
   Pencil as EditIcon,
   LogOutOutline as LogoutIcon,
 } from "@vicons/ionicons5";
+import Profile from "@/components/User/Profile.vue";
+import UserInfoInput from "../Registration/UserInfoInput.vue";
 
 const renderIcon = (icon: Component) => {
   return () => {
@@ -45,19 +63,41 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore();
     const router = useRouter();
+    const viewProfile = ref(false);
+    const editProfile = ref(false);
+
+    function close() {
+      editProfile.value = false;
+      console.log("click");
+    }
 
     return {
       authStore,
+      viewProfile,
+      editProfile,
+      close,
       options: [
         {
           label: "Profile",
           key: "Profile",
           icon: renderIcon(UserIcon),
+
+          props: {
+            onClick: () => {
+              viewProfile.value = !viewProfile.value;
+            },
+          },
         },
         {
           label: "Edit Profile",
           key: "Edit Profile",
           icon: renderIcon(EditIcon),
+
+          props: {
+            onClick: () => {
+              editProfile.value = !editProfile.value;
+            },
+          },
         },
         {
           label: "Log Out",
@@ -65,7 +105,6 @@ export default defineComponent({
           icon: renderIcon(LogoutIcon),
 
           props: {
-           
             onClick: () => {
               auth
                 .signOut()
@@ -92,6 +131,10 @@ export default defineComponent({
     NAvatar,
     NDropdown,
     NAvatarGroup,
+    Profile,
+    NModal,
+    UserInfoInput,
+    NCard,
   },
   computed: {
     userProfilePic(): string | undefined {
@@ -132,4 +175,20 @@ export default defineComponent({
 .avatar {
   cursor: pointer;
 }
+
+.cross-con {
+  position: absolute;
+  top: 3%;
+  left: 91%;
+  z-index: 5;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
 </style>
