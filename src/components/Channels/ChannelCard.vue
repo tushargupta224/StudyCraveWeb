@@ -29,7 +29,7 @@
           <button><i class="fas fa-user-friends"></i></button>
         </div> -->
         <div class="btn-container">
-          <button @click="onJoinOrEnter">Join</button>
+          <button @click="onJoinOrEnter">{{buttonTitle}}</button>
         </div>
       </div>
     </div>
@@ -102,6 +102,7 @@ export default defineComponent({
   color: green;
   font-weight: bold;
   font-size: 12px;
+  margin-top: 8px;
 }
 .card .desc {
   padding: 0.5rem 1rem;
