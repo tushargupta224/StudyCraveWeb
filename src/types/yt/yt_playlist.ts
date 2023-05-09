@@ -5,7 +5,7 @@ export default interface YtPlaylist {
   videoCount: number;
 }
 
-export default interface YtPlaylistVideo {
+export interface YtPlaylistVideo {
   id: string;
   title: string;
   thumbnails: string;
