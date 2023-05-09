@@ -1,23 +1,41 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import { setUpAuthRouteGuard } from "./authGuard";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView
+      path: "/",
+      name: "landing",
+      component: () => import("../views/LandingView.vue"),
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
-  ]
-})
+      path: "/home",
+      name: "home",
+      component: () => import("../views/HomeView.vue"),
+      meta: { requireAuth: true },
+    },
+    {
+      path: "/channel/:channelId",
+      name: "channel",
+      component: () => import("../views/ChannelView.vue"),
+      meta: { requireAuth: true },
+    },
+    {
+      path: "/private-channel",
+      name: "private-channel",
+      component: () => import("../views/PrivateChannel.vue"),
+      meta: { requireAuth: true },
+    },
+    {
+      path: "/youtube-recommendation",
+      name: "youtube-recommendation",
+      component: () => import("../views/YoutubeRecommendation.vue"),
+      meta: { requireAuth: true },
+    },
+  ],
+});
 
-export default router
+setUpAuthRouteGuard(router);
+
+export default router;

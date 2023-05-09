@@ -1,85 +1,131 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { RouterView } from "vue-router";
+import { NDialogProvider, NMessageProvider } from "naive-ui";
+import { NConfigProvider, type GlobalThemeOverrides } from "naive-ui";
+import "nprogress/nprogress.css";
+import Loading from "./components/Loading.vue";
+
+const themeOverrides: GlobalThemeOverrides = {
+  Button: {
+    textColorGhostHover: "#001f3f",
+    rippleColor: "#001f3f",
+    borderHover: "1px solid #001f3f",
+  },
+  Input: {
+    borderFocus: "1px solid #001f3f",
+    borderHover: "1px solid #001f3f",
+  },
+  Tabs: {
+    tabColorSegment: "#A5D7E8",
+    colorSegment: "#19376D",
+    tabTextColorActiveSegment: "#0B2447",
+    tabTextColorDisabledSegment: "#FFFFFF",
+    tabTextColorSegment: "#FFFFFF",
+    tabTextColorHoverSegment: "#FFFFFF",
+  },
+};
+
+export default {
+  data() {
+    return {
+      themeOverrides: themeOverrides,
+      loading: false,
+    };
+  },
+  mounted() {
+    window.addEventListener("beforeunload", this.showLoading);
+  },
+  beforeUnmount() {
+    window.addEventListener("beforeunload", this.showLoading);
+  },
+  components: {
+    NDialogProvider,
+    NConfigProvider,
+    Loading,
+    NMessageProvider,
+  },
+  methods: {
+    showLoading() {
+      this.loading = true;
+    },
+  },
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <n-config-provider :theme-overrides="themeOverrides">
+    <n-message-provider>
+      <n-dialog-provider>
+        <loading v-if="loading">
+          <template v-slot:body>
+            <div class="lds-ellipsis">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div> </template
+        ></loading>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+        <router-view></router-view>
+      </n-dialog-provider>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
+.lds-ellipsis {
   display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  position: relative;
+  width: 80px;
+  height: 80px;
 }
-
-nav a:first-of-type {
-  border: 0;
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #4a2271;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
+  100% {
+    transform: scale(1);
   }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
   }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
   }
 }
 </style>

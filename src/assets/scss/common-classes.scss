@@ -1,0 +1,27 @@
+.max-width{
+    max-width: 93%;
+    margin: auto;
+}
+.flex{
+    display: flex;
+}
+.absolute-center{
+    justify-content: center;
+    align-items: center;
+}
+.flex-col{
+    flex-direction: column;
+}
+
+
+@media all and (max-width:767px){
+    .non-mobile {
+        display: none !important;
+      }
+}
+
+@media all and (min-width:766px){
+    .only-mobile {
+        display: none !important;
+      }
+}

@@ -27,6 +27,8 @@ coverage
 *.sln
 *.sw?
 
-
 # bundle stats
 stats.html
+
+#env
+.env
