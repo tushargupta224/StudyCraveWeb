@@ -5,7 +5,7 @@
       <div id="todostatus">
         <div id="totalComp">
           <span id="totalCompleted" class="countData">{{
-            completedTodoNum
+            count
           }}</span>
           <span class="countName" id="comp">Comp.</span>
         </div>
@@ -45,6 +45,7 @@
   </div>
 </template>
 <script lang="ts">
+import type { count } from "console";
 import { defineComponent, ref, computed } from "vue";
 
 interface Todo {
@@ -58,6 +59,7 @@ export default defineComponent({
     let todo = ref<Todo[]>([]);
     const newToDoName = ref<string>("");
     const todoId = ref<number>(0);
+    let count = ref<number>(0);
 
     const readLocalStorage = () => {
       const data = localStorage.getItem("todo");
@@ -86,6 +88,7 @@ export default defineComponent({
         todo.value.findIndex((Todo) => Todo.id === id),
         1
       );
+      count.value++
       writeLocalStorage();
     };
 
@@ -114,6 +117,7 @@ export default defineComponent({
       newToDoName,
       todoId,
       toggleTodo,
+      count,
     };
   },
 });
