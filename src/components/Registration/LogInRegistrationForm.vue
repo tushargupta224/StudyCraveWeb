@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { NCard, NMessageProvider } from "naive-ui";
+import { NCard, NMessageProvider, useMessage } from "naive-ui";
 import { XyzTransition } from "@animxyz/vue3";
 import PhoneNumberInput from "@/components/Registration/PhoneNumberInput.vue";
 import OtpInput from "@/components/Registration/OtpInput.vue";
@@ -73,8 +73,9 @@ export default defineComponent({
     const authStore = useAuthStore();
     const otpStore = useOtpStore();
     const dialog = useDialog();
+    const message = useMessage();
 
-    return { authStore, otpStore, dialog };
+    return { authStore, otpStore, dialog, message };
   },
   data() {
     return {
@@ -120,19 +121,20 @@ export default defineComponent({
       this.phoneNumber = phoneNumber;
       this.otpStore.sendOtp("91", phoneNumber);
     },
-    onSubmitOtp(otp: string) {
-      this.otpStore.verifyOtp(otp).then((user) => {
+    async onSubmitOtp(otp: string) {
+      try {
+        const user = await this.otpStore.verifyOtp(otp);
+
         this.authStore.uid = user.uid;
         this.authStore.phoneNumber = user.phoneNumber;
-        this.authStore
-          .getUserData()
-          .then(() => {
-            if (this.isAuthenticated && this.authStore.hasSignedUp) {
-              this.$router.replace("/home");
-            }
-          })
-          .catch((error) => {});
-      });
+        await this.authStore.getUserData();
+
+        if (this.isAuthenticated && this.authStore.hasSignedUp) {
+          this.$router.replace("/home");
+        }
+      } catch (error) {
+        this.message.error("Wrong OTP");
+      }
     },
     async onSignUp(details: UpdateUserDetails) {
       await this.authStore
@@ -142,7 +144,12 @@ export default defineComponent({
             this.$router.replace("/home");
           }
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.log(error);
+          this.message.error(
+            "Something Went wrong while registring, please try again after verifying your details."
+          );
+        });
     },
     handleCloseModal() {
       if (this.showPhoneInput && !this.isAuthenticated) {

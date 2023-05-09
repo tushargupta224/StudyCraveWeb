@@ -75,16 +75,13 @@ export const useOtpStore = defineStore({
         throw Error("");
       }
 
-      return this.confirmationResult
-        ?.confirm(otp)
-        .then((result) => {
-          this.verifyingOtp = false;
-          return result.user;
-        })
-        .catch((error) => {
-          this.verifyingOtp = false;
-          throw error;
-        });
+      try {
+        return (await this.confirmationResult?.confirm(otp)).user;
+      } catch (error) {
+        throw Error("Wrong OTP, Make Sure to enter the correct otp");
+      } finally {
+        this.verifyingOtp = false;
+      }
     },
 
     clearResendTimer() {

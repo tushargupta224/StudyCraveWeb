@@ -11,6 +11,12 @@
             v-for="channel in channels"
             :channel="channel"
           ></ChannelCard>
+          <div v-if="channels.length === 0">
+            <div class="img-container">
+              <img :src="img" alt="" />
+              <h2>Nothing to Show</h2>
+            </div>
+          </div>
         </div>
       </n-tab-pane>
       <n-tab-pane name="Joined Channel" tab="Joined Channel">
@@ -19,6 +25,12 @@
             v-for="channel in joinedChannels"
             :channel="channel"
           ></ChannelCard>
+          <div v-if="joinedChannels.length === 0">
+            <div class="img-container">
+              <img :src="img" alt="" />
+              <h2>Nothing to Show</h2>
+            </div>
+          </div>
         </div>
       </n-tab-pane>
       <n-tab-pane name="Explore Channel" tab="Explore Channel">
@@ -27,6 +39,12 @@
             v-for="channel in exploreChannels"
             :channel="channel"
           ></ChannelCard>
+          <div v-if="exploreChannels.length === 0">
+            <div class="img-container">
+              <img :src="img" alt="" />
+              <h2>Nothing to Show</h2>
+            </div>
+          </div>
         </div>
       </n-tab-pane>
       <n-tab-pane name="My Channel" tab="My Channel">
@@ -35,6 +53,10 @@
             v-for="channel in myChannels"
             :channel="channel"
           ></ChannelCard>
+          <div v-if="myChannels.length === 0">
+            <img :src="img" alt="" />
+            <h2>Nothing to Show</h2>
+          </div>
         </div>
       </n-tab-pane>
     </n-tabs>
@@ -43,7 +65,7 @@
 
 <script lang="ts">
 import { NCard, NTabPane, NTabs, NSpace, NSkeleton, NCarousel } from "naive-ui";
-import { defineComponent, onUnmounted } from "vue";
+import { defineComponent } from "vue";
 import { useChannelStore } from "../../stores/channel";
 import ChannelCard from "./ChannelCard.vue";
 import { useAuthStore } from "../../stores/auth";
@@ -53,9 +75,12 @@ export default defineComponent({
   name: "ChannelSection",
   setup() {
     const { user } = useAuthStore();
+    const img =
+      "https://img.freepik.com/free-vector/curiosity-search-concept-illustration_114360-11031.jpg?w=826&t=st=1683633559~exp=1683634159~hmac=40dab1d8ef825029ed673a38fe9dcfbfd1ecffe9c7f56f61402e0967c4c25994";
 
     return {
       user,
+      img,
     };
   },
   mounted() {
@@ -105,5 +130,21 @@ export default defineComponent({
   flex-wrap: wrap;
   z-index: 1 !important;
   background-color: #ffffff;
+}
+.img-container {
+  width: 100%;
+  // height: 50vh;
+  display: flex;
+  // justify-content: center;
+  align-items: center;
+  flex-direction: column-reverse;
+
+}
+.img-container img {
+  width: 35%;
+  height: 35%;
+}
+.img-container h2 {
+  font-size: 2.5rem;
 }
 </style>
