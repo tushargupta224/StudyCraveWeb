@@ -1,6 +1,6 @@
 <script lang="ts">
 import { RouterView } from "vue-router";
-import { NDialogProvider } from "naive-ui";
+import { NDialogProvider, NMessageProvider } from "naive-ui";
 import { NConfigProvider, type GlobalThemeOverrides } from "naive-ui";
 import "nprogress/nprogress.css";
 import Loading from "./components/Loading.vue";
@@ -21,8 +21,8 @@ const themeOverrides: GlobalThemeOverrides = {
     tabTextColorActiveSegment: "#0B2447",
     tabTextColorDisabledSegment: "#FFFFFF",
     tabTextColorSegment: "#FFFFFF",
-    tabTextColorHoverSegment: "#0B2447",
-  }
+    tabTextColorHoverSegment: "#FFFFFF",
+  },
 };
 
 export default {
@@ -42,6 +42,7 @@ export default {
     NDialogProvider,
     NConfigProvider,
     Loading,
+    NMessageProvider,
   },
   methods: {
     showLoading() {
@@ -53,19 +54,21 @@ export default {
 
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
-    <n-dialog-provider>
-      <loading v-if="loading">
-        <template v-slot:body>
-          <div class="lds-ellipsis">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div> </template
-      ></loading>
-      
-      <router-view></router-view>
-    </n-dialog-provider>
+    <n-message-provider>
+      <n-dialog-provider>
+        <loading v-if="loading">
+          <template v-slot:body>
+            <div class="lds-ellipsis">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div> </template
+        ></loading>
+
+        <router-view></router-view>
+      </n-dialog-provider>
+    </n-message-provider>
   </n-config-provider>
 </template>
 
