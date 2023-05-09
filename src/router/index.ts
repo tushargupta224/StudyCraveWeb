@@ -33,6 +33,12 @@ const router = createRouter({
       component: () => import("../views/YoutubeRecommendation.vue"),
       meta: { requireAuth: true },
     },
+    // {
+    //   path: "/youtube-recommendation/:VideoId",
+    //   name: "youtube-video",
+    //   component: () => import("../views/YoutubeVideo.vue"),
+    //   meta: { requireAuth: true },
+    // },
   ],
 });
 
