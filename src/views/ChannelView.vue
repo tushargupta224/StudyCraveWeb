@@ -1,14 +1,40 @@
 <template>
   <div>
-    <h1 v-if="pageStatus == `LOADING`">
+    <!-- <h1 v-if="pageStatus == `LOADING`">
       Loading Channel Id {{ $route.params.channelId }}
-    </h1>
-    <h1 v-else-if="pageStatus == `ENTERING`">
-      Entering Channel Id {{ $route.params.channelId }}
-    </h1>
-    <h1 v-if="pageStatus == `JOINING`">
-      Joining Channel Id {{ $route.params.channelId }}
-    </h1>
+    </h1> -->
+    <Loading v-if="pageStatus == `LOADING`">
+      <template v-slot:body>
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </template>
+    </Loading>
+    <Loading v-else-if="pageStatus == `ENTERING`">
+      <!-- Entering Channel Id {{ $route.params.channelId }} -->
+      <template v-slot:body>
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </template>
+    </Loading>
+    <Loading v-if="pageStatus == `JOINING`">
+      <!-- Joining Channel Id {{ $route.params.channelId }} -->
+      <template v-slot:body>
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </template>
+    </Loading>
     <h1 v-if="pageStatus == `ERROR`">
       Error Channel Id {{ $route.params.channelId }} {{ error }}
     </h1>
@@ -25,6 +51,7 @@ import { useAuthStore } from "../stores/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
 import Chat from "../components/Chat/chat.vue";
+import Loading from "@/components/Loading.vue";
 
 export default defineComponent({
   name: "ChannelView",
@@ -36,6 +63,7 @@ export default defineComponent({
   },
   components: {
     Chat,
+    Loading,
   },
   mounted() {
     this.channelStore
@@ -118,3 +146,60 @@ export default defineComponent({
   },
 });
 </script>
+<style lang="scss">
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #4a2271;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+</style>
