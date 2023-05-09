@@ -93,6 +93,7 @@ span {
 
 .create-button {
   display: inline-flex;
+  border: none;
   background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
   padding: 15px 35px;
   border-radius: 50px;
