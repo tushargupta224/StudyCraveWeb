@@ -13,7 +13,7 @@
       <div
         class="recommend-card"
         v-for="playlist in playlists"
-        :key="playlist.id"
+        :key="playlist.play_id"
       >
         <img :src="playlist.thumbnail_link" :alt="playlist.title" />
         <div style="width: 100%; height: 80px; overflow: hidden">
