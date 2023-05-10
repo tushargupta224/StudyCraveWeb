@@ -22,12 +22,7 @@
       </div>
       <div class="members">Members</div>
       <ChatMemberCard
-        :name="channel.ownerDisplayName"
-        :avatar="channel.ownerAvatar"
-        :isOnline="channel.ownerStatus"
-      ></ChatMemberCard>
-      <ChatMemberCard
-        v-for="member in channel.members"
+        v-for="member in allMembers"
         :name="member.name"
         :avatar="member.avatar"
         :isOnline="member.isOnline"
@@ -36,7 +31,7 @@
         <button class="back-btn-grad" @click="backBtnHandler">
           Back to Home
         </button>
-        <button class="exit-btn-grad">Exit Channel</button>
+        <!-- <button class="exit-btn-grad">Exit Channel</button> -->
       </div>
     </NLayoutSider>
     <NLayoutContent :nativeScrollbar="false">
@@ -65,6 +60,11 @@ import ChatSection from "./ChatSection.vue";
 import ChatMemberCard from "./ChatMemberCard.vue";
 import type Channel from "../../types/channels/channel";
 import { NLayout, NLayoutSider, NLayoutContent, NButton } from "naive-ui";
+import type ChannelMembers from "../../types/channels/channel_member";
+import { onSnapshot, doc, collection, query } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { useChannelStore } from "../../stores/channel";
+import { useAuthStore } from "../../stores/auth";
 
 export default defineComponent({
   components: {
@@ -76,12 +76,27 @@ export default defineComponent({
     NButton,
   },
   props: {
-    channel: {
+    initialChannel: {
       type: Object as PropType<Channel>,
       required: true,
     },
+    channelId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      channel: this.initialChannel as Channel,
+      members: undefined as ChannelMembers[] | undefined,
+      unsubscribeChannel: null as any,
+      unsubscribeChannelMembers: null as any,
+    };
   },
   setup() {
+    const channelStore = useChannelStore();
+    const { user } = useAuthStore();
+
     const chatSections = [
       { id: "discussion", name: "Discussion" },
       { id: "General", name: "General" },
@@ -95,15 +110,96 @@ export default defineComponent({
     }
 
     return {
+      user,
+      channelStore,
       chatSections,
       currentSection,
       switchSection,
     };
   },
+  async mounted() {
+    this.unsubscribeChannel = onSnapshot(
+      doc(db, "channels", this.channelId),
+      async (doc) => {
+        if (doc.exists()) {
+          this.channel = {
+            id: doc.id,
+            ...doc.data(),
+          } as Channel;
+        }
+      }
+    );
+
+    const channelMembersRef = collection(
+      db,
+      "channels",
+      this.channelId,
+      "members"
+    );
+    const membersRefQuery = query(channelMembersRef);
+
+    this.unsubscribeChannelMembers = onSnapshot(
+      membersRefQuery,
+      (querySnapshot) => {
+        const members: ChannelMembers[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const member = doc.data() as ChannelMembers;
+          member.id = doc.id;
+          members.push(member);
+        });
+
+        this.members = members;
+      }
+    );
+  },
   methods: {
     backBtnHandler() {
       this.$router.replace("/home");
     },
+  },
+  computed: {
+    allMembers(): ChannelMembers[] {
+      let members: ChannelMembers[] = [];
+      if (this.channel) {
+        const owner: ChannelMembers = {
+          id: this.channel.ownerId,
+          userId: this.channel.ownerId,
+          name: this.channel.ownerDisplayName,
+          avatar: this.channel.ownerAvatar,
+          isOwner: true,
+          isOnline: this.channel.ownerStatus,
+          isJoined: true,
+        };
+        if (this.members) members = [owner, ...this.members!];
+        else members = [owner];
+      } else {
+        if (this.members) members = this.members;
+      }
+
+      // Sort members by isOnline status in descending order
+      members.sort((a, b) => {
+        if (a.isOnline === b.isOnline) {
+          return 0;
+        }
+        return a.isOnline ? -1 : 1;
+      });
+
+      return members;
+    },
+  },
+  unmounted() {
+    this.unsubscribeChannel();
+    this.unsubscribeChannelMembers();
+    if (this.channel?.ownerId === this.user!.id) {
+      this.channelStore.updateOwnerStatus(this.channelId, false);
+    } else {
+      this.channelStore.setUserMemberStatus(
+        this.channelId,
+        this.user!.id,
+        false
+      );
+    }
   },
 });
 </script>
@@ -140,12 +236,12 @@ export default defineComponent({
   font-style: italic;
   padding: 0rem 0.8rem;
   border-radius: 12px;
-  background:  rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 10px;
-  border: 1px solidrgba(255,255,255,0.49);
+  border: 1px solidrgba(255, 255, 255, 0.49);
 }
 .section-item {
   padding: 0.5rem 1rem;

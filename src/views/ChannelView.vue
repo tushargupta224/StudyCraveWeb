@@ -38,7 +38,11 @@
     <h1 v-if="pageStatus == `ERROR`">
       Error Channel Id {{ $route.params.channelId }} {{ error }}
     </h1>
-    <Chat :channel="channel!" v-if="pageStatus == `LOADED`" />
+    <Chat
+      :initialChannel="channel!"
+      :channelId="channelId"
+      v-if="pageStatus == `LOADED`"
+    />
   </div>
 </template>
 
@@ -48,8 +52,6 @@ import { useChannelStore } from "../stores/channel";
 import type Channel from "../types/channels/channel";
 import { ChannelLoadingEnum } from "../types/commom";
 import { useAuthStore } from "../stores/auth";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../config/firebase";
 import Chat from "../components/Chat/chat.vue";
 import Loading from "@/components/Loading.vue";
 
@@ -65,7 +67,7 @@ export default defineComponent({
     Chat,
     Loading,
   },
-  mounted() {
+  async mounted() {
     this.channelStore
       .loadChannelByChannelId(this.channelId)
       .then((channel) => {
@@ -110,18 +112,6 @@ export default defineComponent({
         this.error = error;
         this.pageStatus = ChannelLoadingEnum.ERROR;
       });
-
-    const unsubscibe = onSnapshot(
-      doc(db, "channels", this.channelId),
-      async (doc) => {
-        if (doc.exists()) {
-          this.channel = {
-            id: doc.id,
-            ...doc.data(),
-          } as Channel;
-        }
-      }
-    );
   },
   data() {
     return {
@@ -130,19 +120,6 @@ export default defineComponent({
       pageStatus: ChannelLoadingEnum.LOADING,
       error: null as any,
     };
-  },
-  unmounted() {
-    if (this.pageStatus == ChannelLoadingEnum.LOADED) {
-      if (this.channel?.ownerId === this.user!.id) {
-        this.channelStore.updateOwnerStatus(this.channelId, false);
-      } else {
-        this.channelStore.setUserMemberStatus(
-          this.channelId,
-          this.user!.id,
-          false
-        );
-      }
-    }
   },
 });
 </script>
