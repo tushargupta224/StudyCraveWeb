@@ -21,22 +21,32 @@
         {{ section.name }}
       </div>
       <div class="members">Members</div>
-      <ChatMemberCard
-        :name="channel.ownerDisplayName"
-        :avatar="channel.ownerAvatar"
-        :isOnline="channel.ownerStatus"
-      ></ChatMemberCard>
-      <ChatMemberCard
-        v-for="member in channel.members"
-        :name="member.name"
-        :avatar="member.avatar"
-        :isOnline="member.isOnline"
-      ></ChatMemberCard>
+      <div class="channel-members">
+        <ChatMemberCard
+          :name="channel.ownerDisplayName"
+          :avatar="channel.ownerAvatar"
+          :isOnline="channel.ownerStatus"
+        ></ChatMemberCard>
+        <ChatMemberCard
+          v-for="member in channel.members"
+          :name="member.name"
+          :avatar="member.avatar"
+          :isOnline="member.isOnline"
+        ></ChatMemberCard>
+      </div>
+      <!-- <div class="channel-members">
+        <ChatMemberCard
+          v-for="member in allMembers"
+          :name="member.name"
+          :avatar="member.avatar"
+          :isOnline="member.isOnline"
+        ></ChatMemberCard>
+      </div> -->
       <div class="btn-container">
         <button class="back-btn-grad" @click="backBtnHandler">
           Back to Home
         </button>
-        <button class="exit-btn-grad">Exit Channel</button>
+        <!-- <button class="exit-btn-grad">Exit Channel</button> -->
       </div>
     </NLayoutSider>
     <NLayoutContent :nativeScrollbar="false">
@@ -140,12 +150,12 @@ export default defineComponent({
   font-style: italic;
   padding: 0rem 0.8rem;
   border-radius: 12px;
-  background:  rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 10px;
-  border: 1px solidrgba(255,255,255,0.49);
+  border: 1px solidrgba(255, 255, 255, 0.49);
 }
 .section-item {
   padding: 0.5rem 1rem;
@@ -177,6 +187,11 @@ export default defineComponent({
   padding: 0.5rem;
   font-weight: bold;
   font-size: 1rem;
+}
+
+.channel-members {
+  padding-bottom: 60px;
+  overflow-y: auto;
 }
 
 .btn-container {
