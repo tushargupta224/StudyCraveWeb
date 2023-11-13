@@ -34,7 +34,7 @@
           :isOnline="member.isOnline"
         ></ChatMemberCard>
       </div>
-      <!-- <div class="channel-members">
+      <div class="channel-members">
         <ChatMemberCard
           v-for="member in allMembers"
           :name="member.name"
