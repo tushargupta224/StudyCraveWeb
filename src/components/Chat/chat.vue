@@ -21,12 +21,27 @@
         {{ section.name }}
       </div>
       <div class="members">Members</div>
-      <ChatMemberCard
-        v-for="member in allMembers"
-        :name="member.name"
-        :avatar="member.avatar"
-        :isOnline="member.isOnline"
-      ></ChatMemberCard>
+      <div class="channel-members">
+        <ChatMemberCard
+          :name="channel.ownerDisplayName"
+          :avatar="channel.ownerAvatar"
+          :isOnline="channel.ownerStatus"
+        ></ChatMemberCard>
+        <ChatMemberCard
+          v-for="member in channel.members"
+          :name="member.name"
+          :avatar="member.avatar"
+          :isOnline="member.isOnline"
+        ></ChatMemberCard>
+      </div>
+      <!-- <div class="channel-members">
+        <ChatMemberCard
+          v-for="member in allMembers"
+          :name="member.name"
+          :avatar="member.avatar"
+          :isOnline="member.isOnline"
+        ></ChatMemberCard>
+      </div>
       <div class="btn-container">
         <button class="back-btn-grad" @click="backBtnHandler">
           Back to Home
@@ -273,6 +288,11 @@ export default defineComponent({
   padding: 0.5rem;
   font-weight: bold;
   font-size: 1rem;
+}
+
+.channel-members {
+  padding-bottom: 60px;
+  overflow-y: auto;
 }
 
 .btn-container {

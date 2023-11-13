@@ -29,7 +29,7 @@
           <button><i class="fas fa-user-friends"></i></button>
         </div> -->
         <div class="btn-container">
-          <button @click="onJoinOrEnter">{{buttonTitle}}</button>
+          <button @click="onJoinOrEnter">{{ buttonTitle }}</button>
         </div>
       </div>
     </div>
@@ -85,17 +85,25 @@ export default defineComponent({
   background: #fff;
   border-radius: 4px;
   box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.5);
-  width: auto;
+  width: 400px;
+  height: 200px;
   max-width: 500px;
   display: flex;
   flex-direction: column;
   border-radius: 25px;
   position: relative;
+  @media screen and (max-width: 576px) {
+    margin: 0 5px;
+  }
 }
 .card h2 {
   margin: 0;
-  padding: 0 1rem;
+  // padding: 0 1rem;
+  text-align: center;
+  margin-left: 8px;
+
 }
+
 .card .title {
   padding: 1rem;
   text-align: right;
@@ -136,10 +144,15 @@ export default defineComponent({
 .card-text {
   display: grid;
   grid-template-columns: 1fr 2fr;
+  height: 100%;
+  width: 100%;
 }
 
 .title-total {
-  padding: 2.5em 1.5em 1.5em 1.5em;
+  // padding: 2.5em 1.5em 1.5em 1.5em;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 path {
@@ -160,7 +173,7 @@ path {
   background-size: cover;
 }
 
-.title-total{
+.title-total {
   z-index: 2;
 }
 .btn-container {
