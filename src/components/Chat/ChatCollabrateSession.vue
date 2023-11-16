@@ -8,8 +8,8 @@
       :roomId="chatStore.channel!.id"
       socketURL="https://localhost:3009/"
       :enableLogs="true"
-      :enableAudio="audioEnable"
-      :enableVideo="videoEnable"
+      v-model:audio-enabled="audioEnable"
+      v-model:video-enabled="videoEnable"
       v-on:joined-room="onJoined"
       v-on:left-room="logEvent"
       v-on:opened-room="logEvent"
@@ -54,12 +54,6 @@ export default defineComponent({
       return [this.audioEnable, this.videoEnable];
     },
   },
-  watch: {
-    shouldReJoinAutomatically() {
-      this.leaveCall();
-      this.onJoin();
-    },
-  },
   methods: {
     leaveCall() {
       try {
@@ -96,10 +90,12 @@ export default defineComponent({
       console.log("Event : ", event);
     },
     toggleAudio() {
-      this.audioEnable = !this.audioEnable;
+      // this.audioEnable = !this.audioEnable;
+      (this.$refs.webrtc as any).toggleLocalMic();
     },
     toggleVideo() {
-      this.videoEnable = !this.videoEnable;
+      // this.videoEnable = !this.videoEnable;
+      (this.$refs.webrtc as any).toggleLocalVideo();
     },
   },
   beforeUnmount() {

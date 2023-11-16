@@ -24,7 +24,7 @@ import { defineComponent } from "vue";
 import { io } from "socket.io-client";
 import SimpleSignalClient from "simple-signal-client";
 
-export default /*#__PURE__*/ defineComponent({
+export default defineComponent({
   name: "custom-webrtc",
   components: {},
   data() {
@@ -58,11 +58,11 @@ export default /*#__PURE__*/ defineComponent({
       type: String,
       default: "image/jpeg",
     },
-    enableAudio: {
+    audioEnabled: {
       type: Boolean,
       default: true,
     },
-    enableVideo: {
+    videoEnabled: {
       type: Boolean,
       default: true,
     },
@@ -92,17 +92,18 @@ export default /*#__PURE__*/ defineComponent({
   },
   watch: {},
   mounted() {},
+  emits: ["update:audioEnabled", "update:videoEnabled"],
   methods: {
     async join() {
-      var that = this;
+      var that = this as any;
       this.log("join");
       this.socket = io(this.socketURL, this.ioOptions);
       this.signalClient = new SimpleSignalClient(this.socket);
       let constraints = {
-        video: that.enableVideo,
-        audio: that.enableAudio,
+        video: that.videoEnabled,
+        audio: that.audioEnabled,
       };
-      if (that.deviceId && that.enableVideo) {
+      if (that.deviceId && that.videoEnabled) {
         constraints.video = { deviceId: { exact: that.deviceId } };
       }
       const localStream = await navigator.mediaDevices.getUserMedia(
@@ -237,6 +238,37 @@ export default /*#__PURE__*/ defineComponent({
         that.signalClient.peers().forEach((p) => that.onPeer(p, screenStream));
       } catch (e) {
         that.log("Media error: " + JSON.stringify(e));
+      }
+    },
+    toggleLocalMic() {
+      const localStream = this.videoList.find((v) => v.isLocal)?.stream;
+      if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        audioTrack.enabled = !audioTrack.enabled;
+        this.$emit("update:audioEnabled", audioTrack.enabled);
+        this.replaceTrack(audioTrack, localStream);
+      }
+    },
+
+    toggleLocalVideo() {
+      const localStream = this.videoList.find((v) => v.isLocal)?.stream;
+      if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        videoTrack.enabled = !videoTrack.enabled;
+        this.$emit("update:videoEnabled", videoTrack.enabled);
+        this.replaceTrack(videoTrack, localStream);
+      }
+    },
+
+    replaceTrack(newTrack, stream) {
+      const peer = this.signalClient
+        .peers()
+        .find((p) => p.stream?.id === stream.id);
+      if (peer) {
+        const sender = peer.peer.streams[0]
+          .getTracks()
+          .find((t) => t.kind === newTrack.kind);
+        sender.replaceTrack(newTrack);
       }
     },
     log(message, data) {
