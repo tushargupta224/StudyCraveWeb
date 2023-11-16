@@ -6,9 +6,10 @@ import {
   limit,
   startAfter,
   getDocs,
-  serverTimestamp,
   addDoc,
   onSnapshot,
+  where,
+  deleteDoc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { db } from "../config/firebase";
@@ -25,6 +26,9 @@ export const useChatStore = defineStore({
     hasMoreMessages: true,
     initialFetch: false,
     listener: null as Function | null,
+    videoCallListener: null as Function | null,
+    participants: [] as any[],
+    onVideoSession: false,
   }),
   actions: {
     setChannel(channel: Channel) {
@@ -33,6 +37,9 @@ export const useChatStore = defineStore({
       this.lastMessage = null;
       this.initialFetch = false;
       this.hasMoreMessages = true;
+      this.participants = [];
+
+      this.listenForVideoCallParticipants();
     },
     async fetchMessages(messageCollection: string, limitPerPage: number = 20) {
       if (!this.channel || !this.hasMoreMessages) return;
@@ -125,6 +132,65 @@ export const useChatStore = defineStore({
       if (this.listener) {
         this.listener();
         this.listener = null;
+      }
+
+      this.stopListeningForVideoCallParticipants();
+    },
+    async joinVideoCall(mediaStreamId: string) {
+      if (!this.channel) return;
+
+      const { user } = useAuthStore();
+      if (!user) return;
+
+      await addDoc(
+        collection(db, `channels/${this.channel.id}/callParticipants`),
+        {
+          userId: user.id,
+          userName: (user.firstName ?? "") + " " + (user.lastName ?? ""),
+          userAvatar: user.profilePic ?? "",
+          mediaStreamId: mediaStreamId,
+        }
+      );
+    },
+
+    async leaveVideoCall() {
+      if (!this.channel) return;
+
+      const { user } = useAuthStore();
+      if (!user) return;
+
+      const participantRef = collection(
+        db,
+        `channels/${this.channel.id}/callParticipants`
+      );
+
+      const querySnapshot = await getDocs(
+        query(participantRef, where("userId", "==", user.id))
+      );
+
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+    },
+
+    listenForVideoCallParticipants() {
+      if (!this.channel) return;
+
+      const participantsQuery = query(
+        collection(db, `channels/${this.channel.id}/callParticipants`)
+      );
+
+      this.videoCallListener = onSnapshot(participantsQuery, (snapshot) => {
+        this.participants = snapshot.docs.map((doc) => doc.data());
+
+        console.log("Video call participants:", this.participants);
+      });
+    },
+
+    stopListeningForVideoCallParticipants() {
+      if (this.videoCallListener) {
+        this.videoCallListener();
+        this.videoCallListener = null;
       }
     },
   },
