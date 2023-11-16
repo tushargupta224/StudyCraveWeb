@@ -19,267 +19,271 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import { io } from "socket.io-client";
+<script setup lang="ts">
+import { defineComponent, ref, toRefs } from "vue";
+import { Socket, io } from "socket.io-client";
 import SimpleSignalClient from "simple-signal-client";
 
-export default defineComponent({
-  name: "custom-webrtc",
-  components: {},
-  data() {
-    return {
-      signalClient: null,
-      videoList: [],
-      canvas: null,
-      socket: null,
-    };
+interface CallVideo {
+  id: string;
+  muted: boolean;
+  stream: MediaStream;
+  isLocal: boolean;
+}
+
+const signalClient = ref();
+const socket = ref<Socket>();
+
+const videoList = ref<CallVideo[]>([]);
+const videos = ref();
+
+const props = defineProps({
+  roomId: {
+    type: String,
+    default: "public-101",
   },
-  props: {
-    roomId: {
-      type: String,
-      default: "public-room-v2",
-    },
-    socketURL: {
-      type: String,
-      default: "https://weston-vue-webrtc-lobby.azurewebsites.net",
-      //default: 'https://localhost:3000'
-      //default: 'https://192.168.1.201:3000'
-    },
-    cameraHeight: {
-      type: [Number, String],
-      default: 160,
-    },
-    autoplay: {
-      type: Boolean,
-      default: true,
-    },
-    screenshotFormat: {
-      type: String,
-      default: "image/jpeg",
-    },
-    audioEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    videoEnabled: {
-      type: Boolean,
-      default: true,
-    },
-    enableLogs: {
-      type: Boolean,
-      default: false,
-    },
-    peerOptions: {
-      type: Object, // NOTE: use these options: https://github.com/feross/simple-peer
-      default() {
-        return {};
-      },
-    },
-    ioOptions: {
-      type: Object, // NOTE: use these options: https://socket.io/docs/v4/client-options/
-      default() {
-        return {
-          rejectUnauthorized: false,
-          transports: ["polling", "websocket"],
-        };
-      },
-    },
-    deviceId: {
-      type: String,
-      default: null,
+  socketURL: {
+    type: String,
+    required: true,
+  },
+  cameraHeight: {
+    type: [Number, String],
+    default: 160,
+  },
+  audioEnabled: {
+    type: Boolean,
+    default: true,
+  },
+  videoEnabled: {
+    type: Boolean,
+    default: true,
+  },
+  enableLogs: {
+    type: Boolean,
+    default: false,
+  },
+  peerOptions: {
+    type: Object, // NOTE: use these options: https://github.com/feross/simple-peer
+    default() {
+      return {};
     },
   },
-  watch: {},
-  mounted() {},
-  emits: ["update:audioEnabled", "update:videoEnabled"],
-  methods: {
-    async join() {
-      var that = this as any;
-      this.log("join");
-      this.socket = io(this.socketURL, this.ioOptions);
-      this.signalClient = new SimpleSignalClient(this.socket);
-      let constraints = {
-        video: that.videoEnabled,
-        audio: that.audioEnabled,
+  ioOptions: {
+    type: Object, // NOTE: use these options: https://socket.io/docs/v4/client-options/
+    default() {
+      return {
+        rejectUnauthorized: false,
+        transports: ["polling", "websocket"],
       };
-      if (that.deviceId && that.videoEnabled) {
-        constraints.video = { deviceId: { exact: that.deviceId } };
-      }
-      const localStream = await navigator.mediaDevices.getUserMedia(
-        constraints
-      );
-      this.log("opened", localStream);
-      this.joinedRoom(localStream, true);
-      this.signalClient.once("discover", (discoveryData) => {
-        that.log("discovered", discoveryData);
-        async function connectToPeer(peerID) {
-          if (peerID == that.socket.id) return;
-          try {
-            that.log("Connecting to peer");
-            const { peer } = await that.signalClient.connect(
-              peerID,
-              that.roomId,
-              that.peerOptions
-            );
-            that.videoList.forEach((v) => {
-              if (v.isLocal) {
-                that.onPeer(peer, v.stream);
-              }
-            });
-          } catch (e) {
-            that.log("Error connecting to peer");
-          }
-        }
-        discoveryData.peers.forEach((peerID) => connectToPeer(peerID));
-        that.$emit("opened-room", that.roomId);
-      });
-      this.signalClient.on("request", async (request) => {
-        that.log("requested", request);
-        const { peer } = await request.accept({}, that.peerOptions);
-        that.log("accepted", peer);
-        that.videoList.forEach((v) => {
-          if (v.isLocal) {
-            that.onPeer(peer, v.stream);
-          }
-        });
-      });
-      this.signalClient.discover(that.roomId);
-    },
-    onPeer(peer, localStream) {
-      var that = this;
-      that.log("onPeer");
-      peer.addStream(localStream);
-      peer.on("stream", (remoteStream) => {
-        that.joinedRoom(remoteStream, false);
-        peer.on("close", () => {
-          var newList = [];
-          that.videoList.forEach(function (item) {
-            if (item.id !== remoteStream.id) {
-              newList.push(item);
-            }
-          });
-          that.videoList = newList;
-          that.$emit("left-room", remoteStream.id);
-        });
-        peer.on("error", (err) => {
-          that.log("peer error ", err);
-        });
-      });
-    },
-    joinedRoom(stream, isLocal) {
-      var that = this;
-      let found = that.videoList.find((video) => {
-        return video.id === stream.id;
-      });
-      if (found === undefined) {
-        let video = {
-          id: stream.id,
-          muted: isLocal,
-          stream: stream,
-          isLocal: isLocal,
-        };
-
-        that.videoList.push(video);
-      }
-
-      setTimeout(function () {
-        for (var i = 0, len = that.$refs.videos.length; i < len; i++) {
-          if (that.$refs.videos[i].id === stream.id) {
-            that.$refs.videos[i].srcObject = stream;
-            break;
-          }
-        }
-      }, 500);
-
-      that.$emit("joined-room", stream.id);
-    },
-    leave() {
-      this.videoList.forEach((v) =>
-        v.stream.getTracks().forEach((t) => t.stop())
-      );
-      this.videoList = [];
-      this.signalClient.peers().forEach((peer) => peer.removeAllListeners());
-      this.signalClient.destroy();
-      this.signalClient = null;
-      this.socket.destroy();
-      this.socket = null;
-    },
-    capture() {
-      return this.getCanvas().toDataURL(this.screenshotFormat);
-    },
-    getCanvas() {
-      let video = this.$refs.videos[0];
-      if (video !== null && !this.ctx) {
-        let canvas = document.createElement("canvas");
-        canvas.height = video.clientHeight;
-        canvas.width = video.clientWidth;
-        this.canvas = canvas;
-        this.ctx = canvas.getContext("2d");
-      }
-      const { ctx, canvas } = this;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      return canvas;
-    },
-    async shareScreen() {
-      var that = this;
-      if (navigator.mediaDevices == undefined) {
-        that.log("Error: https is required to load cameras");
-        return;
-      }
-
-      try {
-        var screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: false,
-        });
-        this.joinedRoom(screenStream, true);
-        that.$emit("share-started", screenStream.id);
-        that.signalClient.peers().forEach((p) => that.onPeer(p, screenStream));
-      } catch (e) {
-        that.log("Media error: " + JSON.stringify(e));
-      }
-    },
-    toggleLocalMic() {
-      const localStream = this.videoList.find((v) => v.isLocal)?.stream;
-      if (localStream) {
-        const audioTrack = localStream.getAudioTracks()[0];
-        audioTrack.enabled = !audioTrack.enabled;
-        this.$emit("update:audioEnabled", audioTrack.enabled);
-        this.replaceTrack(audioTrack, localStream);
-      }
-    },
-
-    toggleLocalVideo() {
-      const localStream = this.videoList.find((v) => v.isLocal)?.stream;
-      if (localStream) {
-        const videoTrack = localStream.getVideoTracks()[0];
-        videoTrack.enabled = !videoTrack.enabled;
-        this.$emit("update:videoEnabled", videoTrack.enabled);
-        this.replaceTrack(videoTrack, localStream);
-      }
-    },
-
-    replaceTrack(newTrack, stream) {
-      const peer = this.signalClient
-        .peers()
-        .find((p) => p.stream?.id === stream.id);
-      if (peer) {
-        const sender = peer.peer.streams[0]
-          .getTracks()
-          .find((t) => t.kind === newTrack.kind);
-        sender.replaceTrack(newTrack);
-      }
-    },
-    log(message, data) {
-      if (this.enableLogs) {
-        console.log(message);
-        if (data != null) {
-          console.log(data);
-        }
-      }
     },
   },
+  deviceId: {
+    type: String,
+    default: null,
+  },
+});
+
+const emits = defineEmits([
+  "update:audioEnabled",
+  "update:videoEnabled",
+  "opened-room",
+  "joined-room",
+  "left-room",
+  "share-started",
+]);
+
+const {
+  roomId,
+  socketURL,
+  audioEnabled,
+  videoEnabled,
+  ioOptions,
+  deviceId,
+  peerOptions,
+  enableLogs,
+} = toRefs(props);
+
+const join = async () => {
+  console.log("join");
+  socket.value = io(socketURL.value, ioOptions.value);
+  signalClient.value = new SimpleSignalClient(socket.value);
+
+  //Initial constraints
+  let constraints: MediaStreamConstraints = {
+    video: videoEnabled.value,
+    audio: audioEnabled.value,
+  };
+
+  if (deviceId.value && videoEnabled.value) {
+    constraints.video = { deviceId: { exact: deviceId.value } };
+  }
+
+  //Get user local stream
+  const localStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+  console.log("opened", localStream);
+  joinedRoom(localStream, true);
+
+  signalClient.value.once("discover", (discoveryData: any) => {
+    console.log("discovered", discoveryData);
+    async function connectToPeer(peerID: string) {
+      if (peerID == socket.value?.id) return;
+      try {
+        console.log("Connecting to peer");
+        const { peer } = await signalClient.value.connect(
+          peerID,
+          roomId.value,
+          peerOptions.value
+        );
+        videoList.value.forEach((v) => {
+          if (v.isLocal) {
+            onPeer(peer, v.stream);
+          }
+        });
+      } catch (e) {
+        console.log("Error connecting to peer");
+      }
+    }
+    discoveryData.peers.forEach((peerID: string) => connectToPeer(peerID));
+    emits("opened-room", roomId.value);
+  });
+  signalClient.value.on("request", async (request: any) => {
+    console.log("requested", request);
+    const { peer } = await request.accept({}, peerOptions.value);
+    console.log("accepted", peer);
+    videoList.value.forEach((v) => {
+      if (v.isLocal) {
+        onPeer(peer, v.stream);
+      }
+    });
+  });
+  signalClient.value.discover(roomId.value);
+};
+
+const onPeer = (peer: any, localStream: MediaStream) => {
+  log("onPeer");
+  peer.addStream(localStream);
+  peer.on("stream", (remoteStream: MediaStream) => {
+    joinedRoom(remoteStream, false);
+    peer.on("close", () => {
+      var newList: CallVideo[] = [];
+      videoList.value.forEach(function (item) {
+        if (item.id !== remoteStream.id) {
+          newList.push(item);
+        }
+      });
+      videoList.value = newList;
+      emits("left-room", remoteStream.id);
+    });
+    peer.on("error", (err: any) => {
+      log("peer error ", err);
+    });
+  });
+};
+
+const joinedRoom = (stream: MediaStream, isLocal: boolean) => {
+  let found = videoList.value.find((video) => {
+    return video.id === stream.id;
+  });
+  if (found === undefined) {
+    let video = {
+      id: stream.id,
+      muted: isLocal,
+      stream: stream,
+      isLocal: isLocal,
+    };
+
+    videoList.value.push(video);
+  }
+
+  setTimeout(function () {
+    for (var i = 0, len = videos.value.length; i < len; i++) {
+      if (videos.value[i].id === stream.id) {
+        videos.value[i].srcObject = stream;
+        break;
+      }
+    }
+  }, 500);
+
+  emits("joined-room", stream.id);
+};
+
+const leave = () => {
+  videoList.value.forEach((v) => v.stream.getTracks().forEach((t) => t.stop()));
+  videoList.value = [];
+  signalClient.value?.peers().forEach((peer: any) => peer.removeAllListeners());
+  signalClient.value?.destroy();
+  signalClient.value = undefined;
+  (socket.value as any)?.destroy();
+  socket.value = undefined;
+};
+
+const shareScreen = async () => {
+  if (navigator.mediaDevices == undefined) {
+    log("Error: https is required to load cameras");
+    return;
+  }
+
+  try {
+    var screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: false,
+    });
+    joinedRoom(screenStream, true);
+    emits("share-started", screenStream.id);
+    signalClient.value.peers().forEach((p: any) => onPeer(p, screenStream));
+  } catch (e) {
+    log("Media error: " + JSON.stringify(e));
+  }
+};
+
+const toggleLocalMic = () => {
+  const localStream = videoList.value.find((v) => v.isLocal)?.stream;
+  if (localStream) {
+    const audioTrack = localStream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    emits("update:audioEnabled", audioTrack.enabled);
+    replaceTrack(audioTrack, localStream);
+  }
+};
+
+const toggleLocalVideo = () => {
+  const localStream = videoList.value.find((v) => v.isLocal)?.stream;
+  if (localStream) {
+    const videoTrack = localStream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    emits("update:videoEnabled", videoTrack.enabled);
+    replaceTrack(videoTrack, localStream);
+  }
+};
+
+const replaceTrack = (newTrack: MediaStreamTrack, stream: MediaStream) => {
+  const peer = signalClient.value
+    .peers()
+    .find((p: any) => p.stream?.id === stream.id);
+  if (peer) {
+    const sender = peer.peer.streams[0]
+      .getTracks()
+      .find((t: MediaStreamTrack) => t.kind === newTrack.kind);
+    sender.replaceTrack(newTrack);
+  }
+};
+
+const log = (message: string, data?: any) => {
+  if (enableLogs.value) {
+    console.log(message);
+    if (data) {
+      console.log(data);
+    }
+  }
+};
+
+defineExpose({
+  join,
+  leave,
+  shareScreen,
+  toggleLocalMic,
+  toggleLocalVideo,
 });
 </script>
 <style scoped>
