@@ -43,6 +43,12 @@
         ></ChatMemberCard>
       </div>
       <div class="btn-container">
+        <button
+          class="back-btn-grad"
+          @click="chatStore.onVideoSession = !chatStore.onVideoSession"
+        >
+          Call {{ chatStore.participants.length }}
+        </button>
         <button class="back-btn-grad" @click="backBtnHandler">
           Back to Home
         </button>
@@ -80,6 +86,7 @@ import { onSnapshot, doc, collection, query } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useChannelStore } from "../../stores/channel";
 import { useAuthStore } from "../../stores/auth";
+import { useChatStore } from "../../stores/chat";
 
 export default defineComponent({
   components: {
@@ -110,6 +117,7 @@ export default defineComponent({
   },
   setup() {
     const channelStore = useChannelStore();
+    const chatStore = useChatStore();
     const { user } = useAuthStore();
 
     const chatSections = [
@@ -126,6 +134,7 @@ export default defineComponent({
 
     return {
       user,
+      chatStore,
       channelStore,
       chatSections,
       currentSection,
