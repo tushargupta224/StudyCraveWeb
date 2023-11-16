@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <vue-webrtc
+    <custom-webrtc
       ref="webrtc"
       width="100%"
       :roomId="chatStore.channel!.id"
@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { VueWebRTC } from "vue-webrtc";
+import CustomWebRtc from "../WebRtc/CustomWebRtc.vue";
 import { useChatStore } from "../../stores/chat";
 import { defineComponent } from "vue";
 // Adjust the path based on your project structure
@@ -32,7 +32,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "ChatCollabrateSession",
   components: {
-    "vue-webrtc": VueWebRTC,
+    "custom-webrtc": CustomWebRtc,
   },
   setup() {
     const chatStore = useChatStore();
