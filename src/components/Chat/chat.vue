@@ -34,11 +34,15 @@
           v-for="section in chatSections"
           :key="section.id"
           class="section-item"
-          :class="{ active: currentSection.id === section.id }"
+          :class="{
+            active:
+              currentSection.id === section.id && !chatStore.onVideoSession,
+          }"
           @click="switchSection(section)"
         >
           {{ section.name }}
         </div>
+        <LiveSessionCard />
         <div class="members">Members</div>
         <div class="channel-members">
           <ChatMemberCard
@@ -50,12 +54,6 @@
           <div style="height: 200px"></div>
         </div>
         <div class="btn-container">
-          <button
-            class="back-btn-grad"
-            @click="chatStore.onVideoSession = !chatStore.onVideoSession"
-          >
-            Call {{ chatStore.participants.length }}
-          </button>
           <button class="back-btn-grad" @click="backBtnHandler">
             Back to Home
           </button>
@@ -96,6 +94,7 @@ import { db } from "../../config/firebase";
 import { useChannelStore } from "../../stores/channel";
 import { useAuthStore } from "../../stores/auth";
 import { useChatStore } from "../../stores/chat";
+import LiveSessionCard from "./LiveSessionCard.vue";
 
 export default defineComponent({
   components: {
@@ -105,6 +104,7 @@ export default defineComponent({
     NLayoutContent,
     ChatMemberCard,
     NButton,
+    LiveSessionCard,
   },
   props: {
     initialChannel: {
@@ -139,6 +139,8 @@ export default defineComponent({
 
     function switchSection(section: any) {
       currentSection.value = section;
+
+      chatStore.onVideoSession = false;
     }
 
     return {
@@ -250,44 +252,7 @@ export default defineComponent({
   align-items: center;
   overflow: hidden;
 }
-.sidebar-img {
-  width: 100%;
-  height: 140px;
-  background-image: url("https://img.freepik.com/free-photo/top-view-education-day-elements-with-copy-space_23-2148721220.jpg");
-  background-size: cover;
-  background-position: center center;
-  display: flex;
-}
 
-.sidebar-img h2 {
-  font-size: 1.6rem;
-  margin-left: 20px;
-  margin-top: 10px;
-  color: #ffffff;
-  letter-spacing: 1px;
-  margin-bottom: 0px;
-}
-.sidebar-img .h2-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  color: #ffffff;
-}
-
-.sidebar-img .h2-container p {
-  margin-top: 0px;
-  color: white;
-  font-style: italic;
-  padding: 0rem 0.8rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solidrgba(255, 255, 255, 0.49);
-}
 .section-item {
   padding: 0.5rem 1rem;
   margin: 12px;

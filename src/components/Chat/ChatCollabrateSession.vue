@@ -111,6 +111,7 @@ export default defineComponent({
     },
     onLeave() {
       (this.$refs.webrtc as any).leave();
+      this.chatStore.onVideoSession = false;
     },
     onShareScreen() {
       this.img = (this.$refs.webrtc as any).shareScreen();
