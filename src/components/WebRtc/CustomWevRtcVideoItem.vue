@@ -1,10 +1,9 @@
 <template>
-  <div class="video-item">
+  <div class="video-item" :class="{ 'mic-on': audioActive }">
     <video
       autoplay
       playsinline
       ref="video"
-      :muted="videoItem.muted"
       :id="videoItem.id"
       style="width: 101%; height: 100%; transform: scaleX(-1)"
     ></video>
@@ -103,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type PropType, toRefs } from "vue";
+import { ref, type PropType, toRefs, onMounted, onBeforeUnmount } from "vue";
 import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
 import { MicOffOutline, MicOutline } from "@vicons/ionicons5";
 
@@ -122,8 +121,57 @@ const { videoItem } = toRefs(props);
 
 const video = ref();
 
+const audioActive = ref<boolean>(false);
+const audioContext = ref<AudioContext>();
+const mounted = ref(false);
+
+onMounted(() => {
+  mounted.value = true;
+});
+
+onBeforeUnmount(() => {
+  mounted.value = false;
+  if (audioContext.value) {
+    audioContext.value.close();
+  }
+});
+
 const setStreamObject = (stream: MediaStream) => {
   if (videoItem.value.id === stream.id) video.value.srcObject = stream;
+  createAudioAnalyser();
+};
+
+const createAudioAnalyser = () => {
+  const audioContextLocal = new (window.AudioContext ||
+    (window as any)?.webkitAudioContext)();
+  const analyser = audioContextLocal.createAnalyser();
+  const source = audioContextLocal.createMediaElementSource(video.value);
+
+  source.connect(analyser);
+  analyser.connect(audioContextLocal.destination);
+
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  const update = () => {
+    if (mounted) {
+      analyser.getByteFrequencyData(dataArray);
+      const average =
+        dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+
+      if (average > 10) {
+        audioActive.value = true;
+      } else {
+        audioActive.value = false;
+      }
+    }
+
+    requestAnimationFrame(update);
+  };
+
+  update();
+  audioContext.value = audioContextLocal;
 };
 
 defineExpose({ setStreamObject });
