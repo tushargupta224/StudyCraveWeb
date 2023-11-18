@@ -5,53 +5,44 @@
       :nativeScrollbar="false"
       style="background-color: #ffffff"
     >
-      <div class="sidebar-img">
-        <div class="h2-container">
-          <h2>{{ channel.name }}</h2>
-          <p>{{ channel.description }}</p>
+      <div>
+        <div class="sidebar-img">
+          <div class="h2-container">
+            <h2>{{ channel.name }}</h2>
+            <p>{{ channel.description }}</p>
+          </div>
         </div>
-      </div>
-      <div
-        v-for="section in chatSections"
-        :key="section.id"
-        class="section-item"
-        :class="{ active: currentSection.id === section.id }"
-        @click="switchSection(section)"
-      >
-        {{ section.name }}
-      </div>
-      <div class="members">Members</div>
-      <div class="channel-members">
-        <ChatMemberCard
-          :name="channel.ownerDisplayName"
-          :avatar="channel.ownerAvatar"
-          :isOnline="channel.ownerStatus"
-        ></ChatMemberCard>
-        <ChatMemberCard
-          v-for="member in channel.members"
-          :name="member.name"
-          :avatar="member.avatar"
-          :isOnline="member.isOnline"
-        ></ChatMemberCard>
-      </div>
-      <div class="channel-members">
-        <ChatMemberCard
-          v-for="member in allMembers"
-          :name="member.name"
-          :avatar="member.avatar"
-          :isOnline="member.isOnline"
-        ></ChatMemberCard>
-      </div>
-      <div class="btn-container">
-        <button
-          class="back-btn-grad"
-          @click="chatStore.onVideoSession = !chatStore.onVideoSession"
+        <div
+          v-for="section in chatSections"
+          :key="section.id"
+          class="section-item"
+          :class="{ active: currentSection.id === section.id }"
+          @click="switchSection(section)"
         >
-          Call {{ chatStore.participants.length }}
-        </button>
-        <button class="back-btn-grad" @click="backBtnHandler">
-          Back to Home
-        </button>
+          {{ section.name }}
+        </div>
+        <div class="members">Members</div>
+        <div class="channel-members">
+          <ChatMemberCard
+            v-for="member in allMembers"
+            :name="member.name"
+            :avatar="member.avatar"
+            :isOnline="member.isOnline"
+          ></ChatMemberCard>
+          <div style="height: 200px"></div>
+        </div>
+        <div class="btn-container">
+          <button
+            class="back-btn-grad"
+            @click="chatStore.onVideoSession = !chatStore.onVideoSession"
+          >
+            Call {{ chatStore.participants.length }}
+          </button>
+          <button class="back-btn-grad" @click="backBtnHandler">
+            Back to Home
+          </button>
+        </div>
+
         <!-- <button class="exit-btn-grad">Exit Channel</button> -->
       </div>
     </NLayoutSider>
@@ -293,7 +284,7 @@ export default defineComponent({
 }
 
 .members {
-  margin: 12px;
+  margin-left: 12px;
   padding: 0.5rem;
   font-weight: bold;
   font-size: 1rem;
