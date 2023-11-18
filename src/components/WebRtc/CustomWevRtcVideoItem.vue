@@ -9,6 +9,17 @@
       style="width: 101%; height: 100%; transform: scaleX(-1)"
     ></video>
 
+    <div style="top: 6px; right: 4px; position: absolute">
+      <div class="mic-icon" :class="{ green: participant.audioEnabled }">
+        <MicOutline
+          style="color: white"
+          v-if="participant.audioEnabled"
+          class="icon"
+        />
+        <MicOffOutline style="color: white" v-else class="icon" />
+      </div>
+    </div>
+
     <div
       style="
         bottom: 4px;
@@ -16,7 +27,7 @@
         position: absolute;
         color: white;
         border-radius: 99px;
-        backdrop-filter: blur(14px);
+        backdrop-filter: blur(40px);
         background-color: rgba(255, 255, 255, 0.2);
         padding: 4px 6px;
         padding-right: 12px;
@@ -94,6 +105,7 @@
 <script setup lang="ts">
 import { ref, type PropType, toRefs } from "vue";
 import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
+import { MicOffOutline, MicOutline } from "@vicons/ionicons5";
 
 const props = defineProps({
   videoItem: {
@@ -134,6 +146,30 @@ defineExpose({ setStreamObject });
   &.mic-on {
     border: 2px solid #ffc72c;
     box-shadow: #ffc72c 0px 0px 50px;
+  }
+}
+
+.mic-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 100rem;
+  border: 0;
+  color: white;
+  font-size: 18px;
+  background: transparent;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #36454f;
+
+  .icon {
+    width: 24px;
+  }
+
+  &.green {
+    background-color: #355e3b;
   }
 }
 </style>
