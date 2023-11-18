@@ -6,10 +6,28 @@
       style="background-color: #ffffff"
     >
       <div>
-        <div class="sidebar-img">
-          <div class="h2-container">
-            <h2>{{ channel.name }}</h2>
-            <p>{{ channel.description }}</p>
+        <div class="channel-card">
+          <img
+            contain
+            style="height: 100px; width: 225px"
+            src="https://www.divami.com/blog/wp-content/uploads/2021/10/How-design-engineering-and-product-teams-work-together.png"
+          />
+          <div
+            style="
+              background-color: #071952;
+              color: white;
+              padding: 4px 8px;
+              width: 100%;
+            "
+          >
+            <div style="margin-left: 12px; font-weight: 700">
+              {{ channel.name }}
+            </div>
+          </div>
+          <div style="background-color: #f2f7a1; padding: 4px 8px; width: 100%">
+            <div style="margin-left: 12px">
+              {{ channel.description }}
+            </div>
           </div>
         </div>
         <div
@@ -219,7 +237,19 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.channel-card {
+  display: flex;
+  flex-direction: column;
+  margin: 12px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
+    rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
+    rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+  align-items: center;
+  overflow: hidden;
+}
 .sidebar-img {
   width: 100%;
   height: 140px;
