@@ -21,16 +21,24 @@
       @error="onError"
     />
     <div class="btn-container">
-      <button @click="toggleAudio" class="c-control">
-        <MicOutline style="color: white" v-if="audioEnable" class="icon" />
-        <MicOffOutline style="color: white" v-else class="icon" />
+      <button class="c-control">
+        <div @click="toggleAudio">
+          <MicOutline style="color: white" v-if="audioEnable" class="icon" />
+          <MicOffOutline style="color: white" v-else class="icon" />
+        </div>
       </button>
       <button @click="leaveCall" class="c-control--end-call">
         <CallOutline class="icon" />
       </button>
-      <button @click="toggleVideo" class="c-control">
-        <VideocamOutline style="color: white" v-if="videoEnable" class="icon" />
-        <VideocamOffOutline style="color: white" v-else class="icon" />
+      <button class="c-control">
+        <div @click="toggleVideo">
+          <VideocamOutline
+            style="color: white"
+            v-if="videoEnable"
+            class="icon"
+          />
+          <VideocamOffOutline style="color: white" v-else class="icon" />
+        </div>
       </button>
     </div>
   </div>
@@ -164,17 +172,6 @@ export default defineComponent({
   align-items: center;
   cursor: pointer;
   background-color: #36454f;
-
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: inherit;
-    height: inherit;
-    // box-shadow: inset 0 0 2000px rgba(255, 255, 255, 0.5);
-    // filter: blur(10px);
-  }
 
   &--end-call {
     width: 40px;

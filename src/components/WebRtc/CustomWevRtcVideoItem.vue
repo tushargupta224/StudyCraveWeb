@@ -11,15 +11,15 @@
 
     <div
       style="
-        bottom: 3%;
-        left: 50%;
+        bottom: 4px;
+        left: 4px;
         position: absolute;
         color: white;
-        transform: translateX(-50%);
-        border-radius: 12px;
+        border-radius: 99px;
         backdrop-filter: blur(14px);
         background-color: rgba(255, 255, 255, 0.2);
-        padding: 2px 5px;
+        padding: 4px 6px;
+        padding-right: 12px;
       "
     >
       <div style="display: flex; justify-content: center; align-items: center">
@@ -28,7 +28,7 @@
             width: 25px;
             height: 25px;
             border-radius: 50%;
-            border: 1px solid white;
+            border: 1px solid #fdfe02;
             background-color: transparent;
             margin-right: 5px;
             overflow: hidden;
