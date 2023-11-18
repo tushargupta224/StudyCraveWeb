@@ -6,7 +6,7 @@
       ref="video"
       :muted="videoItem.muted"
       :id="videoItem.id"
-      style="width: 100%; height: 100%; transform: scaleX(-1)"
+      style="width: 101%; height: 100%; transform: scaleX(-1)"
     ></video>
 
     <div
