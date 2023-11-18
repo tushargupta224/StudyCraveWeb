@@ -6,41 +6,6 @@
       v-bind:key="item.id"
       class="video-item"
     >
-      <div
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-        "
-        v-for="user in participants"
-        :key="user.userId"
-        v-if="!enableVideo"
-      >
-        <img
-          :src="user.userAvatar"
-          alt="img"
-          style="width: 100%; height: 100%; filter: blur(15px)"
-        />
-
-        <div
-          style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          "
-          v-if="!enableVideo"
-        >
-          <img
-            :src="user.userAvatar"
-            alt="dp"
-            style="width: 80px; height: 80px; border-radius: 50%"
-          />
-        </div>
-      </div>
       <video
         autoplay
         playsinline
@@ -64,8 +29,6 @@
         "
       >
         <div
-          v-for="participant in participants"
-          :key="participant.userId"
           style="display: flex; justify-content: center; align-items: center"
         >
           <div
@@ -80,12 +43,57 @@
             "
           >
             <img
-              :src="participant.userAvatar"
+              :src="participantDetails(item.id).userAvatar"
               style="width: 100%; height: 100%"
             />
           </div>
 
-          {{ participant.userName }}
+          {{ participantDetails(item.id).userName }}
+        </div>
+      </div>
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          background: white;
+        "
+        v-if="!participantDetails(item.id).videoEnabled"
+      >
+        <img
+          :src="participantDetails(item.id).userAvatar"
+          alt="img"
+          style="width: 100%; height: 100%; filter: blur(4px)"
+        />
+        <img
+          :src="participantDetails(item.id).userAvatar"
+          alt="img"
+          style="
+            position: absolute;
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            filter: blur(15px);
+          "
+        />
+
+        <div
+          style="
+            position: absolute;
+            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          "
+        >
+          <img
+            :src="participantDetails(item.id).userAvatar"
+            alt="dp"
+            style="width: 80px; height: 80px; border-radius: 50%"
+          />
         </div>
       </div>
     </div>
@@ -93,10 +101,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, ref, toRefs } from "vue";
+import { ref, toRefs, type PropType } from "vue";
 import { Socket, io } from "socket.io-client";
 import SimpleSignalClient from "simple-signal-client";
-import { useChatStore } from "@/stores/chat";
+import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
 
 interface CallVideo {
   id: string;
@@ -115,6 +123,10 @@ const props = defineProps({
   roomId: {
     type: String,
     default: "public-101",
+  },
+  participants: {
+    type: Array as PropType<ISessionParticipants[]>,
+    default: [],
   },
   socketURL: {
     type: String,
@@ -164,6 +176,8 @@ const emits = defineEmits([
   "joined-room",
   "left-room",
   "share-started",
+  "localAudioStatusChange",
+  "localVideoStatusChange",
 ]);
 
 const {
@@ -175,7 +189,34 @@ const {
   deviceId,
   peerOptions,
   enableLogs,
+  participants,
 } = toRefs(props);
+
+const participantDetails = (mediaStreamId: string): ISessionParticipants => {
+  const participant = participants.value?.find(
+    (t) => t.mediaStreamId === mediaStreamId
+  );
+
+  if (!participant) {
+    const defaultDetails: ISessionParticipants = {
+      userId: "random",
+      userName: "Anonymous",
+      userAvatar:
+        "https://cdn.dribbble.com/users/3474264/screenshots/11222954/background-2_4x.png",
+      mediaStreamId: mediaStreamId,
+      audioEnabled: true,
+      videoEnabled: true,
+    };
+
+    return defaultDetails;
+  }
+
+  return {
+    ...participant,
+    userAvatar:
+      "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250",
+  };
+};
 
 const join = async () => {
   console.log("join");
@@ -317,6 +358,18 @@ const toggleLocalMic = () => {
     const audioTrack = localStream.getAudioTracks()[0];
     audioTrack.enabled = !audioTrack.enabled;
     emits("update:audioEnabled", audioTrack.enabled);
+
+    const sessionParticipant = participantDetails(localStream.id);
+
+    if (sessionParticipant) {
+      const updated: ISessionParticipants = {
+        ...sessionParticipant,
+        audioEnabled: audioTrack.enabled,
+      };
+
+      emits("localAudioStatusChange", updated);
+    }
+
     replaceTrack(audioTrack, localStream);
   }
 };
@@ -327,6 +380,18 @@ const toggleLocalVideo = () => {
     const videoTrack = localStream.getVideoTracks()[0];
     videoTrack.enabled = !videoTrack.enabled;
     emits("update:videoEnabled", videoTrack.enabled);
+
+    const sessionParticipant = participantDetails(localStream.id);
+
+    if (sessionParticipant) {
+      const updated: ISessionParticipants = {
+        ...sessionParticipant,
+        videoEnabled: videoTrack.enabled,
+      };
+
+      emits("localVideoStatusChange", updated);
+    }
+
     replaceTrack(videoTrack, localStream);
   }
 };
@@ -360,7 +425,7 @@ defineExpose({
   toggleLocalVideo,
 });
 </script>
-<style scoped>
+<style scoped lang="scss">
 .video-list {
   background: whitesmoke;
   width: 100%;
@@ -386,8 +451,14 @@ defineExpose({
   margin: 10px;
   width: 386px;
   height: 290px;
-  border-radius: 12px;
+  border-radius: 24px;
   overflow: hidden;
   position: relative;
+  border: 2px solid #363062;
+
+  &.mic-on {
+    border: 2px solid #ffc72c;
+    box-shadow: #ffc72c 0px 0px 50px;
+  }
 }
 </style>

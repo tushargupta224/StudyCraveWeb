@@ -10,12 +10,15 @@ import {
   onSnapshot,
   where,
   deleteDoc,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { db } from "../config/firebase";
 import type Channel from "../types/channels/channel";
 import type Message from "../types/channels/message";
 import { useAuthStore } from "./auth";
+import type { ISessionParticipants } from "../types/channels/ISessionParticipants";
 
 export const useChatStore = defineStore({
   id: "chat",
@@ -27,7 +30,7 @@ export const useChatStore = defineStore({
     initialFetch: false,
     listener: null as Function | null,
     videoCallListener: null as Function | null,
-    participants: [] as any[],
+    participants: [] as ISessionParticipants[],
     onVideoSession: false,
   }),
   actions: {
@@ -136,20 +139,35 @@ export const useChatStore = defineStore({
 
       this.stopListeningForVideoCallParticipants();
     },
-    async joinVideoCall(mediaStreamId: string) {
+    async joinVideoCall(
+      mediaStreamId: string,
+      audioEnabled: boolean,
+      videoEnabled: boolean
+    ) {
       if (!this.channel) return;
 
       const { user } = useAuthStore();
       if (!user) return;
 
+      const streamParticipant: ISessionParticipants = {
+        userId: user.id,
+        userName: (user.firstName ?? "") + " " + (user.lastName ?? ""),
+        userAvatar: user.profilePic ?? "",
+        mediaStreamId: mediaStreamId,
+        audioEnabled: audioEnabled,
+        videoEnabled: videoEnabled,
+      };
+
       await addDoc(
         collection(db, `channels/${this.channel.id}/callParticipants`),
-        {
-          userId: user.id,
-          userName: (user.firstName ?? "") + " " + (user.lastName ?? ""),
-          userAvatar: user.profilePic ?? "",
-          mediaStreamId: mediaStreamId,
-        }
+        streamParticipant
+      );
+    },
+
+    async updateParticipantConfigStatus(updated: ISessionParticipants) {
+      await updateDoc(
+        doc(db, `channels/${this.channel!.id}/callParticipants/${updated.id}`),
+        { ...updated }
       );
     },
 
@@ -181,7 +199,9 @@ export const useChatStore = defineStore({
       );
 
       this.videoCallListener = onSnapshot(participantsQuery, (snapshot) => {
-        this.participants = snapshot.docs.map((doc) => doc.data());
+        this.participants = snapshot.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id } as ISessionParticipants;
+        });
 
         console.log("Video call participants:", this.participants);
       });

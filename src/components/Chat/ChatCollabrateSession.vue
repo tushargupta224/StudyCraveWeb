@@ -6,6 +6,7 @@
       ref="webrtc"
       width="100%"
       :roomId="chatStore.channel!.id"
+      :participants="chatStore.participants"
       socketURL="https://localhost:3009/"
       :enableLogs="true"
       v-model:audio-enabled="audioEnable"
@@ -15,19 +16,21 @@
       v-on:opened-room="logEvent"
       v-on:share-started="logEvent"
       v-on:share-stopped="logEvent"
+      @local-audio-status-change="onLocalAudioVideoStatusChange"
+      @local-video-status-change="onLocalAudioVideoStatusChange"
       @error="onError"
     />
-    <div class="btn-containe">
+    <div class="btn-container">
       <button @click="toggleAudio" class="c-control">
-        <MicOutline style="color: white" v-if="audioEnable" class="icon"/>
-        <MicOffOutline style="color: white" v-else  class="icon"/>
+        <MicOutline style="color: white" v-if="audioEnable" class="icon" />
+        <MicOffOutline style="color: white" v-else class="icon" />
       </button>
       <button @click="leaveCall" class="c-control--end-call">
-        <CallOutline class="icon"/>
+        <CallOutline class="icon" />
       </button>
       <button @click="toggleVideo" class="c-control">
-        <VideocamOutline style="color: white" v-if="videoEnable" class="icon"/>
-        <VideocamOffOutline style="color: white" v-else  class="icon"/>
+        <VideocamOutline style="color: white" v-if="videoEnable" class="icon" />
+        <VideocamOffOutline style="color: white" v-else class="icon" />
       </button>
     </div>
   </div>
@@ -38,7 +41,14 @@ import CustomWebRtc from "../WebRtc/CustomWebRtc.vue";
 import { useChatStore } from "../../stores/chat";
 import { defineComponent } from "vue";
 
-import { MicOffOutline, CallOutline, VideocamOutline, MicOutline, VideocamOffOutline } from "@vicons/ionicons5";
+import {
+  MicOffOutline,
+  CallOutline,
+  VideocamOutline,
+  MicOutline,
+  VideocamOffOutline,
+} from "@vicons/ionicons5";
+import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
 // Adjust the path based on your project structure
 
 export default defineComponent({
@@ -97,22 +107,23 @@ export default defineComponent({
     onShareScreen() {
       this.img = (this.$refs.webrtc as any).shareScreen();
     },
-    onError(error, stream) {
+    onError(error: any, stream: any) {
       console.log("On Error Event", error, stream);
     },
     onJoined(mediaId: string) {
-      this.chatStore.joinVideoCall(mediaId);
+      this.chatStore.joinVideoCall(mediaId, this.audioEnable, this.videoEnable);
     },
-    logEvent(event) {
+    logEvent(event: any) {
       console.log("Event : ", event);
     },
     toggleAudio() {
-      // this.audioEnable = !this.audioEnable;
       (this.$refs.webrtc as any).toggleLocalMic();
     },
     toggleVideo() {
-      // this.videoEnable = !this.videoEnable;
       (this.$refs.webrtc as any).toggleLocalVideo();
+    },
+    onLocalAudioVideoStatusChange(t: ISessionParticipants) {
+      this.chatStore.updateParticipantConfigStatus(t);
     },
   },
   beforeUnmount() {
@@ -121,20 +132,22 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-.btn-containe {
+<style scoped lang="scss">
+.btn-container {
   position: absolute;
+  z-index: 40;
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 300px;
-  border-radius: 8px;
+
+  border-radius: 99px;
   backdrop-filter: blur(14px);
   background-color: rgba(255, 255, 255, 0.2);
   border: 2px solid white;
+  padding: 4px 8px;
 }
 .c-control {
   z-index: 2;
@@ -150,7 +163,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  background-color: #ccc;
+  background-color: #36454f;
 
   &:before {
     content: "";
@@ -169,6 +182,7 @@ export default defineComponent({
     background-color: rgb(224, 52, 52);
     border-radius: 30px;
     border: 0;
+    margin-inline: 8px;
 
     color: white;
     font-size: 13px;
@@ -180,7 +194,7 @@ export default defineComponent({
   }
 }
 
-.icon{
+.icon {
   width: 25px;
 }
 </style>
