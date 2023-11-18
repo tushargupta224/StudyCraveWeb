@@ -6,15 +6,88 @@
       v-bind:key="item.id"
       class="video-item"
     >
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+        "
+        v-for="user in participants"
+        :key="user.userId"
+        v-if="!enableVideo"
+      >
+        <img
+          :src="user.userAvatar"
+          alt="img"
+          style="width: 100%; height: 100%; filter: blur(15px)"
+        />
+
+        <div
+          style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          "
+          v-if="!enableVideo"
+        >
+          <img
+            :src="user.userAvatar"
+            alt="dp"
+            style="width: 80px; height: 80px; border-radius: 50%"
+          />
+        </div>
+      </div>
       <video
-        controls
         autoplay
         playsinline
         ref="videos"
-        :height="cameraHeight"
         :muted="item.muted"
         :id="item.id"
+        style="width: 100%; height: 100%; transform: scaleX(-1)"
       ></video>
+
+      <div
+        style="
+          bottom: 3%;
+          left: 50%;
+          position: absolute;
+          color: white;
+          transform: translateX(-50%);
+          border-radius: 12px;
+          backdrop-filter: blur(14px);
+          background-color: rgba(255, 255, 255, 0.2);
+          padding: 2px 5px;
+        "
+      >
+        <div
+          v-for="participant in participants"
+          :key="participant.userId"
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <div
+            style="
+              width: 25px;
+              height: 25px;
+              border-radius: 50%;
+              border: 1px solid white;
+              background-color: transparent;
+              margin-right: 5px;
+              overflow: hidden;
+            "
+          >
+            <img
+              :src="participant.userAvatar"
+              style="width: 100%; height: 100%"
+            />
+          </div>
+
+          {{ participant.userName }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -23,6 +96,7 @@
 import { defineComponent, ref, toRefs } from "vue";
 import { Socket, io } from "socket.io-client";
 import SimpleSignalClient from "simple-signal-client";
+import { useChatStore } from "@/stores/chat";
 
 interface CallVideo {
   id: string;
@@ -289,11 +363,15 @@ defineExpose({
 <style scoped>
 .video-list {
   background: whitesmoke;
-  height: auto;
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
+  background: url("https://cdn.dribbble.com/users/3474264/screenshots/11222954/background-2_4x.png");
+  overflow: hidden;
 }
 
 .video-list div {
@@ -301,8 +379,15 @@ defineExpose({
 }
 
 .video-item {
-  background: #c5c4c4;
-  display: inline-block;
+  background-color: transparent;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   margin: 10px;
+  width: 386px;
+  height: 290px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
 }
 </style>
