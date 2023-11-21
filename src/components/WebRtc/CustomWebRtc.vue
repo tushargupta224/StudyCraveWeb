@@ -115,7 +115,7 @@ const participantDetails = (mediaStreamId: string): ISessionParticipants => {
       userId: "random",
       userName: "Anonymous",
       userAvatar:
-        "https://cdn.dribbble.com/users/3474264/screenshots/11222954/background-2_4x.png",
+        "https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png",
       mediaStreamId: mediaStreamId,
       audioEnabled: true,
       videoEnabled: true,
@@ -127,7 +127,8 @@ const participantDetails = (mediaStreamId: string): ISessionParticipants => {
   return {
     ...participant,
     userAvatar:
-      "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250",
+      // "https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png",
+      participant.userAvatar,
   };
 };
 
