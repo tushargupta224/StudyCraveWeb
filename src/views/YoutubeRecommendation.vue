@@ -26,7 +26,7 @@
             @click="handleClick(playlist.play_id)"
             class="banner_slider__button"
           >
-            Copy playlist url
+            View Playlist
           </button>
         </div>
       </div>
@@ -47,7 +47,7 @@ import { useAuthStore } from "@/stores/auth";
 interface State {
   playlists: Ref<YtPlaylist[]>;
   apiUrl: Ref<string>;
-  api_Key: Ref<string>;
+  api_Key: Ref<string | undefined>;
   apiParams: Record<string, string>;
 }
 
@@ -61,8 +61,8 @@ export default defineComponent({
 
     const state: State = {
       playlists: ref<YtPlaylist[]>([]),
-      apiUrl: ref("https://studycraveytrec.up.railway.app/api/yt_play_recom"),
-      api_Key: ref("cQsgws_xiQ-c5zeMDSfs7IKlszjOKsOq5_EiEdhGzy4"),
+      apiUrl: ref("https://yt-api-deploy-production.up.railway.app/api/yt_play_recom"),
+      api_Key: ref(import.meta.env.VITE_YOUTUBE_RECOMMENDATION_API_KEY as string),
       apiParams: {
         count: "4",
       },
@@ -102,19 +102,20 @@ export default defineComponent({
   methods: {
     handleClick(index: any) {
       let playlistLink = `https://www.youtube.com/playlist?list=${index}`;
-      navigator.clipboard
-        .writeText(playlistLink)
-        .then(() => {
-          console.log(playlistLink);
-          this.message.success("PlayList link Copied to Clipboard");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      // navigator.clipboard
+      //   .writeText(playlistLink)
+      //   .then(() => {
+      //     console.log(playlistLink);
+      //     this.message.success("PlayList link Copied to Clipboard");
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
       // this.$router.push({
       //   name: "youtube-video",
       //   params: { VideoId: index },
       // });
+      window.open(playlistLink, '_blank');
       console.log(index);
     },
   },
