@@ -5,47 +5,60 @@
       :nativeScrollbar="false"
       style="background-color: #ffffff"
     >
-      <div class="sidebar-img">
-        <div class="h2-container">
-          <h2>{{ channel.name }}</h2>
-          <p>{{ channel.description }}</p>
+      <div>
+        <div class="channel-card">
+          <img
+            contain
+            style="height: 100px; width: 225px"
+            src="https://www.divami.com/blog/wp-content/uploads/2021/10/How-design-engineering-and-product-teams-work-together.png"
+          />
+          <div
+            style="
+              background-color: #071952;
+              color: white;
+              padding: 4px 8px;
+              width: 100%;
+            "
+          >
+            <div style="margin-left: 12px; font-weight: 700">
+              {{ channel.name }}
+            </div>
+          </div>
+          <div style="background-color: #f2f7a1; padding: 4px 8px; width: 100%">
+            <div style="margin-left: 12px">
+              {{ channel.description }}
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        v-for="section in chatSections"
-        :key="section.id"
-        class="section-item"
-        :class="{ active: currentSection.id === section.id }"
-        @click="switchSection(section)"
-      >
-        {{ section.name }}
-      </div>
-      <div class="members">Members</div>
-      <div class="channel-members">
-        <ChatMemberCard
-          :name="channel.ownerDisplayName"
-          :avatar="channel.ownerAvatar"
-          :isOnline="channel.ownerStatus"
-        ></ChatMemberCard>
-        <ChatMemberCard
-          v-for="member in channel.members"
-          :name="member.name"
-          :avatar="member.avatar"
-          :isOnline="member.isOnline"
-        ></ChatMemberCard>
-      </div>
-      <div class="channel-members">
-        <ChatMemberCard
-          v-for="member in allMembers"
-          :name="member.name"
-          :avatar="member.avatar"
-          :isOnline="member.isOnline"
-        ></ChatMemberCard>
-      </div>
-      <div class="btn-container">
-        <button class="back-btn-grad" @click="backBtnHandler">
-          Back to Home
-        </button>
+        <div
+          v-for="section in chatSections"
+          :key="section.id"
+          class="section-item"
+          :class="{
+            active:
+              currentSection.id === section.id && !chatStore.onVideoSession,
+          }"
+          @click="switchSection(section)"
+        >
+          {{ section.name }}
+        </div>
+        <LiveSessionCard />
+        <div class="members">Members</div>
+        <div class="channel-members">
+          <ChatMemberCard
+            v-for="member in allMembers"
+            :name="member.name"
+            :avatar="member.avatar"
+            :isOnline="member.isOnline"
+          ></ChatMemberCard>
+          <div style="height: 200px"></div>
+        </div>
+        <div class="btn-container">
+          <button class="back-btn-grad" @click="backBtnHandler">
+            Back to Home
+          </button>
+        </div>
+
         <!-- <button class="exit-btn-grad">Exit Channel</button> -->
       </div>
     </NLayoutSider>
@@ -80,6 +93,8 @@ import { onSnapshot, doc, collection, query } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useChannelStore } from "../../stores/channel";
 import { useAuthStore } from "../../stores/auth";
+import { useChatStore } from "../../stores/chat";
+import LiveSessionCard from "./LiveSessionCard.vue";
 
 export default defineComponent({
   components: {
@@ -89,6 +104,7 @@ export default defineComponent({
     NLayoutContent,
     ChatMemberCard,
     NButton,
+    LiveSessionCard,
   },
   props: {
     initialChannel: {
@@ -110,6 +126,7 @@ export default defineComponent({
   },
   setup() {
     const channelStore = useChannelStore();
+    const chatStore = useChatStore();
     const { user } = useAuthStore();
 
     const chatSections = [
@@ -122,10 +139,13 @@ export default defineComponent({
 
     function switchSection(section: any) {
       currentSection.value = section;
+
+      chatStore.onVideoSession = false;
     }
 
     return {
       user,
+      chatStore,
       channelStore,
       chatSections,
       currentSection,
@@ -219,45 +239,20 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.sidebar-img {
-  width: 100%;
-  height: 140px;
-  background-image: url("https://img.freepik.com/free-photo/top-view-education-day-elements-with-copy-space_23-2148721220.jpg");
-  background-size: cover;
-  background-position: center center;
+<style scoped lang="scss">
+.channel-card {
   display: flex;
-}
-
-.sidebar-img h2 {
-  font-size: 1.6rem;
-  margin-left: 20px;
-  margin-top: 10px;
-  color: #ffffff;
-  letter-spacing: 1px;
-  margin-bottom: 0px;
-}
-.sidebar-img .h2-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
   flex-direction: column;
-  color: #ffffff;
+  margin: 12px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
+    rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
+    rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+  align-items: center;
+  overflow: hidden;
 }
 
-.sidebar-img .h2-container p {
-  margin-top: 0px;
-  color: white;
-  font-style: italic;
-  padding: 0rem 0.8rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solidrgba(255, 255, 255, 0.49);
-}
 .section-item {
   padding: 0.5rem 1rem;
   margin: 12px;
@@ -284,7 +279,7 @@ export default defineComponent({
 }
 
 .members {
-  margin: 12px;
+  margin-left: 12px;
   padding: 0.5rem;
   font-weight: bold;
   font-size: 1rem;

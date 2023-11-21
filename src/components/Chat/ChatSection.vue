@@ -1,5 +1,6 @@
 <template>
-  <div class="chat">
+  <ChatCollabrateSession v-if="chatStore.onVideoSession" />
+  <div class="chat" v-else>
     <n-layout class="chat-layout">
       <n-layout-content class="messages-container">
         <div class="infinite">
@@ -80,6 +81,7 @@ import {
   NTag,
   NSpace,
 } from "naive-ui";
+import ChatCollabrateSession from "./ChatCollabrateSession.vue";
 
 export default defineComponent({
   components: {
@@ -92,6 +94,7 @@ export default defineComponent({
     NButton,
     NTag,
     NSpace,
+    ChatCollabrateSession,
   },
   props: {
     channel: {
@@ -169,6 +172,7 @@ export default defineComponent({
       submitMessage,
       onInfiniteScroll,
       messagesGroupedByDate,
+      chatStore,
     };
   },
   computed: {
