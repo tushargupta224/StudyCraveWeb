@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 2rem">
+  <div style="padding: 2rem; background-color: #FEFEFE;">
     <NavBar />
     <div class="content">
       <div
@@ -25,7 +25,7 @@
       </div>
     </div>
   </div>
-  <div>
+  <div style="background-color: #FEFEFE;">
     <SoloChannelBanner></SoloChannelBanner>
     <ChannelsSection></ChannelsSection>
   </div>

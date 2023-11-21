@@ -54,8 +54,10 @@
             :channel="channel"
           ></ChannelCard>
           <div v-if="myChannels.length === 0">
-            <img :src="img" alt="" />
-            <h2>Nothing to Show</h2>
+            <div class="img-container">
+              <img :src="img" alt="" />
+              <h2>Nothing to Show</h2>
+            </div>
           </div>
         </div>
       </n-tab-pane>
@@ -138,7 +140,6 @@ export default defineComponent({
   // justify-content: center;
   align-items: center;
   flex-direction: column-reverse;
-
 }
 .img-container img {
   width: 35%;
