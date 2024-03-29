@@ -4,7 +4,7 @@
       <n-skeleton height="120px" width="84%" :sharp="false" />
       <n-skeleton height="120px" width="84%" :sharp="false" />
     </n-space>
-    <n-tabs :animated="true" type="segment" v-else>
+    <n-tabs :animated="true" class="tabs-custom" type="segment" v-else>
       <n-tab-pane name="All live Channels" tab="All live channels">
         <div class="card-container">
           <ChannelCard
@@ -124,6 +124,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .n-card__content {
   z-index: 0 !important;
+  background: white;
+  border-radius: 32px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  min-height: 600px;
 }
 .card-container {
   display: flex;
@@ -131,13 +135,13 @@ export default defineComponent({
   gap: 20px;
   flex-wrap: wrap;
   z-index: 1 !important;
-  background-color: #ffffff;
 }
 .img-container {
   width: 100%;
+  min-height: 550px;
   // height: 50vh;
   display: flex;
-  // justify-content: center;
+  justify-content: center;
   align-items: center;
   flex-direction: column-reverse;
 }
@@ -147,5 +151,22 @@ export default defineComponent({
 }
 .img-container h2 {
   font-size: 2.5rem;
+}
+
+.tabs-custom::v-deep .n-tabs-rail {
+  border-radius: 100px !important;
+  background: white;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
+}
+
+.tabs-custom::v-deep .n-tabs-tab {
+  border-radius: 100px !important;
+  color: black !important;
+}
+
+.tabs-custom::v-deep .n-tabs-tab.n-tabs-tab--active {
+  background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
+  color: #fff !important;
+  box-shadow: 0px 14px 80px rgba(252, 56, 56, 0.4);
 }
 </style>

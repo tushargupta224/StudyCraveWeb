@@ -7,7 +7,7 @@
       width="100%"
       :roomId="chatStore.channel!.id"
       :participants="chatStore.participants"
-      socketURL="https://weston-vue-webrtc-lobby.azurewebsites.net/"
+      socketURL="https://localhost:3009/"
       :enableLogs="true"
       v-model:audio-enabled="audioEnable"
       v-model:video-enabled="videoEnable"
