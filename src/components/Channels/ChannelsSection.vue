@@ -124,9 +124,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .n-card__content {
   z-index: 0 !important;
-  background: white;
+  background: #fff7e8;
   border-radius: 32px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   min-height: 600px;
 }
 .card-container {
@@ -135,6 +136,7 @@ export default defineComponent({
   gap: 20px;
   flex-wrap: wrap;
   z-index: 1 !important;
+  margin-top: 12px;
 }
 .img-container {
   width: 100%;
@@ -156,7 +158,8 @@ export default defineComponent({
 .tabs-custom::v-deep .n-tabs-rail {
   border-radius: 100px !important;
   background: white;
-  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px,
+    rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
 }
 
 .tabs-custom::v-deep .n-tabs-tab {
