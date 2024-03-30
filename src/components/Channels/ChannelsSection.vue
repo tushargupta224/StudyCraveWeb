@@ -124,7 +124,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .n-card__content {
   z-index: 0 !important;
-  background: #fff7e8;
+  background: white;
   border-radius: 32px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
@@ -132,11 +132,11 @@ export default defineComponent({
 }
 .card-container {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
   gap: 20px;
   flex-wrap: wrap;
   z-index: 1 !important;
-  margin-top: 12px;
+  margin-block: 12px;
 }
 .img-container {
   width: 100%;

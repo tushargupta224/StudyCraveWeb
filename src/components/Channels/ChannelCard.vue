@@ -111,7 +111,7 @@ p {
 .card {
   height: 190px;
   width: 380px;
-  background: #fff9f2;
+  background: white;
   border-radius: 18px;
   overflow: hidden;
   padding: 20px;
