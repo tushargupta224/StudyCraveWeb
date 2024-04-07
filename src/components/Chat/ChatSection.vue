@@ -1,6 +1,18 @@
 <template>
-  <ChatCollabrateSession v-if="chatStore.onVideoSession" />
-  <div class="chat" v-else>
+  <div class="main-wrapper">
+    <div class="wrapper">
+      <div class="chat-section">as</div>
+      <div class="reply-input">
+        <input
+          v-model="inputText"
+          @keyup.enter="submitMessage"
+          placeholder="Type your message here..."
+          class="reply-input-area"
+        />
+      </div>
+    </div>
+  </div>
+  <!-- <div class="chat">
     <n-layout class="chat-layout">
       <n-layout-content class="messages-container">
         <div class="infinite">
@@ -53,7 +65,7 @@
         >
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
@@ -182,6 +194,56 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.main-wrapper {
+  min-height: 100%;
+  width: 100%;
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    height: 100%;
+
+    .chat-section {
+      flex-grow: 1;
+      margin-bottom: 16px;
+      padding-inline: 12px;
+      background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.4) 100%
+      );
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+      border-radius: 18px;
+      backdrop-filter: blur(50px);
+    }
+
+    .reply-input {
+      background: #2f2e41;
+      border-radius: 12px;
+      border: 1px white solid;
+      height: 48px;
+      width: 100%;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .reply-input-area {
+        padding-left: 16px;
+        color: white;
+        font-weight: 500;
+        font-family: "DM Sans";
+        outline: none !important;
+        background: transparent !important;
+        border: none !important;
+        min-width: 230px;
+       
+      }
+    }
+  }
+}
+
 .chat {
   display: flex;
   flex-direction: column;
