@@ -1,16 +1,35 @@
 <template>
   <div class="container">
+    <close-outline
+      style="
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      "
+      @click="closeTodo"
+    />
     <div style="color: white" class="header">
-      <h2>Set Goals</h2>
+      <h4 style="padding: 0; margin: 8px 0px">Set Goals</h4>
       <div id="todostatus">
+        <div
+          style="
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            border: 1px solid rgba(242, 116, 0, 0.33);
+          "
+        />
+        <div id="totalNum">
+          <span id="totalToDos" class="countData">{{ pendingTodoNum }}</span
+          ><span class="countName">Pending</span>
+        </div>
         <div id="totalComp">
           <span id="totalCompleted" class="countData">{{
-            count
+            completedTodoNum
           }}</span>
-          <span class="countName" id="comp">Comp.</span>
-        </div>
-        <div id="totalNum">
-          <span id="totalToDos" class="countData">{{ todo.length }}</span><span class="countName">Total</span>
+          <span class="countName" id="comp">Completed</span>
         </div>
       </div>
     </div>
@@ -19,34 +38,89 @@
         <input
           type="text"
           v-model="newToDoName"
-          placeholder="Set your goals here"
+          placeholder="What's next?..."
           @keydown.enter="addToDo"
           @keydown.esc="removeTodo(todo[0].id)"
         />
       </div>
+      <button
+        class="addBtn"
+        style="background-color: transparent; border: none; color: white"
+        @click="addToDo"
+      >
+        <AddOutline style="width: 20px; height: 20px" />
+        <span style="font-size: 1rem"> Add</span>
+      </button>
     </div>
     <div id="todoList" v-for="todos in todo" :key="todos.id">
       <div class="listItem">
-        <div
-          v-if="todos.done"
-          class="todoNameDone"
-          @click="toggleTodo(todos.id)"
-        >
-          {{ todos.name }}
+        <div style="width: 100%" v-if="todos.done">
+          <div class="todoNameDone" @click="toggleTodo(todos.id)">
+            <span>{{ todos.name }}</span>
+            <div>
+              <button
+                @click="removeTodo(todos.id)"
+                style="background-color: transparent; border: none"
+              >
+                <TableDeleteRow16Regular
+                  style="width: 15px; height: 15px; color: black"
+                />
+              </button>
+            </div>
+          </div>
         </div>
-        <div v-else class="todoName" @click="toggleTodo(todos.id)">
-          {{ todos.name }}
-        </div>
-        <div>
-          <button @click="removeTodo(todos.id)">×</button>
+        <div v-else style="width: 100%">
+          <div class="todoName">
+            <span>{{ todos.name }}</span>
+            <div>
+              <button
+                @click="toggleTodo(todos.id)"
+                style="background-color: transparent; border: none"
+              >
+                <CheckboxOutline
+                  style="width: 15px; height: 15px; color: #4caf50"
+                />
+              </button>
+              <button
+                @click="removeTodo(todos.id)"
+                style="background-color: transparent; border: none"
+              >
+                <TrashBinOutline
+                  style="width: 15px; height: 15px; color: #f27400"
+                />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+    <!-- <div v-for="list in completedTodo" :key="list.id">
+      <div>{{list.name}}</div>
+    </div> -->
+
+    <div
+      v-if="todo.length === 0"
+      style="display: flex; flex-direction: column; align-items: center"
+    >
+      <img src="../../assets/images/image-9.png" alt="empty image" />
+      <p style="font-size: 10px; text-align: center">
+        Looks like there are no goals on your list yet. Don't worry, every
+        journey starts with a single step! You can begin by adding your first
+        goal below.
+      </p>
     </div>
   </div>
 </template>
 <script lang="ts">
-import type { count } from "console";
 import { defineComponent, ref, computed } from "vue";
+
+import {
+  CloseOutline,
+  AddOutline,
+  TrashBinOutline,
+  CheckboxOutline,
+} from "@vicons/ionicons5";
+import { TableDeleteRow16Regular } from "@vicons/fluent";
 
 interface Todo {
   id: number;
@@ -55,11 +129,12 @@ interface Todo {
 }
 
 export default defineComponent({
-  setup() {
+  setup(props, { emit }) {
     let todo = ref<Todo[]>([]);
     const newToDoName = ref<string>("");
     const todoId = ref<number>(0);
     let count = ref<number>(0);
+    // let completedTodo = ref<Todo[]>([]);
 
     const readLocalStorage = () => {
       const data = localStorage.getItem("todo");
@@ -76,9 +151,8 @@ export default defineComponent({
       todo.value.push({
         id: todoId.value++,
         name: newToDoName.value || "New ToDo",
-        done: true,
+        done: false,
       });
-      
       newToDoName.value = "";
       writeLocalStorage();
     };
@@ -88,7 +162,7 @@ export default defineComponent({
         todo.value.findIndex((Todo) => Todo.id === id),
         1
       );
-      count.value++
+      count.value++;
       writeLocalStorage();
     };
 
@@ -96,6 +170,7 @@ export default defineComponent({
       todo.value = todo.value.map((ToDo) => {
         if (ToDo.id === id) {
           ToDo.done = !ToDo.done;
+          // completedTodo.value.push(ToDo);
         }
         return ToDo;
       });
@@ -106,6 +181,14 @@ export default defineComponent({
     });
 
     readLocalStorage();
+
+    function closeTodo() {
+      emit("close");
+    }
+
+    const pendingTodoNum = computed(() => {
+      return todo.value.length - completedTodoNum.value;
+    });
 
     return {
       readLocalStorage,
@@ -118,62 +201,103 @@ export default defineComponent({
       todoId,
       toggleTodo,
       count,
+      closeTodo,
+      pendingTodoNum,
+      // completedTodo,
     };
+  },
+  emits: ["close"],
+  components: {
+    CloseOutline,
+    AddOutline,
+    TrashBinOutline,
+    CheckboxOutline,
+    TableDeleteRow16Regular,
   },
 });
 </script>
 
 <style scoped>
 .container {
-  width: 200px;
-  /* height: 400px; */
-  margin-top: 1%;
-  margin-left: 15%;
-  border: 1px solid white;
+  width: 330px;
   padding: 0 30px;
-  border-radius: 12px;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(17, 25, 40, 0.75);
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
-  z-index: 2;
-  position: fixed;
+  background-color: rgba(252, 252, 252, 0.12);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: white;
+}
+
+#todostatus {
+  display: flex;
+  background-color: #fdd199;
+  border-radius: 15px;
+  justify-content: space-evenly;
+  color: #5f00d7;
+  height: 57px;
+  position: relative;
+}
+
+#totalNum,
+#totalComp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.countData {
+  font-weight: 600;
 }
 .header {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   z-index: 2;
 }
 .header h2 {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 .header #todostatus {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 500;
   z-index: 2;
 }
-#totalCompleted{
-  color: green;
+.totalComp {
+  border-right: 5px solid #f27400;
 }
-#comp{
-  color: green;
+
+#totalCompleted {
+  color: #9c0000;
 }
-.countName{
-    font-size: 0.5rem;
+#comp {
+  color: #9c0000;
+}
+.countName {
+  font-size: 0.5rem;
 }
 input {
   height: 25px;
-  border-radius: 8px;
-  background-color: transparent;
-  border: 2px solid white;
+  border-radius: 99px;
+  background-color: #353535;
+  border: 1px solid white;
   outline: none;
   color: white;
-  padding-left: 4%;
+  padding: 4px 16px;
   z-index: 2;
-  margin-top: 5px;
+  margin-top: 20px;
   margin-bottom: 22px;
+}
+
+.addBtn {
+  display: flex;
+}
+#input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 .listItem {
   display: flex;
@@ -181,15 +305,35 @@ input {
   align-items: center;
   z-index: 2;
 }
-.todoNameDone {
-  width: 175px;
-  height: 30px;
-  border: 2px solid white;
-  padding-left: 4%;
+
+.todoName {
+  width: 100%;
+  /* height: 30px; */
+  padding: 2px 8px;
+  border-radius: 5px;
   margin: 12px 0;
-  border-radius: 12px;
-  color: white;
+  color: black;
+  font-weight: 500;
   z-index: 2;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todoNameDone {
+  width: 100%;
+  /* height: 30px; */
+  padding: 2px 8px;
+  border-radius: 5px;
+  margin: 12px 0;
+  color: black;
+  font-weight: 500;
+  z-index: 2;
+  background-color: #f7c856;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 button {
   font-size: 1.2rem;
@@ -199,15 +343,19 @@ button {
   z-index: 2;
 }
 
-@media all and (max-width: 601px){
-  .container{
+@media all and (max-width: 601px) {
+  .container {
     top: 25%;
-    margin-left: 25%;
+    margin-left: 27%;
     padding: 0 15px;
     z-index: 1;
+    width: 270px;
   }
-  .header h2{
+  .header h2 {
     font-style: 0.5rem;
+  }
+  input {
+    padding: 4px 8px;
   }
 }
 </style>

@@ -1,70 +1,162 @@
 <template>
   <div class="timer-container">
+    <close-outline style="width: 20px; height: 20px; position: absolute; top: 5px; right: 5px" @click="closeTimer"/>
+    <div class="increaseDecrease">
+      <p @click="decrease15mins">-15 mins</p>
+      <p @click="decrease30mins">-30 mins</p>
+      <p @click="decrease60mins">-1 hour</p>
+    </div>
     <n-space class="timer">
-      <h5 class="h5">Personal Timer</h5>
-      <span style="font-variant-numeric: tabular-nums">
-        <n-countdown ref="countDown" :duration="3000000" :active="active" />
-      </span>
-      <div style="display: flex; justify-content: space-between">
-        <n-button
-          size="small"
-          type="default"
-          @click="handleReset"
-          style="z-index: 3 !important; color: white;"
+      <div style="position: relative">
+        
+        <span
+          style="
+            font-variant-numeric: tabular-nums;
+            position: absolute;
+            top: 28%;
+            left: 50%;
+            transform: translate(-50%, 0%);
+            font-size: 1.4rem;
+          "
         >
-          Reset
-        </n-button>
-        <n-switch v-model:value="active" style="margin-bottom: 20px"></n-switch>
+          <n-countdown ref="countDown" :duration="duration" :active="active" />
+        </span>
+        <!-- Circular progress bar -->
+        <n-progress
+          type="circle"
+          :percentage="progressPercentage"
+          :show-indicator="false"
+          :stroke-width="4"
+          style="width: 120px; height: 120px; transform: rotate(180deg)"
+          color="#FDD199"
+        />
+        <n-switch
+          v-model:value="active"
+          style="
+            margin-bottom: 20px;
+            position: absolute;
+            left: 50%;
+            top: 60%;
+            transform: translateX(-50%);
+          "
+        ></n-switch>
       </div>
     </n-space>
+    <div class="increaseDecrease">
+      <p @click="increase15mins">+15 mins</p>
+      <p @click="increase30mins">+30 mins</p>
+      <p @click="increase60mins">+1 hour</p>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, computed } from "vue";
 
-import { NSpace, NCountdown, NButton, NSwitch } from "naive-ui";
+import {CloseOutline} from "@vicons/ionicons5"
+import { NSpace, NCountdown, NButton, NSwitch, NProgress } from "naive-ui";
 import type { CountdownInst } from "naive-ui";
 
 export default defineComponent({
-  setup() {
+  setup(props, {emit}) {
     const activeRef = ref(true);
     const countdownRef = ref<CountdownInst | null>();
+    const duration = 3000000; // 50 minutes in milliseconds
+    const currentTime = ref(duration);
 
     function handleReset() {
       countdownRef.value?.reset();
+      currentTime.value = duration;
     }
+
+    const progressPercentage = ref(100);
+
+    function updateProgress() {
+      setInterval(() => {
+        if (activeRef.value && currentTime.value > 0) {
+          currentTime.value -= 1000; // decrease current time by 1 second
+          progressPercentage.value = (currentTime.value / duration) * 100;
+        }
+      }, 1000);
+    }
+
+    updateProgress();
+
+    const formattedTime = computed(() => {
+      const minutes = Math.floor(currentTime.value / 60000);
+      const seconds = Math.floor((currentTime.value % 60000) / 1000);
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+        2,
+        "0"
+      )}`;
+    });
+
+    function closeTimer(){
+      emit("close");
+    }
+
     return {
       active: activeRef,
       countDown: countdownRef,
       handleReset,
+      progressPercentage,
+      formattedTime,
+      duration,
+      closeTimer
     };
   },
+  emits: ["close"],
   components: {
     NButton,
     NCountdown,
     NSpace,
     NSwitch,
+    NProgress,
+    CloseOutline,
+  },
+  methods: {
+    increase15mins() {
+      this.duration += 900000;
+    },
+    increase30mins() {
+      this.duration += 1800000;
+    },
+    increase60mins() {
+      this.duration += 3600000;
+    },
+    decrease15mins() {
+      if (this.duration >= 900000) {
+        this.duration -= 900000;
+      }
+    },
+    decrease30mins() {
+      if (this.duration >= 1800000) {
+        this.duration -= 1800000;
+      }
+    },
+    decrease60mins() {
+      if (this.duration >= 3600000) {
+        this.duration -= 3600000;
+      }
+    },
   },
 });
 </script>
+
 <style lang="scss" scoped>
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text&family=DM+Sans:opsz@9..40&family=Mandali&display=swap");
 .timer-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  width: 200px;
-  height: 156.8px;
+  width: 330px;
+  height: 150px;
   color: white;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(17, 25, 40, 0.75);
+  background-color: rgba(252, 252, 252, 0.12);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
-  margin-top: 1%;
-  margin-left: 35%;
-  z-index: 2;
-  position: fixed;
+  position: relative;
 }
 .timer {
   display: flex !important;
@@ -80,25 +172,30 @@ export default defineComponent({
   z-index: 2;
 }
 
-span {
-  margin-top: 12px;
-  font-size: 2rem;
+.timer-text {
+  font-size: 1.2rem;
   font-weight: bold;
   z-index: 2;
 }
 
-@media all and (max-width: 601px){
-  .timer-container{
+.increaseDecrease p{
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+@media all and (max-width: 601px) {
+  .timer-container {
     top: 25%;
-    margin-left: 25%;
+    margin-left: 27%;
     z-index: 1;
+    max-width: 270px;
   }
-  .h5{
+  .h5 {
     margin-top: 0px;
     padding: 0;
   }
 
-  .timer{
+  .timer {
     row-gap: 10px !important;
   }
 }
