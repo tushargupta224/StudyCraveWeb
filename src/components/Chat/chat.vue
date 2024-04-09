@@ -3,55 +3,49 @@
     <NLayoutSider
       :width="280"
       :nativeScrollbar="false"
-      style="background-color: #ffffff"
+      style="background-color: #2f2e41"
     >
-      <div>
-        <div class="channel-card">
-          <img
-            contain
-            style="height: 100px; width: 225px"
-            src="https://www.divami.com/blog/wp-content/uploads/2021/10/How-design-engineering-and-product-teams-work-together.png"
-          />
-          <div
-            style="
-              background-color: #071952;
-              color: white;
-              padding: 4px 8px;
-              width: 100%;
-            "
-          >
-            <div style="margin-left: 12px; font-weight: 700">
-              {{ channel.name }}
+      <div class="main-sidebar">
+        <div class="channel-main-tile">
+          <div class="channel-name">
+            <div
+              style="font-size: 24px; font-weight: 700; font-family: 'DM Sans'"
+            >
+              #
             </div>
-          </div>
-          <div style="background-color: #f2f7a1; padding: 4px 8px; width: 100%">
-            <div style="margin-left: 12px">
-              {{ channel.description }}
-            </div>
+            <div style="margin-left: 4px">{{ channel.name }}</div>
           </div>
         </div>
+
+        <div class="sub-heading">Channels</div>
+
         <div
-          v-for="section in chatSections"
+          v-for="(section, i) in chatSections"
           :key="section.id"
           class="section-item"
           :class="{
             active:
               currentSection.id === section.id && !chatStore.onVideoSession,
+            'no-margin': i === chatSections.length - 1,
           }"
           @click="switchSection(section)"
         >
           {{ section.name }}
         </div>
-        <LiveSessionCard />
-        <div class="members">Members</div>
+
+        <div class="sub-heading">Members</div>
+
         <div class="channel-members">
           <ChatMemberCard
-            v-for="member in allMembers"
+            :style="{
+              'margin-bottom': i == allMembers.length - 1 ? '0px' : '16px',
+            }"
+            v-for="(member, i) in allMembers"
             :name="member.name"
             :avatar="member.avatar"
             :isOnline="member.isOnline"
           ></ChatMemberCard>
-          <div style="height: 200px"></div>
+          <div style="height: 100px"></div>
         </div>
         <div class="btn-container">
           <button class="back-btn-grad" @click="backBtnHandler">
@@ -63,21 +57,28 @@
       </div>
     </NLayoutSider>
     <NLayoutContent :nativeScrollbar="false">
-      <ChatSection
-        :channel="channel"
-        :messageCollection="chatSections[0].id"
-        v-if="currentSection.id === chatSections[0].id"
-      />
-      <ChatSection
-        :channel="channel"
-        :messageCollection="chatSections[1].id"
-        v-else-if="currentSection.id === chatSections[1].id"
-      />
-      <ChatSection
-        :channel="channel"
-        :messageCollection="chatSections[2].id"
-        v-else-if="currentSection.id === chatSections[2].id"
-      />
+      <div class="main-container">
+        <div class="header">
+          <div>{{ currentSection.name }}</div>
+        </div>
+        <div class="sub-container">
+          <ChatSection
+            :channel="channel"
+            :messageCollection="chatSections[0].id"
+            v-if="currentSection.id === chatSections[0].id"
+          />
+          <ChatSection
+            :channel="channel"
+            :messageCollection="chatSections[1].id"
+            v-else-if="currentSection.id === chatSections[1].id"
+          />
+          <ChatSection
+            :channel="channel"
+            :messageCollection="chatSections[2].id"
+            v-else-if="currentSection.id === chatSections[2].id"
+          />
+        </div>
+      </div>
     </NLayoutContent>
   </NLayout>
 </template>
@@ -240,115 +241,125 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.channel-card {
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text&family=DM+Sans:opsz@9..40&family=Mandali&display=swap");
+
+.main-sidebar {
   display: flex;
   flex-direction: column;
-  margin: 12px;
-  border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px,
-    rgba(0, 0, 0, 0.1) 0px 2px 4px 0px,
-    rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.channel-main-tile {
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(40px);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  overflow: hidden;
+  color: white;
+
+  .channel-name {
+    font-size: 20px;
+    font-family: "Mandali";
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.sub-heading {
+  font-family: "Crimson Text";
+  font-size: 16px;
+  color: white;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding-left: 12px;
 }
 
 .section-item {
-  padding: 0.5rem 1rem;
-  margin: 12px;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
   border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
+  backdrop-filter: blur(40px);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: "DM Sans";
+  margin-bottom: 16px;
   cursor: pointer;
+
+  &.no-margin {
+    margin-bottom: 0px;
+  }
+
+  &.active {
+    background: linear-gradient(90deg, #f7354f 0%, #7f02d9 100%);
+  }
 }
 
-.section-item.active {
-  font-weight: bold;
-  color: #ffffff;
-  background: #00d2ff; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #3a7bd5,
-    #00d2ff
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #3a7bd5,
-    #00d2ff
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(90deg, #fad56f 0%, #fbfee6 100%);
+  overflow: hidden;
 
-.members {
-  margin-left: 12px;
-  padding: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-}
+  .header {
+    display: flex;
+    padding: 12px 16px;
+    font-family: "DM Sans";
+    font-weight: 600;
+    font-size: 24px;
+    color: black;
+  }
 
-.channel-members {
-  padding-bottom: 60px;
-  overflow-y: auto;
+  .sub-container {
+    background: linear-gradient(90deg, #fb1798 0%, #023ef2 100%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    flex-grow: 1;
+    padding: 8px;
+    display: flex;
+  }
 }
 
 .btn-container {
   position: absolute;
+  left: 0px;
   bottom: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 6px;
-  background-color: white;
-}
-
-.exit-btn-grad {
-  background-image: linear-gradient(
-    to right,
-    #141e30 0%,
-    #243b55 51%,
-    #141e30 100%
-  );
-  margin: 4px;
-  padding: 15px 48px;
-  text-align: center;
-  transition: 0.5s;
-  background-size: 200% auto;
-  color: white;
-  box-shadow: 0 0 20px #eee;
-  border-radius: 10px;
-  display: block;
-  cursor: pointer;
-}
-
-.exit-btn-grad:hover {
-  background-position: right center; /* change the direction of the change here */
-  color: #fff;
-  text-decoration: none;
+  justify-content: center;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  background-color: rgb(#2f2e41, 0.2);
+  backdrop-filter: blur(40px);
 }
 
 .back-btn-grad {
-  background-image: linear-gradient(
-    to right,
-    #000046 0%,
-    #1cb5e0 51%,
-    #000046 100%
-  );
-  margin: 4px;
-  padding: 15px 45px;
+  background: linear-gradient(90deg, #fca5b8 0%, #fb21ab 100%);
+  box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  padding: 16px 24px;
+  height: 48px;
   text-align: center;
   transition: 0.5s;
-  background-size: 200% auto;
-  color: white;
-  box-shadow: 0 0 20px #eee;
-  border-radius: 10px;
+  color: black;
   border: none;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-}
-
-.back-btn-grad:hover {
-  background-position: right center; /* change the direction of the change here */
-  color: #fff;
-  text-decoration: none;
+  font-weight: 700;
+  font-family: "DM Sans";
+  font-size: 16px;
 }
 </style>
