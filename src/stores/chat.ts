@@ -12,6 +12,7 @@ import {
   deleteDoc,
   updateDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { db } from "../config/firebase";
@@ -157,12 +158,24 @@ export const useChatStore = defineStore({
         audioEnabled: audioEnabled,
         videoEnabled: videoEnabled,
       };
-      this.participants = [...this.participants, streamParticipant];
 
-      await addDoc(
+      const ref = await addDoc(
         collection(db, `channels/${this.channel.id}/callParticipants`),
         streamParticipant
       );
+
+      const res = await getDoc(ref);
+
+      const hasEntry = this.participants.find((i) => i.id === res.id);
+
+      if (!hasEntry)
+        this.participants = [
+          ...this.participants,
+          {
+            id: res.id,
+            ...res.data(),
+          } as ISessionParticipants,
+        ];
     },
 
     async updateParticipantConfigStatus(updated: ISessionParticipants) {
