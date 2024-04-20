@@ -8,6 +8,7 @@
             'full-height':
               messagesGroupedByDate.length === 0 && !hasMoreMessages,
           }"
+          ref="msgContainer"
         >
           <div class="infinite">
             <InfiniteLoading
@@ -49,7 +50,12 @@
       <div class="reply-input">
         <input
           v-model="inputText"
-          @keyup.enter="submitMessage"
+          @keyup.enter="
+            async () => {
+              await submitMessage();
+              scrollToBottom();
+            }
+          "
           placeholder="Type your message here..."
           class="reply-input-area"
         />
@@ -123,19 +129,20 @@ export default defineComponent({
       chatStore.stopListening();
     });
 
-    function submitMessage() {
-      if (inputText.value.trim()) {
-        chatStore.sendMessage(props.messageCollection, inputText.value.trim());
+    async function submitMessage() {
+      const msg = inputText.value.trim();
+      if (msg) {
         inputText.value = "";
+        await chatStore.sendMessage(props.messageCollection, msg);
       }
     }
 
-    function onInfiniteScroll() {
+    async function onInfiniteScroll() {
       if (!chatStore.hasMoreMessages) {
         return;
       }
       if (chatStore.initialFetch)
-        chatStore.fetchMessages(props.messageCollection);
+        await chatStore.fetchMessages(props.messageCollection);
     }
 
     const messagesGroupedByDate = computed(() => {
@@ -179,6 +186,23 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useChatStore, ["hasMoreMessages"]),
+    hasInitialFetchDone() {
+      return this.chatStore.initialFetch;
+    },
+  },
+  methods: {
+    scrollToBottom() {
+      this.$nextTick(function () {
+        var container = this.$refs.msgContainer;
+        if (container) container.scrollTop = container.scrollHeight + 120;
+      });
+    },
+  },
+  watch: {
+    hasInitialFetchDone: function () {
+      if (!this.hasInitialFetchDone) return;
+      this.scrollToBottom();
+    },
   },
 });
 </script>
