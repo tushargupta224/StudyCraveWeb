@@ -19,7 +19,10 @@
 
         <div>
           <p style="text-align: center; color: #4caf50; font-size: 16px">
-            Ongoing: <span style="color: #78ff9e; text-decoration: underline">{{ channel.topic }}</span>
+            Ongoing:
+            <span style="color: #78ff9e; text-decoration: underline">{{
+              channel.topic
+            }}</span>
           </p>
           <div
             style="
@@ -33,7 +36,7 @@
             <p>{{ channel.description }}</p>
           </div>
 
-          <hr style="color: #fdd199; margin-top:12px" />
+          <hr style="color: #fdd199; margin-top: 12px" />
         </div>
 
         <div class="sub-heading">Channels</div>
@@ -67,9 +70,14 @@
           <div style="height: 160px"></div>
         </div>
         <div class="btn-container">
-          <div style="width: 100%; display: flex;">
-            <div class="vision-call-button"  :class="{ active: onVideoSession }"
-            @click="onVideoSession = !onVideoSession">VisionCall</div>
+          <div style="width: 100%; display: flex">
+            <div
+              class="vision-call-button"
+              :class="{ active: onVideoSession }"
+              @click="onVideoSession = !onVideoSession"
+            >
+              VisionCall
+            </div>
           </div>
           <button class="back-btn-grad" @click="backBtnHandler">
             Back to Home
@@ -82,11 +90,14 @@
     <NLayoutContent :nativeScrollbar="false">
       <div class="main-container">
         <div class="header">
-          <div>{{ onVideoSession ? 'VisionCall' : currentSection.name }}</div>
+          <div>{{ onVideoSession ? "VisionCall" : currentSection.name }}</div>
         </div>
-        <div class="sub-container" :class="{
-          'no-padding': onVideoSession,
-        }">
+        <div
+          class="sub-container"
+          :class="{
+            'no-padding': onVideoSession,
+          }"
+        >
           <ChatCollabrateSession v-if="onVideoSession" />
           <ChatSection
             :channel="channel"
@@ -133,7 +144,7 @@ export default defineComponent({
     ChatMemberCard,
     NButton,
     LiveSessionCard,
-    ChatCollabrateSession
+    ChatCollabrateSession,
   },
   props: {
     initialChannel: {
@@ -151,13 +162,14 @@ export default defineComponent({
       members: undefined as ChannelMembers[] | undefined,
       unsubscribeChannel: null as any,
       unsubscribeChannelMembers: null as any,
+      unMounted: false,
     };
   },
   setup() {
     const channelStore = useChannelStore();
     const chatStore = useChatStore();
     const { user } = useAuthStore();
-    const {onVideoSession} = toRefs(useChatStore());
+    const { onVideoSession } = toRefs(useChatStore());
 
     const chatSections = [
       { id: "discussion", name: "Discussion" },
@@ -180,7 +192,7 @@ export default defineComponent({
       chatSections,
       currentSection,
       switchSection,
-      onVideoSession
+      onVideoSession,
     };
   },
   async mounted() {
@@ -218,10 +230,32 @@ export default defineComponent({
         this.members = members;
       }
     );
+
+    window.addEventListener('beforeunload', this.onBeforeUnload);
+    window.addEventListener('unload', this.onBeforeUnload)
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
+    window.removeEventListener('unload', this.onBeforeUnload);
   },
   methods: {
     backBtnHandler() {
       this.$router.replace("/home");
+    },
+    onBeforeUnload() {
+      if(this.unMounted) return;
+      this.unMounted = true;
+      this.unsubscribeChannel();
+      this.unsubscribeChannelMembers();
+      if (this.channel?.ownerId === this.user!.id) {
+        this.channelStore.updateOwnerStatus(this.channelId, false);
+      } else {
+        this.channelStore.setUserMemberStatus(
+          this.channelId,
+          this.user!.id,
+          false
+        );
+      }
     },
   },
   computed: {
@@ -254,18 +288,8 @@ export default defineComponent({
       return members;
     },
   },
-  unmounted() {
-    this.unsubscribeChannel();
-    this.unsubscribeChannelMembers();
-    if (this.channel?.ownerId === this.user!.id) {
-      this.channelStore.updateOwnerStatus(this.channelId, false);
-    } else {
-      this.channelStore.setUserMemberStatus(
-        this.channelId,
-        this.user!.id,
-        false
-      );
-    }
+  beforeUnmount() {
+    this.onBeforeUnload();
   },
 });
 </script>
@@ -399,7 +423,7 @@ export default defineComponent({
 }
 
 .vision-call-button {
-  background: linear-gradient(90deg, #22948A 0%, #E1FCAB 100%);
+  background: linear-gradient(90deg, #22948a 0%, #e1fcab 100%);
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   backdrop-filter: blur(40px);

@@ -79,10 +79,17 @@ export default defineComponent({
       img: null,
       audioEnable: true,
       videoEnable: true,
+      unMounted: false,
     };
   },
   mounted() {
     this.onJoin();
+    window.addEventListener('beforeunload', this.onBeforeUnload);
+    window.addEventListener('unload', this.onBeforeUnload)
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
+    window.removeEventListener('unload', this.onBeforeUnload);
   },
   computed: {
     shouldReJoinAutomatically() {
@@ -91,13 +98,8 @@ export default defineComponent({
   },
   methods: {
     leaveCall() {
-      try {
-        // Leave the call using the chat store
         this.chatStore.leaveVideoCall();
         this.onLeave();
-      } catch (error) {
-        console.error("Error leaving call:", error);
-      }
     },
     callEnded() {
       // Additional logic when the call ends
@@ -134,6 +136,11 @@ export default defineComponent({
     onLocalAudioVideoStatusChange(t: ISessionParticipants) {
       this.chatStore.updateParticipantConfigStatus(t);
     },
+    onBeforeUnload() {
+      if(this.unMounted) return;
+      this.unMounted = true;
+      this.leaveCall();
+    }
   },
   beforeUnmount() {
     this.leaveCall();
