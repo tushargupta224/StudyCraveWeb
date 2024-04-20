@@ -11,11 +11,11 @@
       :enableLogs="true"
       v-model:audio-enabled="audioEnable"
       v-model:video-enabled="videoEnable"
-      v-on:joined-room="onJoined"
-      v-on:left-room="logEvent"
-      v-on:opened-room="logEvent"
-      v-on:share-started="logEvent"
-      v-on:share-stopped="logEvent"
+      @joined-room="onJoined"
+      @left-room="logEvent"
+      @opened-room="logEvent"
+      @share-started="logEvent"
+      @share-stopped="logEvent"
       @local-audio-status-change="onLocalAudioVideoStatusChange"
       @local-video-status-change="onLocalAudioVideoStatusChange"
       @error="onError"
@@ -104,17 +104,17 @@ export default defineComponent({
       console.log("Call ended.");
     },
     onCapture() {
-      this.img = (this.$refs.webrtc as any).capture();
+      this.img = (this.$refs.webrtc as any)?.capture();
     },
     onJoin() {
-      (this.$refs.webrtc as any).join();
+      (this.$refs.webrtc as any)?.join();
     },
     onLeave() {
-      (this.$refs.webrtc as any).leave();
+      (this.$refs.webrtc as any)?.leave();
       this.chatStore.onVideoSession = false;
     },
     onShareScreen() {
-      this.img = (this.$refs.webrtc as any).shareScreen();
+      this.img = (this.$refs.webrtc as any)?.shareScreen();
     },
     onError(error: any, stream: any) {
       console.log("On Error Event", error, stream);

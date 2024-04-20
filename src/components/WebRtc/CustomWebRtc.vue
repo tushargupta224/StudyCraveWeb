@@ -226,7 +226,7 @@ const joinedRoom = (stream: MediaStream, isLocal: boolean) => {
   }
 
   setTimeout(function () {
-    for (var i = 0, len = videos.value.length; i < len; i++) {
+    for (var i = 0, len = videos.value?.length; i < len; i++) {
       videos.value[i].setStreamObject(stream);
     }
   }, 500);
