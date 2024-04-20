@@ -17,6 +17,25 @@
           </div>
         </div>
 
+        <div>
+          <p style="text-align: center; color: #4caf50; font-size: 16px">
+            Ongoing: <span style="color: #78ff9e; text-decoration: underline">{{ channel.topic }}</span>
+          </p>
+          <div
+            style="
+              padding: 2px 3px;
+              border: 2px solid #fdd199;
+              border-radius: 12px;
+              text-align: center;
+              color: white;
+            "
+          >
+            <p>{{ channel.description }}</p>
+          </div>
+
+          <hr style="color: #fdd199; margin-top:12px" />
+        </div>
+
         <div class="sub-heading">Channels</div>
 
         <div
@@ -285,7 +304,7 @@ export default defineComponent({
   font-family: "Crimson Text";
   font-size: 16px;
   color: white;
-  margin-top: 16px;
+  margin-top: 12px;
   margin-bottom: 16px;
   padding-left: 12px;
 }
