@@ -25,9 +25,15 @@
             left: 50%;
             transform: translate(-50%, 0%);
             font-size: 1.4rem;
+            color: 'rgba(55.87, 55.87, 55.87, 0.40)';
           "
         >
-          <n-countdown ref="countDown" :duration="duration" :active="active" />
+          <n-countdown
+            :render="renderCountdown"
+            ref="countDown"
+            :duration="duration"
+            :active="active"
+          />
         </span>
         <!-- Circular progress bar -->
         <n-progress
@@ -67,11 +73,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, ref, computed, h } from "vue";
 
 import { CloseOutline } from "@vicons/ionicons5";
 import { NSpace, NCountdown, NButton, NSwitch, NProgress } from "naive-ui";
-import type { CountdownInst } from "naive-ui";
+import type { CountdownInst, CountdownProps } from "naive-ui";
 
 export default defineComponent({
   setup(props, { emit }) {
@@ -107,6 +113,38 @@ export default defineComponent({
       )}`;
     });
 
+    const renderCountdown: CountdownProps["render"] = ({
+      hours,
+      minutes,
+      seconds,
+    }) => {
+      return [
+        h(
+          "span",
+          {
+            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+          },
+          [String(hours).padStart(2, "0")]
+        ),
+        ":",
+        h(
+          "span",
+          {
+            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+          },
+          [String(minutes).padStart(2, "0")]
+        ),
+        ":",
+        h(
+          "span",
+          {
+            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+          },
+          [String(seconds).padStart(2, "0")]
+        ),
+      ];
+    };
+
     function closeTimer() {
       emit("close");
     }
@@ -119,6 +157,7 @@ export default defineComponent({
       formattedTime,
       duration,
       closeTimer,
+      renderCountdown,
     };
   },
   emits: ["close"],

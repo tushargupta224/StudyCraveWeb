@@ -1,16 +1,11 @@
 <template>
   <div class="img-parent">
-    <close-outline
-      style="
-        width: 20px;
-        height: 20px;
-        position: absolute;
-        top: 7px;
-        right: 5px;
-      "
-      @click="closeHandler"
-    />
-    <h2>Customize Background</h2>
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <h2>Customize Background</h2>
+      <close-outline style="width: 20px; height: 20px" @click="closeHandler" />
+    </div>
     <div class="img-grid">
       <button @click="removeBackgroundImages" class="removeBtn">
         <img src="../../assets/images/eye.svg" alt="eye" />
@@ -35,9 +30,6 @@ export default {
       emit("close");
     }
 
-    
-
-    
     return { closeHandler };
   },
 
@@ -81,7 +73,6 @@ export default {
   methods: {
     selectedImg(imageurl: any) {
       this.$emit("image-selected", imageurl);
-      
     },
     removeBackgroundImages() {
       // this.selectedImageIndex = null;
@@ -96,20 +87,24 @@ export default {
 </script>
 <style scoped lang="scss">
 .img-parent {
-  width: 300px;
+ 
   background-color: rgba(252, 252, 252, 0.12);
   border-radius: 5px;
   color: white;
   position: relative;
   overflow-y: auto;
+  padding: 12px;
 }
 h2 {
   font-size: 0.8rem;
-  padding: 5px;
+  padding: 0px;
+  margin: 0px;
 }
 .img-container {
-  width: 80px;
-  height: 80px;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
   background-repeat: no-repeat;
   background-position: center center;
   border-radius: 8px;
@@ -121,10 +116,10 @@ h2 {
 }
 
 .img-grid {
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three columns */
   gap: 15px; /* Gap between image containers */
-  padding: 8px;
   box-sizing: border-box;
 }
 .removeBtn {
@@ -132,6 +127,10 @@ h2 {
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
 }
 .selected-image {
   border: 2px solid white !important;
