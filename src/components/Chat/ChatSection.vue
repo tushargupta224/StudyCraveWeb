@@ -21,11 +21,11 @@
             v-if="messagesGroupedByDate.length === 0 && !hasMoreMessages"
           >
             <img
-              src="https://cdni.iconscout.com/illustration/premium/thumb/social-messages-2511593-2122857.png?f=webp"
+              src="https://assets.streamlinehq.com/image/private/w_200,h_200,ar_1/f_auto/v1/icons/lagos/interface/interface/empty-state-messenger-no-conversations-6193lwuaecnvhcei6x3y3.png?_a=DAJFJtWIZAAC"
               alt=""
             />
-            <h1>No chat to show.</h1>
-            <p>Start a conversation from your end.</p>
+            <h2 style="color: white">Start a New Conversation</h2>
+            <p style="text-align: center; color: white">This section looks a bit lonely! Why not initiate a conversation? Click the button below to begin a new discussion and connect with others. Start sharing ideas, asking questions, or simply saying hello!</p>
           </div>
           <div v-else class="messages">
             <div
@@ -305,14 +305,21 @@ export default defineComponent({
   flex-direction: column;
   margin: auto;
 }
-.empty_state h1 {
-  font-size: 3rem;
+.empty_state img {
+  height: 300px;
+}
+.empty_state h2 {
+  font-size: 28px;
   margin: 0;
+  padding-top: 24px;
 }
 .empty_state p {
   font-style: italic;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 16;
+  font-weight: 400;
+  padding-top: 24px;
+
+  padding-inline: 100px;
   margin: 0;
 }
 
