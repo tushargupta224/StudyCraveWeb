@@ -1,17 +1,18 @@
 <template>
   <div class="container">
-    <close-outline
-      style="
-        width: 20px;
-        height: 20px;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-      "
-      @click="closeTodo"
-    />
     <div style="color: white" class="header">
-      <h4 style="padding: 0; margin: 8px 0px">Set Goals</h4>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        "
+      >
+        <h4 style="padding: 0px; margin: 0px">Set Goals</h4>
+        <close-outline style="width: 20px; height: 20px" @click="closeTodo" />
+      </div>
+
       <div id="todostatus">
         <div
           style="
@@ -36,6 +37,7 @@
     <div id="input-container">
       <div class="listItem">
         <input
+          style="width: 100%"
           type="text"
           v-model="newToDoName"
           placeholder="What's next?..."
@@ -217,10 +219,16 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+input {
+  &::placeholder {
+    color: white;
+  }
+}
+
 .container {
   width: 330px;
-  padding: 0 30px;
+  padding: 16px;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(252, 252, 252, 0.12);
@@ -245,6 +253,7 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 .countData {
   font-weight: 600;
@@ -298,12 +307,14 @@ input {
   justify-content: center;
   align-items: center;
   gap: 6px;
+  width: 100%;
 }
 .listItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 2;
+  width: 100%;
 }
 
 .todoName {
