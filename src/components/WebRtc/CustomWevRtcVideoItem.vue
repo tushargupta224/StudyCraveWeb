@@ -44,9 +44,10 @@
             overflow: hidden;
           "
         >
-          <img
+          <n-image
             :src="participant.userAvatar"
             style="width: 100%; height: 100%"
+            fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
           />
         </div>
 
@@ -70,9 +71,10 @@
         alt="img"
         style="width: 100%; height: 100%; filter: blur(4px)"
       />
-      <img
+      <n-image
         :src="participant.userAvatar"
         alt="img"
+        fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
         style="
           position: absolute;
           z-index: 5;
@@ -91,10 +93,11 @@
           transform: translate(-50%, -50%);
         "
       >
-        <img
+        <n-image
           :src="participant.userAvatar"
           alt="dp"
           style="width: 80px; height: 80px; border-radius: 50%"
+          fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
         />
       </div>
     </div>
@@ -105,6 +108,7 @@
 import { ref, type PropType, toRefs, onMounted, onBeforeUnmount } from "vue";
 import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
 import { MicOffOutline, MicOutline } from "@vicons/ionicons5";
+import { NImage } from "naive-ui";
 
 const props = defineProps({
   videoItem: {
