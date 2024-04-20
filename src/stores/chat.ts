@@ -157,6 +157,7 @@ export const useChatStore = defineStore({
         audioEnabled: audioEnabled,
         videoEnabled: videoEnabled,
       };
+      this.participants = [...this.participants, streamParticipant];
 
       await addDoc(
         collection(db, `channels/${this.channel.id}/callParticipants`),
