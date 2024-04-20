@@ -12,9 +12,13 @@
       @click="closeTimer"
     />
     <div class="increaseDecrease">
-      <p @click="decrease15mins">-15 mins</p>
+      <div style="position: relative">
+        <p style="position: absolute; bottom: -8px; right: -12px;" @click="decrease15mins">-15 mins</p>
+      </div>
       <p @click="decrease30mins">-30 mins</p>
-      <p @click="decrease60mins">-1 hour</p>
+      <div style="position: relative">
+        <p style="position: absolute; bottom: -38px; right: -12px;"  @click="decrease60mins">-1 hour</p>
+      </div>
     </div>
     <n-space class="timer">
       <div style="position: relative">
@@ -66,9 +70,13 @@
       </div>
     </n-space>
     <div class="increaseDecrease">
-      <p @click="increase15mins">+15 mins</p>
-      <p @click="increase30mins">+30 mins</p>
-      <p @click="increase60mins">+1 hour</p>
+      <div style="position: relative">
+        <p style="position: absolute; bottom: -8px; left: -12px;" @click="increase15mins">+15 mins</p>
+      </div>
+      <p  @click="increase30mins">+30 mins</p>
+      <div style="position: relative">
+        <p style="position: absolute; bottom: -38px; left: -12px;" @click="increase60mins">+1 hour</p>
+      </div>
     </div>
   </div>
 </template>
