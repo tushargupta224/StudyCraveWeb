@@ -10,7 +10,7 @@
         "
       >
         <h4 style="padding: 0px; margin: 0px">Set Goals</h4>
-        <close-outline style="width: 20px; height: 20px" @click="closeTodo" />
+        <close-outline style="width: 20px; height: 20px; cursor: pointer;" @click="closeTodo" />
       </div>
 
       <div id="todostatus">
@@ -56,7 +56,7 @@
     </div>
     <div id="todoList" v-for="todos in todo" :key="todos.id">
       <div class="listItem">
-        <div style="width: 100%" v-if="todos.done">
+        <div style="flex-grow: 1" v-if="todos.done">
           <div class="todoNameDone" @click="toggleTodo(todos.id)">
             <span>{{ todos.name }}</span>
             <div>
@@ -71,7 +71,7 @@
             </div>
           </div>
         </div>
-        <div v-else style="width: 100%">
+        <div v-else style="flex-grow: 1">
           <div class="todoName">
             <span>{{ todos.name }}</span>
             <div>
@@ -80,7 +80,7 @@
                 style="background-color: transparent; border: none"
               >
                 <CheckboxOutline
-                  style="width: 15px; height: 15px; color: #4caf50"
+                  style="width: 16px; height: 16px; color: #4caf50"
                 />
               </button>
               <button
@@ -88,7 +88,7 @@
                 style="background-color: transparent; border: none"
               >
                 <TrashBinOutline
-                  style="width: 15px; height: 15px; color: #f27400"
+                  style="width: 16px; height: 16px; color: #f27400"
                 />
               </button>
             </div>
@@ -221,8 +221,16 @@ export default defineComponent({
 
 <style scoped lang="scss">
 input {
+  font-size: 12px;
+  color: white;
+  font-weight: 600;
+
+  text-align: left;
   &::placeholder {
     color: white;
+    text-align: left;
+    font-weight: 400;
+    font-size: 12px;
   }
 }
 
@@ -318,11 +326,12 @@ input {
 }
 
 .todoName {
-  width: 100%;
+
   /* height: 30px; */
-  padding: 2px 8px;
+  padding: 6px 8px;
+  padding-left: 12px;
   border-radius: 5px;
-  margin: 12px 0;
+  margin: 8px 0;
   color: black;
   font-weight: 500;
   z-index: 2;
@@ -333,11 +342,12 @@ input {
 }
 
 .todoNameDone {
-  width: 100%;
+
   /* height: 30px; */
-  padding: 2px 8px;
+  padding: 6px 8px;
+  padding-left: 12px;
   border-radius: 5px;
-  margin: 12px 0;
+  margin: 8px 0;
   color: black;
   font-weight: 500;
   z-index: 2;

@@ -5,8 +5,8 @@
         width: 20px;
         height: 20px;
         position: absolute;
-        top: 5px;
-        right: 5px;
+        top: 12px;
+        right: 12px;
       "
       @click="closeTimer"
     />
@@ -42,7 +42,7 @@
         <n-switch
           v-model:value="active"
           :rail-style="
-            ({ _f, c }) => {
+            () => {
               if (active) return { background: '#FDD199' };
 
               return { background: '#EFEFEF' };
@@ -167,6 +167,7 @@ export default defineComponent({
   align-items: center;
   width: 330px;
   height: 150px;
+  padding-top: 12px;
   color: white;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
