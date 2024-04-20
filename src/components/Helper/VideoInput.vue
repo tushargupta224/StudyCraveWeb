@@ -66,8 +66,8 @@ export default {
 <style scoped lang="scss">
 .form-parent {
   position: fixed;
-  top: 11%;
-  right: 35px;
+  top: 80px;
+  right: 24px;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(252, 252, 252, 0.12);

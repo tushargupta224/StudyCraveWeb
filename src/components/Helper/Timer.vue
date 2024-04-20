@@ -1,6 +1,15 @@
 <template>
   <div class="timer-container">
-    <close-outline style="width: 20px; height: 20px; position: absolute; top: 5px; right: 5px" @click="closeTimer"/>
+    <close-outline
+      style="
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      "
+      @click="closeTimer"
+    />
     <div class="increaseDecrease">
       <p @click="decrease15mins">-15 mins</p>
       <p @click="decrease30mins">-30 mins</p>
@@ -8,7 +17,6 @@
     </div>
     <n-space class="timer">
       <div style="position: relative">
-        
         <span
           style="
             font-variant-numeric: tabular-nums;
@@ -29,9 +37,17 @@
           :stroke-width="4"
           style="width: 120px; height: 120px; transform: rotate(180deg)"
           color="#FDD199"
+          rail-color="#383838"
         />
         <n-switch
           v-model:value="active"
+          :rail-style="
+            ({ _f, c }) => {
+              if (active) return { background: '#FDD199' };
+
+              return { background: '#EFEFEF' };
+            }
+          "
           style="
             margin-bottom: 20px;
             position: absolute;
@@ -53,12 +69,12 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 
-import {CloseOutline} from "@vicons/ionicons5"
+import { CloseOutline } from "@vicons/ionicons5";
 import { NSpace, NCountdown, NButton, NSwitch, NProgress } from "naive-ui";
 import type { CountdownInst } from "naive-ui";
 
 export default defineComponent({
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const activeRef = ref(true);
     const countdownRef = ref<CountdownInst | null>();
     const duration = 3000000; // 50 minutes in milliseconds
@@ -91,7 +107,7 @@ export default defineComponent({
       )}`;
     });
 
-    function closeTimer(){
+    function closeTimer() {
       emit("close");
     }
 
@@ -102,7 +118,7 @@ export default defineComponent({
       progressPercentage,
       formattedTime,
       duration,
-      closeTimer
+      closeTimer,
     };
   },
   emits: ["close"],
@@ -178,9 +194,11 @@ export default defineComponent({
   z-index: 2;
 }
 
-.increaseDecrease p{
-  font-size: 0.7rem;
-  cursor: pointer;
+.increaseDecrease {
+  p {
+    font-size: 12px;
+    cursor: pointer;
+  }
 }
 
 @media all and (max-width: 601px) {

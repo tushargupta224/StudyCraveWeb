@@ -32,92 +32,18 @@
         class="nav-container"
         v-if="showContainer"
       >
-        <div style="display: flex; gap: 25px" class="nav2">
-          <div
-            style="
-              width: 50px;
-              height: 40px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-left: 3%;
-              color: black;
-              cursor: pointer;
-              backdrop-filter: blur(16px) saturate(180%);
-              -webkit-backdrop-filter: blur(16px) saturate(180%);
-              background-color: #fdd199;
-              border-radius: 8px;
-              z-index: 2;
-            "
-            @click="showTodoHandler"
-
-          >
-            <!-- Replace TimerOutline with the imported SVG -->
+        <div style="display: flex; gap: 16px" class="nav2">
+          <div class="icon-container" @click="showTodoHandler">
             <img src="@/assets/icons/taskListIcon.svg" class="icon" />
           </div>
-          <div
-            style="
-              width: 50px;
-              height: 40px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-left: 3%;
-              color: white;
-              cursor: pointer;
-              backdrop-filter: blur(16px) saturate(180%);
-              -webkit-backdrop-filter: blur(16px) saturate(180%);
-              background-color: #fdd199;
-              border-radius: 8px;
-
-              z-index: 2;
-            "
-            @click="timerShowHandler"
-          >
-            <!-- Replace ClipboardOutline with the imported SVG -->
+          <div class="icon-container" @click="timerShowHandler">
             <img src="@/assets/icons/timerIcon.svg" class="icon" />
           </div>
-          <div
-            style="
-              width: 50px;
-              height: 40px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              margin-left: 3%;
-              color: white;
-              cursor: pointer;
-              backdrop-filter: blur(16px) saturate(180%);
-              -webkit-backdrop-filter: blur(16px) saturate(180%);
-              background-color: #fdd199;
-              border-radius: 8px;
-
-              z-index: 2;
-            "
-            @click="showBackgroundDivHandler"
-          >
-            <!-- Replace PlayOutline with the imported SVG -->
+          <div class="icon-container" @click="showBackgroundDivHandler">
             <img src="@/assets/icons/mediaIcon.svg" class="icon" />
           </div>
         </div>
-        <div
-          style="
-            width: 50px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 3%;
-            color: white;
-            cursor: pointer;
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            background-color: #fdd199;
-            border-radius: 8px;
-          "
-          class="yt"
-          @click="showFormHandler"
-        >
+        <div class="yt icon-container" @click="showFormHandler">
           <img src="@/assets/icons/yt.svg" class="icon" style="height: 50px" />
         </div>
       </div>
@@ -132,9 +58,10 @@
         @image-selected="setBackgroundImageUrl"
         v-if="showBackground"
         @close="showBackgroundDivHandler"
-        :style="{height: '440px'}"
+        :style="{ height: '440px' }"
       />
     </div>
+
     <VideoInput
       v-if="showForm"
       @submit="handleFormSubmit"
@@ -397,6 +324,21 @@ p {
   background-color: rgba(150, 150, 150, 0.45);
 }
 
+.icon-container {
+  width: 60px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  cursor: pointer;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: #fdd199;
+  border-radius: 8px;
+  z-index: 2;
+}
+
 .icon {
   height: 25px;
   z-index: 1;
@@ -437,7 +379,7 @@ p {
     left: -40%;
     z-index: 8;
   }
-  .nav2{
+  .nav2 {
     flex-direction: column;
   }
   .logout {
@@ -485,10 +427,10 @@ p {
     left: 3%;
     top: 6%;
   }
-  .bg{
+  .bg {
     top: 0 !important;
   }
-  .yt{
+  .yt {
     margin-left: 0 !important;
   }
 }
