@@ -231,10 +231,11 @@ const joinedRoom = (stream: MediaStream, isLocal: boolean) => {
     }
   }, 500);
 
-  emits("joined-room", stream.id);
+  emits("joined-room", stream.id, isLocal);
 };
 
 const leave = () => {
+  log("leave");
   videoList.value.forEach((v) => v.stream.getTracks().forEach((t) => t.stop()));
   videoList.value = [];
   signalClient.value?.peers().forEach((peer: any) => peer.removeAllListeners());

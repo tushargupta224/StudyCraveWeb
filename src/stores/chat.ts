@@ -144,7 +144,7 @@ export const useChatStore = defineStore({
       mediaStreamId: string,
       audioEnabled: boolean,
       videoEnabled: boolean
-    ) {
+    ): Promise<string | undefined> {
       if (!this.channel) return;
 
       const { user } = useAuthStore();
@@ -176,6 +176,8 @@ export const useChatStore = defineStore({
             ...res.data(),
           } as ISessionParticipants,
         ];
+
+      return res.id;
     },
 
     async updateParticipantConfigStatus(updated: ISessionParticipants) {
@@ -185,24 +187,18 @@ export const useChatStore = defineStore({
       );
     },
 
-    async leaveVideoCall() {
+    async leaveVideoCall(localSessionId: string) {
       if (!this.channel) return;
 
       const { user } = useAuthStore();
       if (!user) return;
 
-      const participantRef = collection(
-        db,
-        `channels/${this.channel.id}/callParticipants`
+      await deleteDoc(
+        doc(
+          db,
+          `channels/${this.channel.id}/callParticipants/${localSessionId}`
+        )
       );
-
-      const querySnapshot = await getDocs(
-        query(participantRef, where("userId", "==", user.id))
-      );
-
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref);
-      });
     },
 
     listenForVideoCallParticipants() {

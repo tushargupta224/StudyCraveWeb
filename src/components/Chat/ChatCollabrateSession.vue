@@ -80,16 +80,17 @@ export default defineComponent({
       audioEnable: true,
       videoEnable: true,
       unMounted: false,
+      localSessionId: undefined as string | undefined,
     };
   },
   mounted() {
     this.onJoin();
-    window.addEventListener('beforeunload', this.onBeforeUnload);
-    window.addEventListener('unload', this.onBeforeUnload)
+    window.addEventListener("beforeunload", this.onBeforeUnload);
+    window.addEventListener("unload", this.onBeforeUnload);
   },
   beforeDestroy() {
-    window.removeEventListener('beforeunload', this.onBeforeUnload);
-    window.removeEventListener('unload', this.onBeforeUnload);
+    window.removeEventListener("beforeunload", this.onBeforeUnload);
+    window.removeEventListener("unload", this.onBeforeUnload);
   },
   computed: {
     shouldReJoinAutomatically() {
@@ -98,8 +99,8 @@ export default defineComponent({
   },
   methods: {
     leaveCall() {
-        this.chatStore.leaveVideoCall();
-        this.onLeave();
+      this.chatStore.leaveVideoCall(this.localSessionId);
+      this.onLeave();
     },
     callEnded() {
       // Additional logic when the call ends
@@ -121,8 +122,15 @@ export default defineComponent({
     onError(error: any, stream: any) {
       console.log("On Error Event", error, stream);
     },
-    onJoined(mediaId: string) {
-      this.chatStore.joinVideoCall(mediaId, this.audioEnable, this.videoEnable);
+    async onJoined(mediaId: string, isLocal: boolean) {
+      if (isLocal) {
+        const id = await this.chatStore.joinVideoCall(
+          mediaId,
+          this.audioEnable,
+          this.videoEnable
+        );
+        this.localSessionId = id;
+      }
     },
     logEvent(event: any) {
       console.log("Event : ", event);
@@ -137,10 +145,10 @@ export default defineComponent({
       this.chatStore.updateParticipantConfigStatus(t);
     },
     onBeforeUnload() {
-      if(this.unMounted) return;
+      if (this.unMounted) return;
       this.unMounted = true;
       this.leaveCall();
-    }
+    },
   },
   beforeUnmount() {
     this.leaveCall();
