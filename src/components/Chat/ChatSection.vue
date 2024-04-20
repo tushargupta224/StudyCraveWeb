@@ -47,6 +47,33 @@
           placeholder="Type your message here..."
           class="reply-input-area"
         />
+        <div
+          @click="submitMessage"
+          style="
+            width: 32px;
+            height: 32px;
+            background-color: white;
+            border-radius: 8px;
+            margin-right: 8px;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+          "
+        >
+          <img
+            :src="forwardIconSrc"
+            alt="send"
+            style="
+              
+              width: 24px;
+              height: 24px;
+
+              cursor: pointer;
+              color: white;
+            "
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -78,6 +105,8 @@ import {
   NSpace,
 } from "naive-ui";
 import ChatCollabrateSession from "./ChatCollabrateSession.vue";
+import { Send16Regular } from "@vicons/fluent";
+import forward from "../../assets/icons/Forward.svg";
 
 export default defineComponent({
   components: {
@@ -91,6 +120,7 @@ export default defineComponent({
     NTag,
     NSpace,
     ChatCollabrateSession,
+    Send16Regular,
   },
   props: {
     channel: {
@@ -173,6 +203,11 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useChatStore, ["hasMoreMessages"]),
+  },
+  data() {
+    return {
+      forwardIconSrc: forward,
+    };
   },
 });
 </script>
