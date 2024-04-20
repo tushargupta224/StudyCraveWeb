@@ -231,22 +231,22 @@ export default defineComponent({
       }
     );
 
-    window.addEventListener('beforeunload', this.onBeforeUnload);
-    window.addEventListener('unload', this.onBeforeUnload)
+    window.addEventListener("beforeunload", this.onBeforeUnload);
+    window.addEventListener("unload", this.onBeforeUnload);
   },
   beforeDestroy() {
-    window.removeEventListener('beforeunload', this.onBeforeUnload);
-    window.removeEventListener('unload', this.onBeforeUnload);
+    window.removeEventListener("beforeunload", this.onBeforeUnload);
+    window.removeEventListener("unload", this.onBeforeUnload);
   },
   methods: {
     backBtnHandler() {
       this.$router.replace("/home");
     },
     onBeforeUnload() {
-      if(this.unMounted) return;
+      if (this.unMounted) return;
       this.unMounted = true;
-      this.unsubscribeChannel();
-      this.unsubscribeChannelMembers();
+      if (this.unsubscribeChannel) this.unsubscribeChannel();
+      if (this.unsubscribeChannelMembers) this.unsubscribeChannelMembers();
       if (this.channel?.ownerId === this.user!.id) {
         this.channelStore.updateOwnerStatus(this.channelId, false);
       } else {
