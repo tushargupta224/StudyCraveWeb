@@ -1,18 +1,12 @@
 <template>
   <div class="form-parent">
-    <close-outline
-      style="
-        width: 20px;
-        height: 20px;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-      "
-      @click="closeHandler"
-    />
-    <div style="width: 90%; margin: auto">
+    <div style="width: 100%;">
       <div class="form-heading">
         <h4>YouTube</h4>
+        <close-outline
+          style="width: 20px; height: 20px; cursor: pointer"
+          @click="closeHandler"
+        />
       </div>
       <div class="form-container">
         <form @submit.prevent="submitForm">
@@ -42,7 +36,7 @@ export default {
     function closeHandler() {
       emit("close");
     }
-    return {closeHandler}
+    return { closeHandler };
   },
   data() {
     return {
@@ -71,23 +65,33 @@ export default {
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(252, 252, 252, 0.12);
-  border-radius: 8px;
+  border-radius: 18px;
   color: white;
-  width: 329px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 2;
-  height: 128px;
+  max-height: 128px;
+  padding: 16px;
 }
+
+.form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .form-heading h4 {
   font-size: 20px;
-  margin-bottom: 12px;
-  margin-right: 10px;
+  margin: 0px;
+  padding: 0px;
 }
 .form-container {
   width: 100%;
-  margin-bottom: 15px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 
 .form-container form {
@@ -106,7 +110,18 @@ input {
   width: 100%;
   z-index: 2;
   box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+
+  &::placeholder {
+    color: white;
+    text-align: left;
+    font-weight: 400;
+    font-size: 12px;
+  }
 }
+
 .form-container button {
   cursor: pointer;
 }

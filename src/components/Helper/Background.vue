@@ -4,7 +4,7 @@
       style="display: flex; justify-content: space-between; align-items: center"
     >
       <h2>Customize Background</h2>
-      <close-outline style="width: 20px; height: 20px" @click="closeHandler" />
+      <close-outline style="width: 20px; height: 20px; cursor: pointer" @click="closeHandler" />
     </div>
     <div class="img-grid">
       <button @click="removeBackgroundImages" class="removeBtn">
@@ -89,11 +89,11 @@ export default {
 .img-parent {
  
   background-color: rgba(252, 252, 252, 0.12);
-  border-radius: 5px;
+  border-radius: 18px;
   color: white;
   position: relative;
   overflow-y: auto;
-  padding: 12px;
+  padding: 16px;
 }
 h2 {
   font-size: 0.8rem;

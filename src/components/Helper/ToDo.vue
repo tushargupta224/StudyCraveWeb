@@ -240,7 +240,7 @@ input {
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(252, 252, 252, 0.12);
-  border-radius: 8px;
+  border-radius: 18px;
   box-sizing: border-box;
   color: white;
 }

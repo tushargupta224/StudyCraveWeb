@@ -7,6 +7,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
+        cursor: pointer;
       "
       @click="closeTimer"
     />
@@ -211,7 +212,7 @@ export default defineComponent({
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(252, 252, 252, 0.12);
-  border-radius: 12px;
+  border-radius: 18px;
   position: relative;
 }
 .timer {
