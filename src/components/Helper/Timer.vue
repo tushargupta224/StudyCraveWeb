@@ -13,11 +13,37 @@
     />
     <div class="increaseDecrease">
       <div style="position: relative">
-        <p style="position: absolute; bottom: -8px; right: -12px;" @click="decrease15mins">-15 mins</p>
+        <p
+          style="position: absolute; bottom: -8px; right: -12px"
+          :style="{
+            opacity: duration >= 900000 ? 1 : 0.4,
+            cursor: duration >= 900000 ? 'pointer' : 'none',
+          }"
+          @click="decrease15mins"
+        >
+          -15 mins
+        </p>
       </div>
-      <p @click="decrease30mins">-30 mins</p>
+      <p
+        :style="{
+          opacity: duration >= 1800000 ? 1 : 0.4,
+          cursor: duration >= 1800000 ? 'pointer' : 'none',
+        }"
+        @click="decrease30mins"
+      >
+        -30 mins
+      </p>
       <div style="position: relative">
-        <p style="position: absolute; bottom: -38px; right: -12px;"  @click="decrease60mins">-1 hour</p>
+        <p
+          style="position: absolute; bottom: -38px; right: -12px"
+          :style="{
+            opacity: duration >= 3600000 ? 1 : 0.4,
+            cursor: duration >= 3600000 ? 'pointer' : 'none',
+          }"
+          @click="decrease60mins"
+        >
+          -1 hour
+        </p>
       </div>
     </div>
     <n-space class="timer">
@@ -71,11 +97,21 @@
     </n-space>
     <div class="increaseDecrease">
       <div style="position: relative">
-        <p style="position: absolute; bottom: -8px; left: -12px;" @click="increase15mins">+15 mins</p>
+        <p
+          style="position: absolute; bottom: -8px; left: -12px"
+          @click="increase15mins"
+        >
+          +15 mins
+        </p>
       </div>
-      <p  @click="increase30mins">+30 mins</p>
+      <p @click="increase30mins">+30 mins</p>
       <div style="position: relative">
-        <p style="position: absolute; bottom: -38px; left: -12px;" @click="increase60mins">+1 hour</p>
+        <p
+          style="position: absolute; bottom: -38px; left: -12px"
+          @click="increase60mins"
+        >
+          +1 hour
+        </p>
       </div>
     </div>
   </div>
@@ -92,12 +128,12 @@ export default defineComponent({
   setup(props, { emit }) {
     const activeRef = ref(true);
     const countdownRef = ref<CountdownInst | null>();
-    const duration = 3000000; // 50 minutes in milliseconds
-    const currentTime = ref(duration);
+    const duration = ref(3000000); // 50 minutes in milliseconds
+    const currentTime = ref(duration.value);
 
     function handleReset() {
       countdownRef.value?.reset();
-      currentTime.value = duration;
+      currentTime.value = duration.value;
     }
 
     const progressPercentage = ref(100);
@@ -106,7 +142,7 @@ export default defineComponent({
       setInterval(() => {
         if (activeRef.value && currentTime.value > 0) {
           currentTime.value -= 1000; // decrease current time by 1 second
-          progressPercentage.value = (currentTime.value / duration) * 100;
+          progressPercentage.value = (currentTime.value / duration.value) * 100;
         }
       }, 1000);
     }
@@ -131,7 +167,8 @@ export default defineComponent({
         h(
           "span",
           {
-            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+            style:
+              "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
           },
           [String(hours).padStart(2, "0")]
         ),
@@ -139,7 +176,8 @@ export default defineComponent({
         h(
           "span",
           {
-            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+            style:
+              "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
           },
           [String(minutes).padStart(2, "0")]
         ),
@@ -147,7 +185,8 @@ export default defineComponent({
         h(
           "span",
           {
-            style: "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
+            style:
+              "color: rgba(55.87, 55.87, 55.87, 0.90); text-shadow: -1px -1px 0 #fff,0   -1px 0 #fff,1px -1px 0 #fff,1px  0   0 #fff,1px  1px 0 #fff,0    1px 0 #fff,-1px  1px 0 #fff,-1px  0   0 #fff;",
           },
           [String(seconds).padStart(2, "0")]
         ),
