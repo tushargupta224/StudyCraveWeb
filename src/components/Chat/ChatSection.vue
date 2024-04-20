@@ -2,7 +2,14 @@
   <div class="main-wrapper">
     <div class="wrapper">
       <div class="chat-section">
-        <div class="messages-container">
+        <div
+          class="messages-container"
+          :class="{
+            'full-height':
+              messagesGroupedByDate.length === 0 && !hasMoreMessages,
+          }"
+          ref="msgContainer"
+        >
           <div class="infinite">
             <InfiniteLoading
               v-if="hasMoreMessages"
@@ -14,11 +21,11 @@
             v-if="messagesGroupedByDate.length === 0 && !hasMoreMessages"
           >
             <img
-              src="https://cdni.iconscout.com/illustration/premium/thumb/social-messages-2511593-2122857.png?f=webp"
+              src="https://assets.streamlinehq.com/image/private/w_200,h_200,ar_1/f_auto/v1/icons/lagos/interface/interface/empty-state-messenger-no-conversations-6193lwuaecnvhcei6x3y3.png?_a=DAJFJtWIZAAC"
               alt=""
             />
-            <h1>No chat to show.</h1>
-            <p>Start a conversation from your end.</p>
+            <h2 style="color: white">Start a New Conversation</h2>
+            <p style="text-align: center; color: white">This section looks a bit lonely! Why not initiate a conversation? Click the button below to begin a new discussion and connect with others. Start sharing ideas, asking questions, or simply saying hello!</p>
           </div>
           <div v-else class="messages">
             <div
@@ -43,7 +50,12 @@
       <div class="reply-input">
         <input
           v-model="inputText"
-          @keyup.enter="submitMessage"
+          @keyup.enter="
+            async () => {
+              await submitMessage();
+              scrollToBottom();
+            }
+          "
           placeholder="Type your message here..."
           class="reply-input-area"
         />
@@ -147,19 +159,20 @@ export default defineComponent({
       chatStore.stopListening();
     });
 
-    function submitMessage() {
-      if (inputText.value.trim()) {
-        chatStore.sendMessage(props.messageCollection, inputText.value.trim());
+    async function submitMessage() {
+      const msg = inputText.value.trim();
+      if (msg) {
         inputText.value = "";
+        await chatStore.sendMessage(props.messageCollection, msg);
       }
     }
 
-    function onInfiniteScroll() {
+    async function onInfiniteScroll() {
       if (!chatStore.hasMoreMessages) {
         return;
       }
       if (chatStore.initialFetch)
-        chatStore.fetchMessages(props.messageCollection);
+        await chatStore.fetchMessages(props.messageCollection);
     }
 
     const messagesGroupedByDate = computed(() => {
@@ -203,6 +216,23 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useChatStore, ["hasMoreMessages"]),
+    hasInitialFetchDone() {
+      return this.chatStore.initialFetch;
+    },
+  },
+  methods: {
+    scrollToBottom() {
+      this.$nextTick(function () {
+        var container = this.$refs.msgContainer;
+        if (container) container.scrollTop = container.scrollHeight + 120;
+      });
+    },
+  },
+  watch: {
+    hasInitialFetchDone: function () {
+      if (!this.hasInitialFetchDone) return;
+      this.scrollToBottom();
+    },
   },
   data() {
     return {
@@ -212,7 +242,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .main-wrapper {
   min-height: 100%;
   width: 100%;
@@ -240,12 +270,17 @@ export default defineComponent({
 
       .messages-container {
         position: absolute;
-        height: 100%;
-        width: 100%;
+        bottom: 0px;
+        max-height: 100%;
+        width: calc(100% - 16px);
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         background: transparent;
+
+        &.full-height {
+          height: 100%;
+        }
       }
     }
 
@@ -305,14 +340,21 @@ export default defineComponent({
   flex-direction: column;
   margin: auto;
 }
-.empty_state h1 {
-  font-size: 3rem;
+.empty_state img {
+  height: 300px;
+}
+.empty_state h2 {
+  font-size: 28px;
   margin: 0;
+  padding-top: 24px;
 }
 .empty_state p {
   font-style: italic;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 16;
+  font-weight: 400;
+  padding-top: 24px;
+
+  padding-inline: 100px;
   margin: 0;
 }
 
@@ -325,7 +367,6 @@ export default defineComponent({
   border-radius: 100px;
   padding: 6px 12px;
   margin-bottom: 16px;
-  margin-top: 16px;
   font-size: 12px;
   background: linear-gradient(90deg, #fee3e0 0%, #fce5c9 100%);
   box-shadow: 0px 8px 20px rgba(5, 5, 4, 0.08);
@@ -357,5 +398,10 @@ export default defineComponent({
   background-position: right center; /* change the direction of the change here */
   color: #fff;
   text-decoration: none;
+}
+
+.message-group {
+  margin-bottom: 16px;
+  padding-top: 16px;
 }
 </style>
