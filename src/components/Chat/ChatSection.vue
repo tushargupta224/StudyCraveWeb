@@ -2,7 +2,13 @@
   <div class="main-wrapper">
     <div class="wrapper">
       <div class="chat-section">
-        <div class="messages-container">
+        <div
+          class="messages-container"
+          :class="{
+            'full-height':
+              messagesGroupedByDate.length === 0 && !hasMoreMessages,
+          }"
+        >
           <div class="infinite">
             <InfiniteLoading
               v-if="hasMoreMessages"
@@ -177,7 +183,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .main-wrapper {
   min-height: 100%;
   width: 100%;
@@ -205,12 +211,17 @@ export default defineComponent({
 
       .messages-container {
         position: absolute;
-        height: 100%;
-        width: 100%;
+        bottom: 0px;
+        max-height: 100%;
+        width: calc(100% - 16px);
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         background: transparent;
+
+        &.full-height {
+          height: 100%;
+        }
       }
     }
 
@@ -290,7 +301,6 @@ export default defineComponent({
   border-radius: 100px;
   padding: 6px 12px;
   margin-bottom: 16px;
-  margin-top: 16px;
   font-size: 12px;
   background: linear-gradient(90deg, #fee3e0 0%, #fce5c9 100%);
   box-shadow: 0px 8px 20px rgba(5, 5, 4, 0.08);
@@ -322,5 +332,10 @@ export default defineComponent({
   background-position: right center; /* change the direction of the change here */
   color: #fff;
   text-decoration: none;
+}
+
+.message-group {
+  margin-bottom: 16px;
+  padding-top: 16px;
 }
 </style>
