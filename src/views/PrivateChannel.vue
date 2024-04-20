@@ -55,10 +55,14 @@
         <ToDo v-if="showToDo" @close="showTodoHandler" />
       </div>
       <Background
+        :style="{
+          'margin-left': !showTimer && !showToDo ? '-12px' : '0px',
+          'max-height': '500px'
+        }"
         @image-selected="setBackgroundImageUrl"
         v-if="showBackground"
         @close="showBackgroundDivHandler"
-        :style="{ height: '440px' }"
+        
       />
     </div>
 
@@ -222,7 +226,7 @@ export default defineComponent({
 
 .helper-container {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   flex-wrap: wrap;
   z-index: 2;
   max-width: 95%;
@@ -233,7 +237,7 @@ export default defineComponent({
 .column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .modal {
