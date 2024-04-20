@@ -45,9 +45,13 @@
             :avatar="member.avatar"
             :isOnline="member.isOnline"
           ></ChatMemberCard>
-          <div style="height: 100px"></div>
+          <div style="height: 160px"></div>
         </div>
         <div class="btn-container">
+          <div style="width: 100%; display: flex;">
+            <div class="vision-call-button"  :class="{ active: onVideoSession }"
+            @click="onVideoSession = !onVideoSession">VisionCall</div>
+          </div>
           <button class="back-btn-grad" @click="backBtnHandler">
             Back to Home
           </button>
@@ -59,13 +63,16 @@
     <NLayoutContent :nativeScrollbar="false">
       <div class="main-container">
         <div class="header">
-          <div>{{ currentSection.name }}</div>
+          <div>{{ onVideoSession ? 'VisionCall' : currentSection.name }}</div>
         </div>
-        <div class="sub-container">
+        <div class="sub-container" :class="{
+          'no-padding': onVideoSession,
+        }">
+          <ChatCollabrateSession v-if="onVideoSession" />
           <ChatSection
             :channel="channel"
             :messageCollection="chatSections[0].id"
-            v-if="currentSection.id === chatSections[0].id"
+            v-else-if="currentSection.id === chatSections[0].id"
           />
           <ChatSection
             :channel="channel"
@@ -84,7 +91,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, type PropType } from "vue";
+import { defineComponent, ref, toRefs, type PropType } from "vue";
 import ChatSection from "./ChatSection.vue";
 import ChatMemberCard from "./ChatMemberCard.vue";
 import type Channel from "../../types/channels/channel";
@@ -96,6 +103,7 @@ import { useChannelStore } from "../../stores/channel";
 import { useAuthStore } from "../../stores/auth";
 import { useChatStore } from "../../stores/chat";
 import LiveSessionCard from "./LiveSessionCard.vue";
+import ChatCollabrateSession from "./ChatCollabrateSession.vue";
 
 export default defineComponent({
   components: {
@@ -106,6 +114,7 @@ export default defineComponent({
     ChatMemberCard,
     NButton,
     LiveSessionCard,
+    ChatCollabrateSession
   },
   props: {
     initialChannel: {
@@ -129,6 +138,7 @@ export default defineComponent({
     const channelStore = useChannelStore();
     const chatStore = useChatStore();
     const { user } = useAuthStore();
+    const {onVideoSession} = toRefs(useChatStore());
 
     const chatSections = [
       { id: "discussion", name: "Discussion" },
@@ -151,6 +161,7 @@ export default defineComponent({
       chatSections,
       currentSection,
       switchSection,
+      onVideoSession
     };
   },
   async mounted() {
@@ -326,6 +337,11 @@ export default defineComponent({
     flex-grow: 1;
     padding: 8px;
     display: flex;
+    overflow: hidden;
+
+    &.no-padding {
+      padding: 0px;
+    }
   }
 }
 
@@ -361,5 +377,27 @@ export default defineComponent({
   font-weight: 700;
   font-family: "DM Sans";
   font-size: 16px;
+}
+
+.vision-call-button {
+  background: linear-gradient(90deg, #22948A 0%, #E1FCAB 100%);
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(40px);
+  padding: 12px;
+  flex-grow: 1;
+  margin-inline: 12px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: white;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  &.active {
+    border: 2px solid #fff;
+  }
 }
 </style>

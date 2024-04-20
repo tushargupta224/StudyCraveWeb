@@ -1,13 +1,13 @@
 <!-- VideoCall.vue -->
 
 <template>
-  <div style="position: relative">
+  <div style="position: relative; width: 100%">
     <custom-webrtc
       ref="webrtc"
       width="100%"
       :roomId="chatStore.channel!.id"
       :participants="chatStore.participants"
-      socketURL="https://localhost:3009/"
+      socketURL="https://localhost:4000/"
       :enableLogs="true"
       v-model:audio-enabled="audioEnable"
       v-model:video-enabled="videoEnable"
