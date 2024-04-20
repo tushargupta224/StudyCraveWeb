@@ -242,9 +242,9 @@ export default defineComponent({
 
 .modal {
   width: 600px;
-  padding: 18px 16px;
+  padding: 24px;
   position: absolute;
-  border-radius: 12px;
+  border-radius: 24px;
   top: 50%;
   box-sizing: border-box;
   left: 50%;
@@ -261,13 +261,14 @@ export default defineComponent({
   flex-direction: column;
 }
 .heading {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   z-index: 2;
   text-align: center;
+  margin-bottom: 12px;
 }
 p {
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 1px;
   z-index: 2;
   text-align: center;
@@ -281,6 +282,7 @@ p {
   justify-content: space-between;
   margin-top: 20px;
   box-sizing: border-box;
+ 
   z-index: 2;
 }
 // .confirmation button {
@@ -299,23 +301,26 @@ p {
 
 .confirmation .no {
   // padding: 12px 24px;
-  width: 120px;
-  height: 40px;
+  width: 182px;
+  height: 54px;
   border-radius: 99px;
   border: 2px solid black;
   background-color: transparent;
-  font-size: 1rem;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
 }
 .confirmation .yes {
   // padding: 12px 24px;
-  width: 120px;
-  height: 40px;
+  width: 182px;
+  height: 54px;
   border-radius: 99px;
   background-color: #fdd199;
-  font-size: 1rem;
+  font-size: 16px;
   border: none;
+  font-weight: 600;
   cursor: pointer;
+  margin-left: 24px;
 }
 
 .backdrop {
@@ -348,15 +353,16 @@ p {
   z-index: 1;
 }
 .logout {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   position: absolute;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 8px;
   color: white;
-  bottom: 10%;
-  right: 5%;
+  bottom: 24px;
+  right: 24px;
   background-color: #2f2e41;
+  box-shadow: '0px 4px 4px rgba(0, 0, 0, 0.25)';
   cursor: pointer;
   z-index: 2;
   display: flex;
