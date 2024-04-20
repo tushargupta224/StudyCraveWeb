@@ -7,13 +7,14 @@
       <close-outline style="width: 20px; height: 20px; cursor: pointer" @click="closeHandler" />
     </div>
     <div class="img-grid">
-      <button @click="removeBackgroundImages" class="removeBtn">
+      <button @click="removeBackgroundImages" class="removeBtn" :class="{'selected-image': images.find((i) => i.img === selectedImage) === undefined}">
         <img src="../../assets/images/eye.svg" alt="eye" />
       </button>
       <div
         class="img-container"
         v-for="(image, id) in images"
         :key="id"
+        :class="{'selected-image': image.img === selectedImage}"
         :style="{ backgroundImage: `url(${image.img})` }"
         @click="selectedImg(image.img)"
       ></div>
@@ -32,6 +33,12 @@ export default {
 
     return { closeHandler };
   },
+props: {
+  selectedImage: {
+    type: String,
+    default: undefined,
+  }
+},
 
   data() {
     return {
@@ -72,14 +79,14 @@ export default {
 
   methods: {
     selectedImg(imageurl: any) {
-      this.$emit("image-selected", imageurl);
+      this.$emit("update:selectedImage", imageurl);
     },
     removeBackgroundImages() {
       // this.selectedImageIndex = null;
-      this.$emit("image-selected", "");
+      this.$emit("update:selectedImage", "");
     },
   },
-  emits: ["close", "image-selected"],
+  emits: ["close", "update:selectedImage"],
   components: {
     CloseOutline,
   },
@@ -107,7 +114,8 @@ h2 {
   max-height: 100px;
   background-repeat: no-repeat;
   background-position: center center;
-  border-radius: 8px;
+  border-radius: 12px;
+  overflow: hidden;
   background-size: cover;
   cursor: pointer;
   z-index: 1;
@@ -124,7 +132,8 @@ h2 {
 }
 .removeBtn {
   background-color: rgba(144, 144, 144, 0.54);
-  border-radius: 5px;
+  border-radius: 12px;
+  overflow: hidden;
   border: none;
   cursor: pointer;
   min-width: 100px;
@@ -133,7 +142,7 @@ h2 {
   max-height: 100px;
 }
 .selected-image {
-  border: 2px solid white !important;
+  border: 2px solid #F27400 !important;
 }
 
 @media all and (max-width: 601px) {

@@ -59,7 +59,7 @@
           'margin-left': !showTimer && !showToDo ? '-12px' : '0px',
           'max-height': '500px'
         }"
-        @image-selected="setBackgroundImageUrl"
+        v-model:selected-image="backgroundImageUrl"
         v-if="showBackground"
         @close="showBackgroundDivHandler"
         
