@@ -157,6 +157,7 @@ export const useChatStore = defineStore({
         mediaStreamId: mediaStreamId,
         audioEnabled: audioEnabled,
         videoEnabled: videoEnabled,
+        updatedAt: new Date().toISOString(),
       };
 
       const ref = await addDoc(
@@ -183,7 +184,7 @@ export const useChatStore = defineStore({
     async updateParticipantConfigStatus(updated: ISessionParticipants) {
       await updateDoc(
         doc(db, `channels/${this.channel!.id}/callParticipants/${updated.id}`),
-        { ...updated }
+        { ...updated, updatedAt: new Date().toISOString() }
       );
     },
 
@@ -205,7 +206,9 @@ export const useChatStore = defineStore({
       if (!this.channel) return;
 
       const participantsQuery = query(
-        collection(db, `channels/${this.channel.id}/callParticipants`)
+        collection(db, `channels/${this.channel.id}/callParticipants`),
+        orderBy("updatedAt", "desc"),
+        limit(100)
       );
 
       this.videoCallListener = onSnapshot(participantsQuery, (snapshot) => {
