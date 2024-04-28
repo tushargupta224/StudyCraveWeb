@@ -25,7 +25,7 @@
       </div>
     </div>
   </div>
-  <div style="background-color: #FEFEFE;">
+  <div style="background-color: #FEFEFE; padding-inline: 20px; padding-bottom: 20px;">
     <SoloChannelBanner></SoloChannelBanner>
     <ChannelsSection></ChannelsSection>
   </div>

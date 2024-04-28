@@ -226,15 +226,16 @@ const joinedRoom = (stream: MediaStream, isLocal: boolean) => {
   }
 
   setTimeout(function () {
-    for (var i = 0, len = videos.value.length; i < len; i++) {
+    for (var i = 0, len = videos.value?.length; i < len; i++) {
       videos.value[i].setStreamObject(stream);
     }
   }, 500);
 
-  emits("joined-room", stream.id);
+  emits("joined-room", stream.id, isLocal);
 };
 
 const leave = () => {
+  log("leave");
   videoList.value.forEach((v) => v.stream.getTracks().forEach((t) => t.stop()));
   videoList.value = [];
   signalClient.value?.peers().forEach((peer: any) => peer.removeAllListeners());
@@ -340,7 +341,7 @@ defineExpose({
 .video-list {
   background: whitesmoke;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;

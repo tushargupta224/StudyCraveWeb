@@ -1,18 +1,44 @@
 <template>
   <div class="img-parent">
-    <h2>Choose the Background of the screen.</h2>
     <div
-      class="img-container"
-      v-for="(image, id) in images"
-      :key="id"
-      :style="{ backgroundImage: `url(${image.img})` }"
-      @click="selectedImg(image.img)"
-    ></div>
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <h2>Customize Background</h2>
+      <close-outline style="width: 20px; height: 20px; cursor: pointer" @click="closeHandler" />
+    </div>
+    <div class="img-grid">
+      <button @click="removeBackgroundImages" class="removeBtn" :class="{'selected-image': images.find((i) => i.img === selectedImage) === undefined}">
+        <img src="../../assets/images/eye.svg" alt="eye" />
+      </button>
+      <div
+        class="img-container"
+        v-for="(image, id) in images"
+        :key="id"
+        :class="{'selected-image': image.img === selectedImage}"
+        :style="{ backgroundImage: `url(${image.img})` }"
+        @click="selectedImg(image.img)"
+      ></div>
+    </div>
   </div>
 </template>
 <script lang="ts">
+import { CloseOutline } from "@vicons/ionicons5";
+
 export default {
   name: "Background",
+  setup(props, { emit }) {
+    function closeHandler() {
+      emit("close");
+    }
+
+    return { closeHandler };
+  },
+props: {
+  selectedImage: {
+    type: String,
+    default: undefined,
+  }
+},
 
   data() {
     return {
@@ -50,62 +76,81 @@ export default {
       ],
     };
   },
+
   methods: {
     selectedImg(imageurl: any) {
-      this.$emit("image-selected", imageurl);
+      this.$emit("update:selectedImage", imageurl);
     },
+    removeBackgroundImages() {
+      // this.selectedImageIndex = null;
+      this.$emit("update:selectedImage", "");
+    },
+  },
+  emits: ["close", "update:selectedImage"],
+  components: {
+    CloseOutline,
   },
 };
 </script>
 <style scoped lang="scss">
 .img-parent {
-  width: 300px;
-  display: flex;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(17, 25, 40, 0.75);
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.125);
+ 
+  background-color: rgba(252, 252, 252, 0.12);
+  border-radius: 18px;
   color: white;
   position: relative;
-  z-index: 2;
-  left: 52%;
   overflow-y: auto;
+  padding: 16px;
 }
 h2 {
-  margin-bottom: -50px;
   font-size: 0.8rem;
-  padding: 5px;
+  padding: 0px;
+  margin: 0px;
 }
 .img-container {
-  width: 80px;
-  height: 80px;
-  border: 1px solid white;
-  display: flex;
-  justify-content: space-between;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
   background-repeat: no-repeat;
   background-position: center center;
-  flex-wrap: wrap;
-  border-radius: 8px;
+  border-radius: 12px;
+  overflow: hidden;
   background-size: cover;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-  margin-top: 70px;
-  //   margin-bottom: 50px;
+  z-index: 1;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.img-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Three columns */
+  gap: 15px; /* Gap between image containers */
+  box-sizing: border-box;
+}
+.removeBtn {
+  background-color: rgba(144, 144, 144, 0.54);
+  border-radius: 12px;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 100px;
+  max-height: 100px;
+}
+.selected-image {
+  border: 2px solid #F27400 !important;
 }
 
 @media all and (max-width: 601px) {
   .img-parent {
-    left: 25%;
-    width: 240px;
-    height: 300px;
+    left: 15%;
+    width: 250px;
+    // height: 300px;
     overflow-y: scroll;
-    z-index: 1;
     background-position: center;
     background-size: cover;
   }

@@ -12,6 +12,7 @@ import {
   deleteDoc,
   updateDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { db } from "../config/firebase";
@@ -143,7 +144,7 @@ export const useChatStore = defineStore({
       mediaStreamId: string,
       audioEnabled: boolean,
       videoEnabled: boolean
-    ) {
+    ): Promise<string | undefined> {
       if (!this.channel) return;
 
       const { user } = useAuthStore();
@@ -156,54 +157,77 @@ export const useChatStore = defineStore({
         mediaStreamId: mediaStreamId,
         audioEnabled: audioEnabled,
         videoEnabled: videoEnabled,
+        updatedAt: new Date().toISOString(),
       };
 
-      await addDoc(
+      const ref = await addDoc(
         collection(db, `channels/${this.channel.id}/callParticipants`),
         streamParticipant
       );
+
+      const res = await getDoc(ref);
+
+      const hasEntry = this.participants.find((i) => i.id === res.id);
+
+      if (!hasEntry)
+        this.participants = [
+          ...this.participants,
+          {
+            id: res.id,
+            ...res.data(),
+          } as ISessionParticipants,
+        ];
+
+      return res.id;
     },
 
     async updateParticipantConfigStatus(updated: ISessionParticipants) {
       await updateDoc(
         doc(db, `channels/${this.channel!.id}/callParticipants/${updated.id}`),
-        { ...updated }
+        { ...updated, updatedAt: new Date().toISOString() }
       );
     },
 
-    async leaveVideoCall() {
+    async leaveVideoCall(localSessionId: string) {
       if (!this.channel) return;
 
       const { user } = useAuthStore();
       if (!user) return;
 
-      const participantRef = collection(
-        db,
-        `channels/${this.channel.id}/callParticipants`
+      await deleteDoc(
+        doc(
+          db,
+          `channels/${this.channel.id}/callParticipants/${localSessionId}`
+        )
       );
-
-      const querySnapshot = await getDocs(
-        query(participantRef, where("userId", "==", user.id))
-      );
-
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref);
-      });
     },
 
     listenForVideoCallParticipants() {
       if (!this.channel) return;
 
-      const participantsQuery = query(
-        collection(db, `channels/${this.channel.id}/callParticipants`)
+      const parQuery = query(
+        collection(db, `channels/${this.channel.id}/callParticipants`),
+        orderBy("updatedAt", "desc"),
+        limit(1)
       );
 
-      this.videoCallListener = onSnapshot(participantsQuery, (snapshot) => {
-        this.participants = snapshot.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id } as ISessionParticipants;
+      this.listener = onSnapshot(parQuery, async (snapshot) => {
+        const participants: ISessionParticipants[] = [];
+        const res = await getDocs(
+          query(collection(db, `channels/${this.channel?.id}/callParticipants`))
+        );
+
+        res.docs.forEach((d) => {
+          const data = d.data();
+          const par = {
+            id: d.id,
+            ...data,
+          };
+
+          participants.push(par as ISessionParticipants);
         });
 
-        console.log("Video call participants:", this.participants);
+        this.participants = participants;
       });
     },
 

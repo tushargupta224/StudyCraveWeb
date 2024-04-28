@@ -1,56 +1,91 @@
 <template>
-  <ChatCollabrateSession v-if="chatStore.onVideoSession" />
-  <div class="chat" v-else>
-    <n-layout class="chat-layout">
-      <n-layout-content class="messages-container">
-        <div class="infinite">
-          <InfiniteLoading
-            v-if="hasMoreMessages"
-            @infinite="onInfiniteScroll"
-          />
-        </div>
+  <div class="main-wrapper">
+    <div class="wrapper">
+      <div class="chat-section">
         <div
-          class="empty_state"
-          v-if="messagesGroupedByDate.length === 0 && !hasMoreMessages"
+          class="messages-container"
+          :class="{
+            'full-height':
+              messagesGroupedByDate.length === 0 && !hasMoreMessages,
+          }"
+          ref="msgContainer"
         >
-          <img
-            src="https://cdni.iconscout.com/illustration/premium/thumb/social-messages-2511593-2122857.png?f=webp"
-            alt=""
-          />
-          <h1>No chat to show.</h1>
-          <p>Start a conversation from your end.</p>
-        </div>
-        <div v-else class="messages">
-          <div
-            v-for="(group, index) in messagesGroupedByDate"
-            :key="index"
-            class="message-group"
-          >
-            <div class="date-container">
-              <div class="date">
-                <span>{{ group.date }}</span>
-              </div>
-            </div>
-            <ChatMessage
-              v-for="message in group.messages"
-              :message="message"
-              :key="message.id"
+          <div class="infinite">
+            <InfiniteLoading
+              v-if="hasMoreMessages"
+              @infinite="onInfiniteScroll"
             />
           </div>
+          <div
+            class="empty_state"
+            v-if="messagesGroupedByDate.length === 0 && !hasMoreMessages"
+          >
+            <img
+              src="https://assets.streamlinehq.com/image/private/w_200,h_200,ar_1/f_auto/v1/icons/lagos/interface/interface/empty-state-messenger-no-conversations-6193lwuaecnvhcei6x3y3.png?_a=DAJFJtWIZAAC"
+              alt=""
+            />
+            <h2 style="color: white">Start a New Conversation</h2>
+            <p style="text-align: center; color: white">This section looks a bit lonely! Why not initiate a conversation? Click the button below to begin a new discussion and connect with others. Start sharing ideas, asking questions, or simply saying hello!</p>
+          </div>
+          <div v-else class="messages">
+            <div
+              v-for="(group, index) in messagesGroupedByDate"
+              :key="index"
+              class="message-group"
+            >
+              <div class="date-container">
+                <div class="date">
+                  <span>{{ group.date }}</span>
+                </div>
+              </div>
+              <ChatMessage
+                v-for="message in group.messages"
+                :message="message"
+                :key="message.id"
+              />
+            </div>
+          </div>
         </div>
-      </n-layout-content>
-    </n-layout>
-    <div class="input-area">
-      <div class="input-container">
-        <n-input
-          v-model:value="inputText"
-          @keyup.enter="submitMessage"
-          placeholder="Type message"
-          class="input-field"
+      </div>
+      <div class="reply-input">
+        <input
+          v-model="inputText"
+          @keyup.enter="
+            async () => {
+              await submitMessage();
+              scrollToBottom();
+            }
+          "
+          placeholder="Type your message here..."
+          class="reply-input-area"
         />
-        <n-button class="btn-grad" type="primary" @click="submitMessage"
-          >Send</n-button
+        <div
+          @click="submitMessage"
+          style="
+            width: 32px;
+            height: 32px;
+            background-color: white;
+            border-radius: 8px;
+            margin-right: 8px;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+          "
         >
+          <img
+            :src="forwardIconSrc"
+            alt="send"
+            style="
+              
+              width: 24px;
+              height: 24px;
+
+              cursor: pointer;
+              color: white;
+            "
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -82,6 +117,8 @@ import {
   NSpace,
 } from "naive-ui";
 import ChatCollabrateSession from "./ChatCollabrateSession.vue";
+import { Send16Regular } from "@vicons/fluent";
+import forward from "../../assets/icons/Forward.svg";
 
 export default defineComponent({
   components: {
@@ -95,6 +132,7 @@ export default defineComponent({
     NTag,
     NSpace,
     ChatCollabrateSession,
+    Send16Regular,
   },
   props: {
     channel: {
@@ -121,19 +159,20 @@ export default defineComponent({
       chatStore.stopListening();
     });
 
-    function submitMessage() {
-      if (inputText.value.trim()) {
-        chatStore.sendMessage(props.messageCollection, inputText.value.trim());
+    async function submitMessage() {
+      const msg = inputText.value.trim();
+      if (msg) {
         inputText.value = "";
+        await chatStore.sendMessage(props.messageCollection, msg);
       }
     }
 
-    function onInfiniteScroll() {
+    async function onInfiniteScroll() {
       if (!chatStore.hasMoreMessages) {
         return;
       }
       if (chatStore.initialFetch)
-        chatStore.fetchMessages(props.messageCollection);
+        await chatStore.fetchMessages(props.messageCollection);
     }
 
     const messagesGroupedByDate = computed(() => {
@@ -177,11 +216,103 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useChatStore, ["hasMoreMessages"]),
+    hasInitialFetchDone() {
+      return this.chatStore.initialFetch;
+    },
+  },
+  methods: {
+    scrollToBottom() {
+      this.$nextTick(function () {
+        var container = this.$refs.msgContainer;
+        if (container) container.scrollTop = container.scrollHeight + 120;
+      });
+    },
+  },
+  watch: {
+    hasInitialFetchDone: function () {
+      if (!this.hasInitialFetchDone) return;
+      this.scrollToBottom();
+    },
+  },
+  data() {
+    return {
+      forwardIconSrc: forward,
+    };
   },
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.main-wrapper {
+  min-height: 100%;
+  width: 100%;
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    height: 100%;
+
+    .chat-section {
+      flex-grow: 1;
+      margin-bottom: 16px;
+      padding-inline: 12px;
+      background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.4) 100%
+      );
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+      border-radius: 18px;
+      backdrop-filter: blur(50px);
+      overflow: hidden;
+      position: relative;
+
+      .messages-container {
+        position: absolute;
+        bottom: 0px;
+        max-height: 100%;
+        width: calc(100% - 16px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+
+        &.full-height {
+          height: 100%;
+        }
+      }
+    }
+
+    .reply-input {
+      background: #2f2e41;
+      border-radius: 12px;
+      border: 1px white solid;
+      height: 48px;
+      width: 100%;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .reply-input-area {
+        padding-left: 16px;
+        color: white;
+        font-weight: 500;
+        font-family: "DM Sans";
+        outline: none !important;
+        background: transparent !important;
+        border: none !important;
+        width: 100%;
+
+        &::placeholder {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
 .chat {
   display: flex;
   flex-direction: column;
@@ -209,14 +340,21 @@ export default defineComponent({
   flex-direction: column;
   margin: auto;
 }
-.empty_state h1 {
-  font-size: 3rem;
+.empty_state img {
+  height: 300px;
+}
+.empty_state h2 {
+  font-size: 28px;
   margin: 0;
+  padding-top: 24px;
 }
 .empty_state p {
   font-style: italic;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 16;
+  font-weight: 400;
+  padding-top: 24px;
+
+  padding-inline: 100px;
   margin: 0;
 }
 
@@ -226,61 +364,15 @@ export default defineComponent({
 }
 .date {
   text-align: center;
-  width: 90px;
-  border-radius: 1rem;
-  padding: 0.25rem 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.85rem;
-  background: #1f4037; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #99f2c8,
-    #1f4037
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #99f2c8,
-    #1f4037
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  border: 1px solid #1f4037;
-  color: white;
-}
-
-.messages-container {
-  flex-grow: 1;
-  overflow-y: auto;
-  margin-bottom: 40px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-}
-
-.input-area {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 0.5rem;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.input-container {
-  display: flex;
-  align-items: center;
-  width: calc(100% - 4rem);
-  margin: 0 auto;
-}
-
-.input-field {
-  flex-grow: 1;
-  margin-right: 1rem;
-  border-radius: 24px;
-  padding: 0.28rem;
+  border-radius: 100px;
+  padding: 6px 12px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  background: linear-gradient(90deg, #fee3e0 0%, #fce5c9 100%);
+  box-shadow: 0px 8px 20px rgba(5, 5, 4, 0.08);
+  color: "#2F2E4";
+  text-wrap: nowrap;
+  font-weight: 500;
 }
 
 .btn-grad {
@@ -306,5 +398,10 @@ export default defineComponent({
   background-position: right center; /* change the direction of the change here */
   color: #fff;
   text-decoration: none;
+}
+
+.message-group {
+  margin-bottom: 16px;
+  padding-top: 16px;
 }
 </style>

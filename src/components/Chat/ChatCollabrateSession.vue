@@ -1,7 +1,7 @@
 <!-- VideoCall.vue -->
 
 <template>
-  <div style="position: relative">
+  <div style="position: relative; width: 100%">
     <custom-webrtc
       ref="webrtc"
       width="100%"
@@ -11,11 +11,11 @@
       :enableLogs="true"
       v-model:audio-enabled="audioEnable"
       v-model:video-enabled="videoEnable"
-      v-on:joined-room="onJoined"
-      v-on:left-room="logEvent"
-      v-on:opened-room="logEvent"
-      v-on:share-started="logEvent"
-      v-on:share-stopped="logEvent"
+      @joined-room="onJoined"
+      @left-room="logEvent"
+      @opened-room="logEvent"
+      @share-started="logEvent"
+      @share-stopped="logEvent"
       @local-audio-status-change="onLocalAudioVideoStatusChange"
       @local-video-status-change="onLocalAudioVideoStatusChange"
       @error="onError"
@@ -79,10 +79,18 @@ export default defineComponent({
       img: null,
       audioEnable: true,
       videoEnable: true,
+      unMounted: false,
+      localSessionId: undefined as string | undefined,
     };
   },
   mounted() {
     this.onJoin();
+    window.addEventListener("beforeunload", this.onBeforeUnload);
+    window.addEventListener("unload", this.onBeforeUnload);
+  },
+  beforeDestroy() {
+    window.removeEventListener("beforeunload", this.onBeforeUnload);
+    window.removeEventListener("unload", this.onBeforeUnload);
   },
   computed: {
     shouldReJoinAutomatically() {
@@ -91,36 +99,38 @@ export default defineComponent({
   },
   methods: {
     leaveCall() {
-      try {
-        // Leave the call using the chat store
-        this.chatStore.leaveVideoCall();
-        this.onLeave();
-      } catch (error) {
-        console.error("Error leaving call:", error);
-      }
+      this.chatStore.leaveVideoCall(this.localSessionId);
+      this.onLeave();
     },
     callEnded() {
       // Additional logic when the call ends
       console.log("Call ended.");
     },
     onCapture() {
-      this.img = (this.$refs.webrtc as any).capture();
+      this.img = (this.$refs.webrtc as any)?.capture();
     },
     onJoin() {
-      (this.$refs.webrtc as any).join();
+      (this.$refs.webrtc as any)?.join();
     },
     onLeave() {
-      (this.$refs.webrtc as any).leave();
+      (this.$refs.webrtc as any)?.leave();
       this.chatStore.onVideoSession = false;
     },
     onShareScreen() {
-      this.img = (this.$refs.webrtc as any).shareScreen();
+      this.img = (this.$refs.webrtc as any)?.shareScreen();
     },
     onError(error: any, stream: any) {
       console.log("On Error Event", error, stream);
     },
-    onJoined(mediaId: string) {
-      this.chatStore.joinVideoCall(mediaId, this.audioEnable, this.videoEnable);
+    async onJoined(mediaId: string, isLocal: boolean) {
+      if (isLocal) {
+        const id = await this.chatStore.joinVideoCall(
+          mediaId,
+          this.audioEnable,
+          this.videoEnable
+        );
+        this.localSessionId = id;
+      }
     },
     logEvent(event: any) {
       console.log("Event : ", event);
@@ -133,6 +143,11 @@ export default defineComponent({
     },
     onLocalAudioVideoStatusChange(t: ISessionParticipants) {
       this.chatStore.updateParticipantConfigStatus(t);
+    },
+    onBeforeUnload() {
+      if (this.unMounted) return;
+      this.unMounted = true;
+      this.leaveCall();
     },
   },
   beforeUnmount() {
