@@ -205,18 +205,29 @@ export const useChatStore = defineStore({
     listenForVideoCallParticipants() {
       if (!this.channel) return;
 
-      const participantsQuery = query(
+      const parQuery = query(
         collection(db, `channels/${this.channel.id}/callParticipants`),
         orderBy("updatedAt", "desc"),
-        limit(100)
+        limit(1)
       );
 
-      this.videoCallListener = onSnapshot(participantsQuery, (snapshot) => {
-        this.participants = snapshot.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id } as ISessionParticipants;
+      this.listener = onSnapshot(parQuery, async (snapshot) => {
+        const participants: ISessionParticipants[] = [];
+        const res = await getDocs(
+          query(collection(db, `channels/${this.channel?.id}/callParticipants`))
+        );
+
+        res.docs.forEach((d) => {
+          const data = d.data();
+          const par = {
+            id: d.id,
+            ...data,
+          };
+
+          participants.push(par as ISessionParticipants);
         });
 
-        console.log("Video call participants:", this.participants);
+        this.participants = participants;
       });
     },
 
