@@ -1,11 +1,6 @@
 <template>
   <div class="msg" :class="{ 'left-msg': !isAuthor, 'right-msg': isAuthor }">
-    <div
-      class="msg-img"
-      :style="
-      `background-image: url(${userAvatar});`
-      "
-    ></div>
+    <div class="msg-img" :style="`background-image: url(${userAvatar});`"></div>
 
     <div class="msg-bubble">
       <div class="msg-info">
@@ -43,10 +38,13 @@ export default defineComponent({
       return this.message.senderId == this.user?.id;
     },
     userAvatar(): string {
-        if(this.message.senderAvatar?.length === 0 || !this.message.senderAvatar) {
-            return "https://avatars.mds.yandex.net/i?id=14e79b2024212714c242526ba0f9f731c295a775-4712318-images-thumbs&n=13";
-        }
-        return this.message.senderAvatar;
+      if (
+        this.message.senderAvatar?.length === 0 ||
+        !this.message.senderAvatar
+      ) {
+        return "/images/placeholder_avatar.png";
+      }
+      return this.message.senderAvatar;
     },
     updateTime(): string {
       const date = new Date(this.message.createdAt);
@@ -65,51 +63,44 @@ export default defineComponent({
   display: flex;
   align-items: flex-end;
   margin-bottom: 10px;
+
+  &.left-msg {
+    align-items: flex-start;
+  }
 }
 .msg:last-of-type {
   margin: 0;
 }
 .msg-img {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   margin-right: 10px;
   background: #ddd;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   border-radius: 50%;
-  margin-bottom: 4%;
 }
 .msg-bubble {
   max-width: 450px;
   padding: 15px;
   border-radius: 15px;
   background: $left-msg-bg;
-  margin-bottom: 1.5%;
-  background: #f64f59; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #a8ff78,
-    #78ffd6
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #a8ff78,
-    #78ffd6
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(90deg, #fed2d6 0%, #fcafec 100%);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
 }
 .msg-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 .msg-info-name {
-  margin-right: 10px;
+  margin-right: 20px;
   font-weight: bold;
 }
 .msg-info-time {
-  font-size: 0.65em;
+  font-size: 8px;
 }
 
 .left-msg .msg-bubble {
@@ -120,20 +111,9 @@ export default defineComponent({
   flex-direction: row-reverse;
 }
 .right-msg .msg-bubble {
-  color: #fff;
   border-bottom-right-radius: 0;
   margin-bottom: 2.5%;
-  background: #1a2980; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #1a2980,
-    #26d0ce
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #1a2980,
-    #26d0ce
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(90deg, #D7FEF6 0%, #D5FCCE 100%);
 }
 .right-msg .msg-img {
   margin-bottom: 2.5%;

@@ -35,7 +35,7 @@ export default {
   overflow-x: auto;
   display: flex;
   flex-direction: column;
-  z-index: 99;
+  z-index: 199;
   height: 333px;
   width: 600px;
   justify-content: center;

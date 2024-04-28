@@ -8,7 +8,7 @@
       style="width: 101%; height: 100%; transform: scaleX(-1)"
     ></video>
 
-    <div style="top: 6px; right: 4px; position: absolute">
+    <div style="top: 6px; right: 4px; position: absolute; z-index: 999">
       <div class="mic-icon" :class="{ green: participant.audioEnabled }">
         <MicOutline
           style="color: white"
@@ -44,9 +44,10 @@
             overflow: hidden;
           "
         >
-          <img
+          <n-image
             :src="participant.userAvatar"
             style="width: 100%; height: 100%"
+            fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
           />
         </div>
 
@@ -62,23 +63,21 @@
         height: 100%;
         display: flex;
         background: white;
+        z-index: 500;
       "
       v-if="!participant.videoEnabled"
     >
-      <img
+      <n-image
         :src="participant.userAvatar"
         alt="img"
-        style="width: 100%; height: 100%; filter: blur(4px)"
-      />
-      <img
-        :src="participant.userAvatar"
-        alt="img"
+        object-fit="cover"
+        fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
         style="
           position: absolute;
           z-index: 5;
           width: 100%;
           height: 100%;
-          filter: blur(15px);
+          filter: blur(4px);
         "
       />
 
@@ -91,10 +90,11 @@
           transform: translate(-50%, -50%);
         "
       >
-        <img
+        <n-image
           :src="participant.userAvatar"
           alt="dp"
-          style="width: 80px; height: 80px; border-radius: 50%"
+          style="width: 80px; min-width: 80px; min-height: 80px; height: 80px; border-radius: 50%"
+          fallback-src="https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png"
         />
       </div>
     </div>
@@ -105,6 +105,7 @@
 import { ref, type PropType, toRefs, onMounted, onBeforeUnmount } from "vue";
 import type { ISessionParticipants } from "../../types/channels/ISessionParticipants";
 import { MicOffOutline, MicOutline } from "@vicons/ionicons5";
+import { NImage } from "naive-ui";
 
 const props = defineProps({
   videoItem: {
@@ -142,36 +143,38 @@ const setStreamObject = (stream: MediaStream) => {
 };
 
 const createAudioAnalyser = () => {
-  const audioContextLocal = new (window.AudioContext ||
-    (window as any)?.webkitAudioContext)();
-  const analyser = audioContextLocal.createAnalyser();
-  const source = audioContextLocal.createMediaElementSource(video.value);
+  try {
+    const audioContextLocal = new (window.AudioContext ||
+      (window as any)?.webkitAudioContext)();
+    const analyser = audioContextLocal.createAnalyser();
+    const source = audioContextLocal.createMediaElementSource(video.value);
 
-  source.connect(analyser);
-  analyser.connect(audioContextLocal.destination);
+    source.connect(analyser);
+    analyser.connect(audioContextLocal.destination);
 
-  analyser.fftSize = 256;
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-  const update = () => {
-    if (mounted) {
-      analyser.getByteFrequencyData(dataArray);
-      const average =
-        dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+    const update = () => {
+      if (mounted) {
+        analyser.getByteFrequencyData(dataArray);
+        const average =
+          dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
 
-      if (average > 10) {
-        audioActive.value = true;
-      } else {
-        audioActive.value = false;
+        if (average > 10) {
+          audioActive.value = true;
+        } else {
+          audioActive.value = false;
+        }
       }
-    }
 
-    requestAnimationFrame(update);
-  };
+      requestAnimationFrame(update);
+    };
 
-  update();
-  audioContext.value = audioContextLocal;
+    update();
+    audioContext.value = audioContextLocal;
+  } catch (error) {}
 };
 
 defineExpose({ setStreamObject });
