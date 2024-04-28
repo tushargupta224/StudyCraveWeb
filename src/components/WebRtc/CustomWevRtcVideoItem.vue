@@ -63,6 +63,7 @@
         height: 100%;
         display: flex;
         background: white;
+        z-index:500;
       "
       v-if="!participant.videoEnabled"
     >

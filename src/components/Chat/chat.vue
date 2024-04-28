@@ -70,13 +70,85 @@
           <div style="height: 160px"></div>
         </div>
         <div class="btn-container">
-          <div style="width: 100%; display: flex">
+          <div style="width: 100%; display: flex; align-items: center">
             <div
               class="vision-call-button"
               :class="{ active: onVideoSession }"
               @click="onVideoSession = !onVideoSession"
             >
-              VisionCall
+              <span style="display: flex; align-items: center; gap: 6px"
+                ><span
+                  style="
+                    width: 20px;
+                    height: 20px;
+                    color: #fff;
+                    font-weight: bold;
+                  "
+                >
+                  <Live20Regular /> </span
+                >VisionCall</span
+              >
+              <span
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                "
+              >
+                <!-- <NAvatarGroup :options="avatarOptions" :size="40" :max="2">
+                  <template #avatar="{ options: { name, src } }">
+                    <n-avatar color="#FFB178" :src="src"/>
+                  </template>
+                  <template #rest="{ options: restOptions, rest }">
+                    <n-avatar color="#BDFFEF"
+                      ><p style="color: #050505">+{{ rest }}</p></n-avatar
+                    >
+                  </template>
+                </NAvatarGroup> -->
+                <span
+                  v-for="(participant, index) in participants.slice(0, 2)"
+                  :key="participant.userId"
+                  style="display: flex; justify-content: center"
+                >
+                  <img
+                    :src="participant.userAvatar"
+                    style="
+                      width: 25px;
+                      height: 25px;
+                      border-radius: 50%;
+                      margin-left: -8px;
+                      border: 2px solid #fff;
+                    "
+                  />
+                </span>
+                <span
+                  v-if="participants.length > 2"
+                  style="
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    background-color: #fdd199;
+                    border: 2px solid #fff;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-left: -8px;
+                    font-size: 12px;
+                    color: black;
+                  "
+                >
+                  +{{ participants.length - 2 }}
+                </span>
+                <HeadphonesSoundWave20Regular
+                  v-if="participants.length > 0"
+                  style="width: 20px; height: 20px; color: #2f2e41"
+                />
+                <span v-else>
+                  <Headphones20Regular
+                    style="width: 20px; height: 20px; color: #2f2e41"
+                  />
+                </span>
+              </span>
             </div>
           </div>
           <button class="back-btn-grad" @click="backBtnHandler">
@@ -125,7 +197,14 @@ import { defineComponent, ref, toRefs, type PropType } from "vue";
 import ChatSection from "./ChatSection.vue";
 import ChatMemberCard from "./ChatMemberCard.vue";
 import type Channel from "../../types/channels/channel";
-import { NLayout, NLayoutSider, NLayoutContent, NButton } from "naive-ui";
+import {
+  NLayout,
+  NLayoutSider,
+  NLayoutContent,
+  NButton,
+  NAvatar,
+  NAvatarGroup,
+} from "naive-ui";
 import type ChannelMembers from "../../types/channels/channel_member";
 import { onSnapshot, doc, collection, query } from "firebase/firestore";
 import { db } from "../../config/firebase";
@@ -134,6 +213,11 @@ import { useAuthStore } from "../../stores/auth";
 import { useChatStore } from "../../stores/chat";
 import LiveSessionCard from "./LiveSessionCard.vue";
 import ChatCollabrateSession from "./ChatCollabrateSession.vue";
+import {
+  Headphones20Regular,
+  HeadphonesSoundWave20Regular,
+  Live20Regular,
+} from "@vicons/fluent";
 
 export default defineComponent({
   components: {
@@ -145,6 +229,11 @@ export default defineComponent({
     NButton,
     LiveSessionCard,
     ChatCollabrateSession,
+    Headphones20Regular,
+    HeadphonesSoundWave20Regular,
+    Live20Regular,
+    NAvatar,
+    NAvatarGroup,
   },
   props: {
     initialChannel: {
@@ -170,6 +259,7 @@ export default defineComponent({
     const chatStore = useChatStore();
     const { user } = useAuthStore();
     const { onVideoSession } = toRefs(useChatStore());
+    const { participants } = toRefs(useChatStore());
 
     const chatSections = [
       { id: "discussion", name: "Discussion" },
@@ -183,6 +273,7 @@ export default defineComponent({
       currentSection.value = section;
 
       chatStore.onVideoSession = false;
+      console.log(participants);
     }
 
     return {
@@ -193,6 +284,7 @@ export default defineComponent({
       currentSection,
       switchSection,
       onVideoSession,
+      participants,
     };
   },
   async mounted() {
@@ -287,9 +379,18 @@ export default defineComponent({
 
       return members;
     },
-  },
-  beforeUnmount() {
-    this.onBeforeUnload();
+
+    avatarOptions() {
+      return this.participants.map((participant) => {
+        return {
+          name: participant.userName,
+          src: participant.userAvatar,
+        };
+      });
+    },
+    beforeUnmount() {
+      this.onBeforeUnload();
+    },
   },
 });
 </script>
