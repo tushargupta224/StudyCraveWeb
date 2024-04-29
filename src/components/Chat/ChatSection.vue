@@ -25,7 +25,12 @@
               alt=""
             />
             <h2 style="color: white">Start a New Conversation</h2>
-            <p style="text-align: center; color: white">This section looks a bit lonely! Why not initiate a conversation? Click the button below to begin a new discussion and connect with others. Start sharing ideas, asking questions, or simply saying hello!</p>
+            <p style="text-align: center; color: white">
+              This section looks a bit lonely! Why not initiate a conversation?
+              Click the button below to begin a new discussion and connect with
+              others. Start sharing ideas, asking questions, or simply saying
+              hello!
+            </p>
           </div>
           <div v-else class="messages">
             <div
@@ -67,7 +72,7 @@
             background-color: white;
             border-radius: 8px;
             margin-right: 8px;
-            display:flex;
+            display: flex;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
@@ -77,7 +82,6 @@
             :src="forwardIconSrc"
             alt="send"
             style="
-              
               width: 24px;
               height: 24px;
 
@@ -223,7 +227,7 @@ export default defineComponent({
   methods: {
     scrollToBottom() {
       this.$nextTick(function () {
-        var container = this.$refs.msgContainer;
+        var container = this.$refs.msgContainer as HTMLElement | undefined;
         if (container) container.scrollTop = container.scrollHeight + 120;
       });
     },

@@ -47,7 +47,7 @@
 <script lang="ts">
 import CustomWebRtc from "../WebRtc/CustomWebRtc.vue";
 import { useChatStore } from "../../stores/chat";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 import {
   MicOffOutline,
@@ -80,7 +80,7 @@ export default defineComponent({
       audioEnable: true,
       videoEnable: true,
       unMounted: false,
-      localSessionId: undefined as string | undefined,
+      localSessionId: ref<string>(""),
     };
   },
   mounted() {
@@ -124,7 +124,7 @@ export default defineComponent({
     },
     async onJoined(mediaId: string, isLocal: boolean) {
       if (isLocal) {
-        const id = await this.chatStore.joinVideoCall(
+        const id: any = await this.chatStore.joinVideoCall(
           mediaId,
           this.audioEnable,
           this.videoEnable
