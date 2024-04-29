@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="footer-row">
-      <n-avatar-group :options="avatarOptions" :size="40" :max="5">
+      <n-avatar-group :options:any="avatarOptions" :size="40" :max="5">
         <template #avatar="{ option: { name, src } }">
           <n-avatar color="#FFB178" :src="src" v-if="src"> </n-avatar>
           <n-avatar color="#FFB178" :src="src" v-else>

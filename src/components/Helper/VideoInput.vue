@@ -1,6 +1,6 @@
 <template>
   <div class="form-parent">
-    <div style="width: 100%;">
+    <div style="width: 100%">
       <div class="form-heading">
         <h4>YouTube</h4>
         <close-outline
@@ -53,7 +53,7 @@ export default {
     CloseOutline,
     SearchOutline,
   },
-  emits: ["close"],
+  emits: ["close", "submit"],
 };
 </script>
 
