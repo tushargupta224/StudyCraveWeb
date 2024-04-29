@@ -128,3 +128,8 @@
   color: #fff !important;
   box-shadow: 0px 14px 80px rgba(252, 56, 56, 0.4);
 }
+
+.n-tabs .n-tabs-rail .n-tabs-capsule {
+  background-color: transparent !important;
+  transition: transform 0.3s var(--n-bezier);
+}
