@@ -154,22 +154,4 @@ export default defineComponent({
 .img-container h2 {
   font-size: 2.5rem;
 }
-
-.tabs-custom::v-deep .n-tabs-rail {
-  border-radius: 100px !important;
-  background: white;
-  box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px,
-    rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 48px;
-}
-
-.tabs-custom::v-deep .n-tabs-tab {
-  border-radius: 100px !important;
-  color: black !important;
-}
-
-.tabs-custom::v-deep .n-tabs-tab.n-tabs-tab--active {
-  background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
-  color: #fff !important;
-  box-shadow: 0px 14px 80px rgba(252, 56, 56, 0.4);
-}
 </style>
